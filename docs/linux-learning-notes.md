@@ -5,12 +5,14 @@ Topics Completed
 - Linux FileSystem
 - User & Groups
 - File Permissions
+- Storage Management
 - Package Management
 - Process Management
 - Service (systemctl)
 - SSH
 - Bash Scripting
-- Git Fundamental
+- Git & GitHub Fundamental
+  
 
 Practice Environment
 

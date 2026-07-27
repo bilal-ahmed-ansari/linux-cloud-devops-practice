@@ -1,3 +1,0 @@
-Siem (security information and event management):
-It collect logs of firewall, network devices, application in one pace and report us if there is any suspicious activity occur. 
-Also it alert automatically of all types of logs like event logs, firewall logs, service log like apache, ssh

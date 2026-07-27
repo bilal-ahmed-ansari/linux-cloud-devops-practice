@@ -1,8 +1,0 @@
-Firewall:
-It acts as a security guard in server which decide who will be go in and who have an authority to enter in server.
-Decide which port should be open or block. And same which service should be allowed or not allowed.
-firewalld is a software that manage firewall rules
-firewall-cmd --list-all === list services which are present in firewall 
-firewall-cmd --add-service=http --permanent === add http service 
-firewall-cmd --add-port=22/tcp --permanent === open port
-systemctl status firewalld == check the status of firewall

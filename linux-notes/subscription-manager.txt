@@ -1,5 +1,0 @@
-If production wanted to use RHEL then server needs to take a subscription from Red hat website
-After that server will get updates and repository (like a project directory)
-subscription-manager register
-subscription-manager status 
-subscription-manager repos --list

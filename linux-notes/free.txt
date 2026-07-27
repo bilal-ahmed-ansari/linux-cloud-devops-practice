@@ -1,2 +1,0 @@
-It shows the summary of ram and swap usage. It defines
-How much ram is used, free, swap usage, how much space is there in buffer/cache (linux store stat temporary somewhere so that performance will be good by utilising ram)

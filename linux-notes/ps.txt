@@ -1,7 +1,0 @@
-------------
-Easy trick 🤓
-ps -a → Terminal wale processes
-ps -e → Every process
-ps -ef → Every process + Full details
-ps aux → CPU aur Memory usage ke saath processes
-------------

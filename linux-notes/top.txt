@@ -1,3 +1,0 @@
-Real time monitoring tool
-It continuously show live information of the system. It shows
-Cpu usage, ram usage, swap usage, which process is using more cpu or ram, load average, uptime 

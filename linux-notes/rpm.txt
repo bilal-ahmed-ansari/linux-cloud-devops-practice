@@ -1,6 +1,0 @@
-Redhat Package Manager 
-When we download the setup, we will get setup.rpm just like .exe file in Windows
-It will install local package but it won't resolve the dependency by installing it. For that we need to use yum or dng
-rpm -ivh nginx== install 
-rpm -q nginx=== check the software 
-rpm -e nginx === erase software 

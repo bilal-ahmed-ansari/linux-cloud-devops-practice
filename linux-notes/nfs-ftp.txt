@@ -1,6 +1,0 @@
-Nfs uses remote directory as a local directory whereas file transfer protocol (ftp) transfer files from one machine to other
-Orginal file is present in location, only it transfer file copies
-put name.pdf = Send file to server
-From server to laptop
-get backup.tar.gz
-Ftp port no is 21

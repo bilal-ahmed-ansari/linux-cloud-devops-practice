@@ -1,2 +1,0 @@
-sudo -l
-which permission does current user have

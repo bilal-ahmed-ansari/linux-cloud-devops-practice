@@ -1,5 +1,0 @@
-help us to install, update and remove the software.
-Yum is an older package manager use till RHEL 7
-Dnf produce better performance and fastest. In Rhel 8 and 9, yum internally uses dnf
-yum install nginx 
-dnf install nginx

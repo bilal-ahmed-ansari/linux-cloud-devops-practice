@@ -185,3 +185,259 @@ telnet: Unable to connect to remote host: Connection refused
 That means service is not running or port is blocked by a firewall
 
 Note:- Telnet port no is 23
+
+25. ls -R
+
+Lists all files and subdirectories recursively.
+
+ls -R
+Example:
+
+Output
+project/
+├── file1.txt
+├── docs/
+│   └── readme.md
+
+26. ls -lh
+
+Shows file sizes in a human-readable format.
+
+Example:
+ls -lh
+
+Output:
+-rw-r--r-- 1 bilal bilal 2.5K Jul 30 notes.txt
+
+Without -h, the size is shown only in bytes.
+
+27. tree
+
+Displays directories in a tree structure.
+
+Example:
+tree
+
+Output
+project
+├── file1.txt
+├── file2.txt
+└── docs
+    └── readme.md
+
+If not installed:
+sudo apt install tree
+
+28. Tells you what type of file it is.
+
+file notes.txt
+
+Output
+notes.txt: ASCII text
+
+29. Shows where a command is located.
+
+which ls
+
+Output
+/usr/bin/ls
+
+30. Displays Linux kernel information.
+
+uname -a
+
+Output
+Linux ubuntu 6.8.0-40-generic x86_64 GNU/Linux
+
+31. sudo
+Runs a command with administrator (root) privileges.
+
+Example
+sudo apt update
+
+31. Difference Between mkdir -p and mkdir -m
+
+| Option     | Full Form | Purpose                                                       |
+| ---------- | --------- | ------------------------------------------------------------- |
+| `mkdir -p` | Parents   | Creates parent directories automatically if they don't exist. |
+| `mkdir -m` | Mode      | Creates a directory with specific permissions.                |
+
+Explaination:
+a) mkdir -p
+
+What does it do?
+
+The -p option tells Linux:
+
+"If the parent directory doesn't exist, create it automatically."
+
+It also doesn't show an error if the directory already exists.
+
+Example 1: Without -p
+
+Current directory
+/home/bilal
+
+Command
+mkdir project/docs/linux
+
+Output
+mkdir: cannot create directory 'project/docs/linux':
+No such file or directory
+
+Why?
+
+Because:
+
+project doesn't exist.
+docs doesn't exist.
+
+Linux cannot create linux inside directories that don't exist.
+
+Example 2: With -p
+
+Command
+mkdir -p project/docs/linux
+
+Linux automatically creates:
+
+project/
+└── docs/
+    └── linux/
+
+No need to create each directory one by one
+
+b) mkdir -m (Mode)
+
+What does it do?
+
+The -m option allows you to set directory permissions at the time of creation.
+
+Normally, mkdir project
+
+creates a directory with default permissions (affect system's umask).
+
+With -m, you choose the permissions yourself.
+
+Example
+mkdir -m 755 project
+
+Check permissions
+
+ls -ld project
+
+Output
+drwxr-xr-x
+
+Note:- 
+
+1. What is "Mode"?
+
+Mode means permissions.
+
+Example
+
+mkdir -m 755 project
+
+Permission breakdown:
+
+7 = Read + Write + Execute
+
+5 = Read + Execute
+
+5 = Read + Execute
+
+Result
+
+Owner  → rwx
+Group  → r-x
+Others → r-x
+
+2. Explain umask
+
+Linux starts with default permissions.
+umask removes unnecessary permissions before the file or directory is created.
+
+a) Why is umask Needed?
+
+Without umask, every new file or directory would get maximum permissions, which would be a security risk.
+
+b) Default Permissions
+
+Linux starts with these base permissions:
+
+New Files
+666
+
+Meaning:
+
+Owner  → rw-
+Group  → rw-
+Others → rw-
+
+Notice that execute (x) is not given by default for regular files.
+
+c) New Directories
+777
+
+Meaning:
+
+Owner  → rwx
+Group  → rwx
+Others → rwx
+
+d) Check Current umask
+
+Command
+
+umask
+
+Example Output
+
+0022
+
+or
+
+022
+
+Both represent the same value.
+
+e) How umask Works
+
+Suppose your current umask is:
+
+022
+
+i)For Directories
+
+Default permission
+
+777
+
+Subtract the umask
+
+777
+-022
+----
+755
+
+Final permission
+
+rwxr-xr-x
+
+ii) For Files
+
+Default permission
+
+666
+
+Subtract the umask
+
+666
+-022
+----
+644
+
+Final permission
+
+rw-r--r--

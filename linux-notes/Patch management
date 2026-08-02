@@ -1,0 +1,81 @@
+1. What is Patch Management?
+
+Patch Management is the process of identifying, testing, installing, and verifying software updates (patches) on a Linux system to fix security vulnerabilities, bugs, and improve performance.
+
+2. What is a Patch?
+
+A patch is a small software update released by the software vendor to improve or fix an existing application or operating system.
+
+3. Real-Life Example
+
+Imagine your car manufacturer finds that the brake system has a problem.
+
+Instead of giving you a new car, they replace only the faulty brake part.
+
+This replacement is similar to a patch.
+
+4. Types of Patches
+a) Security Patch
+
+Fixes security vulnerabilities.
+
+Example:
+
+A vulnerability is discovered in OpenSSH.
+
+The vendor releases a security patch.
+
+Install it immediately to prevent attacks.
+
+b) Bug Fix Patch
+
+Fixes software errors.
+
+Example:
+
+Firefox crashes when opening certain websites.
+
+The vendor releases a patch to resolve the issue
+
+c) Performance Patch
+
+Improves software speed or efficiency.
+
+Example:
+
+A database application is consuming excessive memory.
+
+The vendor releases a patch to optimize memory usage.
+
+d) Feature Patch
+
+Adds small new features or enhancements.
+
+Example:
+
+A new command-line option is added to an existing tool.
+
+5. lifecycle 
+
+Identify Available Patches
+          │
+          ▼
+Evaluate the Impact
+          │
+          ▼
+Test in a Non-Production Environment
+          │
+          ▼
+Take a Backup
+          │
+          ▼
+Install the Patch
+          │
+          ▼
+Restart Services (if required)
+          │
+          ▼
+Verify the Installation
+          │
+          ▼
+Monitor the System

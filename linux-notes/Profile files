@@ -1,0 +1,185 @@
+1. What are Profile Files?
+
+Profile files are configuration files that automatically run when a user logs in or opens a shell.
+
+These files are used to:
+
+Set environment variables
+Configure the shell
+Create aliases
+Set the PATH variable
+
+2. Real-Life Example
+
+Imagine you join a company every morning.
+
+As soon as you enter:
+
+Your office computer turns on.
+Outlook opens.
+Teams starts automatically.
+Your printer is connected.
+
+You didn't start these manually—they happen automatically.
+
+Similarly, when you log in to Linux, profile files automatically configure your environment.
+
+3. Why Do We Need Profile Files?
+
+Instead of typing these commands every time:
+
+export PROJECT=Linux
+alias ll='ls -l'
+cd /home/bilal/projects
+
+you can save them in a profile file.
+
+Whenever you log in, Linux runs these commands automatically.
+
+4. Understanding Each Profile File
+a) /etc/profile
+
+This file contains settings for all users.
+
+Whenever any user logs in, Linux executes this file.
+
+Example:
+
+sudo vi /etc/profile
+
+Example content:
+
+export COMPANY=ABC
+
+Now every user gets:
+
+echo $COMPANY
+
+Output
+
+ABC
+
+b) ~/.profile
+
+This file is only for one user.
+
+Example:
+
+vi ~/.profile
+
+Add
+
+export PROJECT=Linux
+
+Save the file.
+
+Logout and login again.
+
+Check
+
+echo $PROJECT
+
+Output
+
+Linux
+
+Only that user sees this variable.
+
+c) ~/.bash_profile
+
+Used for login Bash shells, mainly on RHEL-based systems.
+
+Example
+
+vi ~/.bash_profile
+
+Add
+
+export NAME=Bilal
+
+Logout and login.
+
+Check
+
+echo $NAME
+
+d) ~/.bashrc
+
+This file is executed whenever you open a new interactive Bash terminal.
+
+It is commonly used for:
+
+Aliases
+Functions
+Shell prompt customization
+
+Example
+
+vi ~/.bashrc
+
+Add
+
+alias ll='ls -l'
+
+Save.
+
+Reload
+
+source ~/.bashrc
+
+Now
+
+ll
+
+works like
+
+ls -l
+
+e) ~/.bash_logout
+
+Runs automatically when you log out.
+
+Example
+
+vi ~/.bash_logout
+
+Add
+
+echo "Good Bye!"
+
+When you log out
+
+Output
+
+Good Bye!
+
+5. Login Shell vs Non-Login (Interactive) Shell
+
+This is important for interviews.
+
+a) Login Shell
+
+Started when you:
+
+Log in to Linux
+Log in through SSH
+
+Reads files such as:
+
+/etc/profile
+
+then one of:
+
+~/.bash_profile
+
+or
+
+~/.profile
+
+b) Interactive Non-Login Shell
+
+Started when you open another terminal window after logging in.
+
+It reads:
+
+~/.bashrc

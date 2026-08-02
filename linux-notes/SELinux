@@ -1,0 +1,146 @@
+1. What is SELinux?
+
+SELinux (Security-Enhanced Linux) is a Linux security feature that provides an extra layer of access control to protect the system from unauthorized access.
+
+Even if a user has normal Linux file permissions, SELinux can still deny access if its security policy does not allow the action.
+
+2. Real-Life Example
+
+Imagine a company office.
+
+To enter the office:
+
+You need the building key (Linux file permissions).
+You also need a security guard's approval (SELinux).
+
+Even if you have the key, the security guard can still stop you from entering.
+
+SELinux works like that security guard.
+
+3. Why Do We Need SELinux?
+
+Normal Linux permissions protect files using:
+
+Owner
+Group
+Others
+
+But sometimes that's not enough.
+
+Example:
+
+Suppose a hacker compromises the Apache web server.
+
+Without SELinux:
+
+Apache might access sensitive files like /etc/shadow.
+
+With SELinux:
+
+Apache is restricted to only the files and directories allowed by the SELinux policy.
+
+4. How it works
+
+User/Application
+        │
+        ▼
+Linux File Permissions
+        │
+        ▼
+SELinux Policy Check
+        │
+        ▼
+Allow or Deny Access
+
+5. SELinux modes 
+
+a) Strict Guard
+
+"If you don't have permission, I won't let you enter."
+
+This is Enforcing Mode
+In this mode:
+
+SELinux checks every action.
+If the action is allowed → It allows it.
+If the action is not allowed → It blocks it.
+
+It also records the event in the log.
+
+Example:
+
+Suppose Apache web server wants to read this file.
+
+/etc/shadow
+
+SELinux checks:
+
+"Is Apache allowed to read this file?"
+
+Answer:
+
+No
+
+Output
+Permission denied
+
+SELinux blocks the request.
+
+Change to Enforcing (Temporary)
+sudo setenforce 1
+
+Command to Check Mode:
+getenforce
+
+Output
+Enforcing
+
+b) Friendly Guard
+
+"You don't have permission, but I'll let you enter. However, I'll write your name in my register."
+
+This is Permissive Mode
+This mode is mainly used for testing and troubleshooting.
+
+Here SELinux still checks every action.
+
+But,
+
+Instead of blocking,
+
+it only writes the event into the logs.
+
+Command:
+
+Temporarily change to permissive
+
+sudo setenforce 0
+
+Check
+
+getenforce
+
+Output
+Permissive
+
+c) No Guard
+
+Nobody checks anything.
+
+Anyone can enter.
+
+This is Disabled Mode
+
+5. Configuration
+
+File
+
+/etc/selinux/config
+
+Example
+
+SELINUX=disabled
+
+After reboot,
+
+SELinux becomes disabled.

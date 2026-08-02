@@ -1,0 +1,175 @@
+1. What are SUID and SGID?
+
+Normally, when you execute a program, it runs with your own permissions.
+
+But sometimes, a program needs higher privileges to perform a task.
+
+Linux provides two special permissions:
+
+SUID (Set User ID)
+SGID (Set Group ID)
+
+These are called Special Permissions.
+
+Simple Definition:
+
+SUID allows a program to run with the file owner's permissions.
+SGID allows a program to run with the file group's permissions.
+
+2. Why Do We Need SUID and SGID?
+
+Suppose a normal user wants to change their password.
+
+The password is stored in:
+
+/etc/shadow
+
+Only the root user can modify this file.
+
+But every user should be able to change their own password.
+
+How is this possible?
+
+Linux uses SUID.
+
+The passwd command runs with the root user's permissions, even when executed by a normal user.
+
+3. SUID (Set User ID)
+What is SUID?
+
+When SUID is set on an executable file,
+
+the program runs with the permissions of the file owner, not the user running it.
+
+Example
+
+Command
+
+ls -l /usr/bin/passwd
+
+Output
+
+-rwsr-xr-x 1 root root ...
+
+Notice
+
+rws
+
+The s replaces the owner's execute (x) permission.
+
+This indicates that SUID is enabled.
+
+a)Setting SUID
+
+i)Symbolic Method
+chmod u+s filename
+
+Example
+
+sudo chmod u+s myscript
+
+ii)Numeric Method
+
+SUID value:
+
+4000
+
+Example
+
+chmod 4755 myscript
+
+b)Removing SUID
+chmod u-s filename
+
+or
+
+chmod 0755 filename
+
+4. SGID (Set Group ID)
+
+SGID behaves differently for files and directories.
+
+a) SGID on Files
+
+When SGID is set on an executable file,
+
+the program runs with the group permissions of the file, not the user's group.
+
+Example
+
+-rwxr-sr-x
+
+The s replaces the group's execute (x) permission.
+
+b) SGID on Directories (Most Common Use)
+
+When SGID is set on a directory,
+
+all new files and subdirectories created inside it inherit the directory's group.
+
+Why is This Useful?
+
+Imagine a shared project directory.
+
+Group: developers
+
+Directory: /project
+
+i)Without SGID
+
+Bilal creates:
+
+app.py
+
+Group: bilal
+
+John creates:
+
+test.py
+
+Group: john
+
+Different group ownership can cause collaboration issues.
+
+ii)With SGID
+
+Enable SGID on:
+
+/project
+
+Now,
+
+Bilal creates:
+
+app.py
+
+Group: developers
+
+John creates:
+
+test.py
+
+Group: developers
+
+Every new file inherits the developers group.
+
+This makes collaboration much easier.
+
+==> Setting SGID
+a)Symbolic Method
+chmod g+s directory
+
+Example
+
+sudo chmod g+s /project
+b)Numeric Method
+
+SGID value
+
+2000
+
+Example
+
+chmod 2755 /project
+==> Remove SGID
+chmod g-s directory

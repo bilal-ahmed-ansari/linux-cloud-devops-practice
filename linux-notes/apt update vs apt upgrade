@@ -1,0 +1,186 @@
+1. What is APT?
+
+APT stands for Advanced Package Tool.
+
+It is the package manager used in Ubuntu and Debian to:
+
+Install software
+Update software
+Remove software
+Manage software packages
+
+2. Real-Life Example
+
+Imagine your mobile phone.
+
+Step 1
+
+You open the Google Play Store.
+
+The Play Store checks:
+
+"Are there any new versions available?"
+
+This is like:
+
+sudo apt update
+
+Nothing is downloaded or installed.
+
+Step 2
+
+You click Update All.
+
+The apps are downloaded and updated.
+
+This is like:
+
+sudo apt upgrade
+
+3. Definition 
+a) apt update
+What does it do?
+
+apt update downloads the latest package information from the configured software repositories.
+
+It does NOT update any installed software.
+
+It only updates the package index (database).
+
+WORKING 
+When you run this command, APT contacts the repositories listed in:
+
+/etc/apt/sources.list
+
+and
+
+/etc/apt/sources.list.d/
+
+It downloads the latest package metadata, including:
+
+Package names
+Available versions
+Dependencies
+Security updates
+
+b) apt upgrade installs the latest versions of already installed packages using the information downloaded by apt update.
+
+4. Related Commands
+Install Software
+sudo apt install nginx
+
+Remove Software
+sudo apt remove nginx
+
+Remove Package with Configuration Files
+sudo apt purge nginx
+
+Remove Unused Dependencies
+sudo apt autoremove
+
+Clean Downloaded Package Cache
+sudo apt clean
+
+Note:-
+
+1. What is DNF?
+
+DNF stands for Dandified YUM.
+
+It is the default package manager used in:
+
+RHEL 8 & RHEL 9
+Rocky Linux
+AlmaLinux
+Fedora
+Oracle Linux (newer versions)
+
+2. Why Do We Need DNF?
+
+Suppose you want to install Nginx.
+
+Without DNF,
+
+You would have to:
+
+Download RPM manually.
+Download all required dependencies.
+Install them one by one.
+
+This is difficult.
+
+DNF automatically:
+
+Downloads the package.
+Downloads required dependencies.
+Installs everything.
+
+DNF is used to:
+
+Install software
+Update software
+Remove software
+Search software packages
+Manage package dependencies
+
+When you install software,
+
+DNF downloads it from a repository.
+
+3. What is a Package?
+
+A package is a software application.
+
+| Package | Purpose            |
+| ------- | ------------------ |
+| nginx   | Web Server         |
+| httpd   | Apache Web Server  |
+| vim     | Text Editor        |
+| git     | Version Control    |
+| docker  | Container Platform |
+
+4. What is a Repository?
+
+A repository (repo) is a storage location where Linux packages are kept.
+
+Think of it as an online software store.
+
+5. Related commands
+
+a) Check Configured Repositories
+dnf repolist
+
+b) Install a Package
+Syntax
+sudo dnf install package_name
+
+Example
+sudo dnf install git
+
+c) Search for a Package
+dnf search nginx
+
+d) View Package Information
+dnf info nginx
+
+e) Remove a Package
+sudo dnf remove nginx
+
+DNF removes:
+
+nginx
+Unneeded dependencies (if applicable)
+
+f) List Installed Packages
+dnf list installed
+
+List Available Packages
+dnf list available
+
+Check for Available Updates
+dnf check-update
+
+g) Install Multiple Packages
+sudo dnf install git vim wget
+
+DNF installs all three packages.

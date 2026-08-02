@@ -1,0 +1,229 @@
+1. What is Hardening?
+
+Hardening is the process of making a Linux system more secure by reducing security risks and protecting it from unauthorized access, attacks, and misuse.
+
+Simply Hardening means locking down your Linux system so that only authorized users can access it and unnecessary services or permissions are removed.
+
+2. Real-Life Example
+
+Imagine you buy a new house.
+
+By default, the house has:
+
+Main door
+Back door
+Windows
+Garage door
+
+If you leave everything open, anyone can enter.
+
+To make your house secure, you:
+
+Lock all doors.
+Install CCTV cameras.
+Use strong locks.
+Allow only family members inside.
+Remove duplicate keys.
+
+This process is called hardening.
+
+3.What is Attack Surface?
+
+Attack surface means:
+
+All the possible ways through which an attacker can enter your system.
+
+Example:
+
+If your server has
+
+FTP running
+Telnet running
+SSH running
+Database open to everyone
+Weak passwords
+
+Then hackers have many ways to attack.
+
+After hardening,
+
+FTP disabled
+Telnet removed
+Only SSH enabled
+Firewall configured
+Strong passwords enforced
+
+4. Linux Hardening Checklist
+
+Linux hardening includes many security tasks.
+
+Keep the system updated
+Use strong passwords
+Disable unnecessary services
+Configure firewall
+Disable root login through SSH
+Use SSH keys instead of passwords
+Set proper file permissions
+Remove unused users
+Enable logging and monitoring
+Regularly apply security patches
+
+5. Let's understand each one.
+
+a) Keep the System Updated
+
+Old software may contain security vulnerabilities.
+
+Attackers often exploit these vulnerabilities.
+
+Update your system regularly.
+
+Ubuntu
+
+sudo apt update
+sudo apt upgrade
+
+RHEL
+sudo dnf update
+
+Example
+
+Suppose Ubuntu releases a security patch for OpenSSH.
+
+If you don't update,
+
+Hackers may exploit that vulnerability.
+
+b) Disable Unnecessary Services
+
+Every running service consumes memory and may become a security risk.
+
+Check running services
+systemctl list-units --type=service
+
+Stop a service
+sudo systemctl stop apache2
+
+Disable it permanently
+sudo systemctl disable apache2
+
+c) Configure Firewall
+
+A firewall controls incoming and outgoing network traffic.
+
+Example
+
+Allow SSH
+
+Ubuntu (UFW)
+sudo ufw allow ssh
+
+Enable firewall
+sudo ufw enable
+
+Check status
+sudo ufw status
+
+Example
+
+Allow only
+
+SSH (22)
+HTTPS (443)
+
+Block everything else.
+
+d) Disable Root Login Through SSH
+
+Logging in directly as the root user is risky.
+
+Instead,
+
+Login as a normal user and use
+
+sudo
+
+Edit
+
+/etc/ssh/sshd_config
+
+Find
+
+PermitRootLogin yes
+
+Change it to
+
+PermitRootLogin no
+
+Restart SSH
+sudo systemctl restart ssh
+
+Now,
+
+Hackers cannot directly log in as root through SSH.
+
+e) Enable Logging
+
+Logs help identify problems and security incidents.
+
+Ubuntu
+
+journalctl
+
+Example
+
+See failed SSH logins
+
+journalctl -u ssh
+
+If someone repeatedly tries to log in,
+
+Logs will record those attempts.
+
+f) Apply Security Patches
+
+Companies regularly release security patches.
+
+Install them as soon as possible.
+
+Example
+
+Ubuntu
+
+sudo apt upgrade
+
+g) Disable Unused Ports
+
+Check listening ports
+
+ss -tuln
+
+Example Output
+
+22
+80
+3306
+
+If MySQL isn't needed,
+
+Stop it
+
+sudo systemctl stop mysql
+
+Note:- Hardening vs Security
+
+Many people think both are the same.
+
+They are different.
+
+Security
+Means protecting the system.
+
+Hardening
+Means improving the system's security by applying security best practices.
+
+6. What is the Principle of Least Privilege?
+
+Answer:
+
+It means giving users only the minimum permissions required to perform their job.

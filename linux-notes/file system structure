@@ -1,0 +1,287 @@
+1. A File System is the way Linux stores, organizes, and manages files and directories.
+
+In Linux, everything starts from one top-level directory called the Root Directory (/).
+
+2. Real-Life Example
+
+Imagine a large office building.
+
+The building = Root Directory (/)
+Each floor = A directory (like /home, /etc, /var)
+Each room = A subdirectory
+Each file cabinet = Files
+
+Everything is organized inside the building.
+
+Similarly, in Linux, everything is organized under the Root Directory (/).
+
+3. Linux File System Structure
+
+                    /
+          (Root Directory)
+                 │
+ ├── /bin
+ ├── /boot
+ ├── /dev
+ ├── /etc
+ ├── /home
+ ├── /lib
+ ├── /media
+ ├── /mnt
+ ├── /opt
+ ├── /proc
+ ├── /root
+ ├── /run
+ ├── /sbin
+ ├── /srv
+ ├── /sys
+ ├── /tmp
+ ├── /usr
+ └── /var
+
+4. Let's understand each subdirectory in detail
+
+a)/ (Root Directory)
+
+This is the top-most directory.
+
+Every file and directory in Linux starts from here.
+
+Example:
+
+/home
+/etc
+/var
+
+All these directories are inside /.
+
+Do not confuse / (root directory) with /root (root user's home directory).
+
+b)/home
+
+Stores home directories of normal users.
+
+Example
+
+/home/bilal
+/home/john
+
+Each user gets a personal workspace.
+
+Example
+
+cd /home/bilal
+
+c)/root
+
+This is the home directory of the root (administrator) user.
+
+Example
+
+/root
+
+Root user files are stored here.
+
+Normal users usually cannot access this directory.
+
+d)/bin (Binary)
+
+Contains essential user commands required for booting and basic system operation.
+
+Examples
+
+ls
+cp
+mv
+cat
+pwd
+rm
+
+Example
+
+ls /bin
+
+On many modern Linux distributions, /bin is a symbolic link to /usr/bin, but the purpose remains the same.
+
+e)/sbin (System Binary)
+
+Contains essential system administration commands.
+
+Examples
+
+fsck
+reboot
+shutdown
+
+Example
+
+ls /sbin
+
+On many modern systems, /sbin is also linked into /usr/sbin.
+
+f)/etc
+
+Contains system configuration files.
+
+Examples
+
+/etc/passwd
+/etc/group
+/etc/hosts
+/etc/fstab
+
+System administrators frequently work here.
+
+Example
+
+cat /etc/hosts
+
+g)/boot
+
+Contains files required to boot the Linux operating system.
+
+Examples
+
+Linux Kernel
+GRUB configuration
+Initial RAM disk (initramfs)
+
+Example
+
+ls /boot
+
+h)/dev (Devices)
+
+Linux treats hardware devices as files.
+
+This directory contains device files.
+
+Examples
+
+/dev/sda
+/dev/null
+/dev/tty
+/dev/random
+
+i)/proc
+
+A virtual filesystem that provides information about:
+
+Running processes
+CPU
+Memory
+Kernel
+
+Example
+
+cat /proc/cpuinfo
+
+or
+
+cat /proc/meminfo
+
+j)/sys
+
+Another virtual filesystem.
+
+Contains information about:
+
+Hardware devices
+Drivers
+Kernel settings
+
+Example
+
+ls /sys
+
+k)/var (Variable Data)
+
+Stores data that changes frequently.
+
+Examples
+
+Log files
+Mail
+Cache
+Print spool files
+
+Important directory
+
+/var/log
+
+Example
+
+ls /var/log
+
+l)/tmp (Temporary Files)
+
+Stores temporary files.
+
+Applications use this directory for temporary data.
+
+Example
+
+touch /tmp/test.txt
+
+Many systems automatically clean old files from /tmp.
+
+m)/opt (Optional Software)
+
+Used to install third-party applications.
+
+Examples
+
+/opt/google
+/opt/oracle
+
+n)/media
+
+Used for automatically mounted removable devices.
+
+Examples
+
+USB drives
+DVD/CD
+
+Example
+
+/media/bilal/USB
+
+o)/mnt
+
+Used for temporary manual mounts.
+
+Example
+
+sudo mount /dev/sdb1 /mnt
+
+After mounting
+
+/mnt
+
+contains the contents of the device.
+
+p)/srv
+
+Stores data served by system services.
+
+Examples
+
+Web server files
+FTP server data
+
+Example
+
+/srv/www
+
+q)/run
+
+Stores runtime information created after the system boots.
+
+Examples
+
+Process IDs (PID files)
+Socket files
+Runtime service data
+
+Contents are cleared after reboot.

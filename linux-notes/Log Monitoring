@@ -1,0 +1,198 @@
+1. Whenever something happens on a Linux server, it is usually recorded in a log file.
+
+As a Linux Administrator, if a user reports:
+
+"I can't login."
+"SSH is not working."
+"Disk is full."
+"Server restarted automatically."
+"Application crashed."
+
+The first place you should check is the logs.
+
+2. What is a Log File?
+
+A log file is a file that stores information about events occurring on the Linux system.
+
+These events include:
+
+User login/logout
+System startup and shutdown
+Errors
+Warnings
+Service status
+Security events
+Application activity
+
+3. Real-Life Example
+
+Think of a CCTV camera.
+
+If something is stolen in an office, security reviews the CCTV footage.
+
+Similarly,
+
+Linux logs act like a CCTV recording for your server.
+
+They record what happened, when it happened, and sometimes who performed the action.
+
+4. Where are Linux Logs Stored?
+
+Most Linux log files are stored in:
+
+/var/log/
+
+5. Log Files
+
+| Log File                                              | Purpose                     | When to Check                     |
+| ----------------------------------------------------- | --------------------------- | --------------------------------- |
+| `/var/log/syslog` *(Ubuntu/Debian)*                   | General system messages     | System issues, services           |
+| `/var/log/messages` *(RHEL/CentOS)*                   | General system messages     | System troubleshooting            |
+| `/var/log/auth.log` *(Ubuntu/Debian)*                 | Authentication and SSH logs | Login failures, sudo, SSH         |
+| `/var/log/secure` *(RHEL/CentOS)*                     | Authentication and SSH logs | Login and security events         |
+| `/var/log/kern.log`                                   | Kernel messages             | Driver and hardware issues        |
+| `/var/log/dmesg`                                      | Boot-time kernel messages   | Boot and hardware troubleshooting |
+| `/var/log/boot.log`                                   | Boot process logs           | Startup problems                  |
+| `/var/log/faillog`                                    | Failed login attempts       | Security auditing                 |
+| `/var/log/lastlog`                                    | Last login details          | User login history                |
+| `/var/log/wtmp`                                       | Login/logout history        | Audit user sessions               |
+| `/var/log/btmp`                                       | Failed login history        | Detect brute-force attacks        |
+| `/var/log/nginx/access.log`                           | Nginx access requests       | Website traffic                   |
+| `/var/log/nginx/error.log`                            | Nginx errors                | Website troubleshooting           |
+| `/var/log/apache2/access.log` *(Ubuntu)*              | Apache access requests      | Website traffic                   |
+| `/var/log/apache2/error.log` *(Ubuntu)*               | Apache errors               | Website issues                    |
+| `/var/log/mysql/error.log` *(path varies)*            | MySQL server errors         | Database troubleshooting          |
+| `/var/log/cron` *(RHEL)*                              | Cron job execution          | Scheduled task troubleshooting    |
+| `/var/log/mail.log` *(Ubuntu)*                        | Mail server activity        | Email issues                      |
+| `/var/log/audit/audit.log` *(if auditd is installed)* | Security audit events       | Compliance and auditing           |
+
+6. Let's understand in details
+
+a)Failed Login History
+/var/log/btmp
+
+Read using
+
+sudo lastb
+
+Useful for identifying repeated failed login attempts.
+
+b)Cron Logs
+
+RHEL
+
+/var/log/cron
+
+Ubuntu typically records cron activity in:
+
+/var/log/syslog
+
+Example
+
+grep CRON /var/log/syslog
+c)Mail Logs
+
+Ubuntu
+
+/var/log/mail.log
+
+Contains mail server activity.
+
+d)Audit Logs
+
+If auditd is installed:
+
+/var/log/audit/audit.log
+
+Contains:
+
+File access
+Security policy events
+User actions
+
+Useful for compliance and security investigations.
+
+e)Last Login Information
+/var/log/lastlog
+
+Command
+
+lastlog
+
+Example
+
+Username         Latest
+bilal            Tue Jul 29
+
+f)Failed Login Attempts
+/var/log/faillog
+
+View
+
+faillog
+
+Shows users with failed login attempts.
+
+g)dmesg Log
+/var/log/dmesg
+
+Contains kernel boot messages.
+
+Better command:
+
+dmesg
+
+Example
+
+dmesg | less
+
+Check USB
+
+dmesg | grep USB
+
+Check disk
+
+dmesg | grep sda
+
+g)Boot Logs
+/var/log/boot.log
+
+Contains messages generated during system startup.
+
+Useful if the system fails to boot correctly.
+
+7. journalctl (Modern Linux)
+
+Many modern Linux distributions use systemd-journald.
+
+Instead of reading individual files,
+
+use
+
+journalctl
+
+Show all logs
+
+journalctl
+
+Recent logs
+
+journalctl -n 50
+
+Live logs
+
+journalctl -f
+
+Logs since today
+
+journalctl --since today
+
+Logs for SSH
+
+journalctl -u ssh
+
+Ubuntu service name may be ssh; RHEL is commonly sshd.
+
+Useful Commands for Monitoring Logs
+View entire file
+cat /var/log/syslog

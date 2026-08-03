@@ -1,0 +1,18 @@
+Interviewer
+
+A user accidentally deleted a file.
+
+Answer
+
+I will first check if a backup exists.
+
+If backups are available, I will restore the file.
+
+If not, I will escalate according to the company's recovery procedure because recovery depends on the filesystem and backup solution.
+
+We need to consider these questions:-
+
+Which filesystem is being used (ext4, XFS, etc.)
+Whether backups are available
+Whether any snapshot technology is being used (such as LVM snapshots or storage snapshots)
+Whether the deleted data has already been overwritten

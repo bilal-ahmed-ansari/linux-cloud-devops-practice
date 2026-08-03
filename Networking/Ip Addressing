@@ -1,0 +1,252 @@
+1. What is an IP Address?
+
+An IP (Internet Protocol) Address is a unique address assigned to every device connected to a network.
+
+Just as every house has a unique postal address, every device on a network has a unique IP address.
+
+Without an IP address, devices cannot communicate.
+
+2. Real-Life Example
+
+Suppose your friend wants to send you a parcel.
+
+To deliver it, they need your home address.
+
+Example:
+
+Bilal Ahmed
+Flat 302
+ABC Apartment
+Mumbai
+
+Similarly, when one computer sends data to another, it needs the destination IP address.
+
+Example:
+
+192.168.1.10
+
+3. Example in Linux
+
+Check your IP address:
+
+ip addr
+
+or
+
+hostname -I
+
+Output:
+
+192.168.1.10
+
+This means your system's IP address is 192.168.1.10.
+
+4. IPv4
+
+IPv4 stands for Internet Protocol Version 4.
+
+It is the most commonly used IP version.
+
+It is 32 bits long.
+
+Example:
+
+192.168.1.10
+
+Another example:
+
+172.16.20.15
+
+a) Structure of IPv4
+
+IPv4 has 4 numbers, separated by dots.
+
+192.168.1.10
+
+Each number is called an octet.
+
+192 | 168 | 1 | 10
+
+Each octet can have a value from:
+
+0 to 255
+
+So these are valid:
+
+10.1.1.1
+192.168.0.100
+172.16.5.25
+8.8.8.8
+
+This is invalid:
+
+192.168.300.1
+
+because 300 is greater than 255.
+
+b) Why only 0–255?
+
+Each octet is 8 bits.
+
+8 bits can store values from 0 to 255.
+
+You don't need to memorize binary for now; just remember:
+
+One octet = 0–255
+
+5. IPv6
+
+IPv6 stands for Internet Protocol Version 6.
+
+It was introduced because IPv4 addresses are limited.
+
+IPv6 is 128 bits long.
+
+Example:
+
+2001:0db8:85a3:0000:0000:8a2e:0370:7334
+
+Unlike IPv4, IPv6 uses hexadecimal numbers (0–9 and A–F).
+
+a) Why IPv6?
+
+Earlier, only a few devices were connected to the internet.
+
+Now we have:
+
+Mobile phones
+Laptops
+TVs
+Smart watches
+IoT devices
+Cars
+
+IPv4 addresses started running out.
+
+IPv6 provides an extremely large number of unique addresses.
+
+6. Public IP Address
+
+A Public IP Address is an IP address that is accessible over the internet.
+
+It is assigned by your Internet Service Provider (ISP).
+
+Examples of ISPs:
+
+Jio
+Airtel
+BSNL
+
+==> Example
+
+When you open:
+
+https://github.com
+
+GitHub sees your public IP, not your private IP.
+
+==> Real-Life Example
+
+Your home has one postal address.
+
+Anyone in the world can send you a parcel using that address.
+
+That is similar to a Public IP.
+
+==> Check Your Public IP
+
+On Linux:
+
+curl ifconfig.me
+
+Example output:
+
+49.36.120.50
+
+7. Private IP Address
+
+A Private IP Address is used only inside a local network.
+
+It is not accessible directly from the internet.
+
+Examples:
+
+192.168.1.20
+10.0.0.15
+172.16.5.8
+
+==> Real-Life Example
+
+In an office:
+
+Computer A
+192.168.1.10
+
+Computer B
+192.168.1.11
+
+Printer
+192.168.1.20
+
+These devices can communicate with each other.
+
+Someone on the internet cannot directly access them.
+
+==> Private IP Ranges (Important for Interviews)
+
+There are three private IP ranges.
+
+Class A
+10.0.0.0
+to
+10.255.255.255
+
+Class B
+172.16.0.0
+to
+172.31.255.255
+
+Class C
+192.168.0.0
+to
+192.168.255.255
+
+These ranges are reserved for private networks.
+
+==> Public IP vs Private IP
+
+| Public IP                    | Private IP                          |
+| ---------------------------- | ----------------------------------- |
+| Accessible from the internet | Used inside a local network         |
+| Assigned by ISP              | Assigned by router or DHCP server   |
+| Unique worldwide             | Can be reused in different networks |
+| Example: 49.36.120.50        | Example: 192.168.1.10               |
+
+==> How Data Travels
+
+Suppose:
+
+Laptop
+Private IP:
+192.168.1.10
+
+↓
+
+Connected to Wi-Fi router
+
+↓
+
+Router has a Public IP:
+
+49.36.120.50
+
+↓
+
+Internet
+
+↓
+
+GitHub Server
+
+Your laptop communicates using its private IP within your home network, while the router uses its public IP to communicate with the internet.
+

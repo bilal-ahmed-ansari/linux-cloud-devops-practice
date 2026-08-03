@@ -1,0 +1,41 @@
+step 1
+
+Check SSH service
+
+systemctl status ssh
+
+(RHEL uses sshd.)
+
+If it is stopped:
+
+sudo systemctl start ssh
+
+step 2
+Check SSH logs
+
+Ubuntu
+
+tail -20 /var/log/auth.log
+
+RHEL
+
+tail -20 /var/log/secure
+
+step 3
+Check firewall
+
+sudo ufw status
+
+or
+
+sudo firewall-cmd --list-all
+
+step 4
+Test connectivity
+
+ping server-ip
+
+step 5. 
+Check SSH port
+
+telnet server-ip 22

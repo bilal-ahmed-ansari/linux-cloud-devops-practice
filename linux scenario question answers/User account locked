@@ -1,0 +1,13 @@
+Interviewer
+
+A user account is locked.
+
+Answer
+
+Check account status.
+
+passwd -S username
+
+Unlock account.
+
+sudo passwd -u username

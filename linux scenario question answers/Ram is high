@@ -1,0 +1,110 @@
+Step 1: Check Memory Usage
+
+Command:
+
+free -h
+
+Example Output:
+
+              total   used   free   shared  buff/cache  available
+Mem:           8Gi    7.5Gi  200Mi   500Mi      300Mi       350Mi
+Swap:          2Gi    1.8Gi  200Mi
+
+Explanation:-
+| Field      | Meaning                                                               |
+| ---------- | --------------------------------------------------------------------- |
+| total      | Total RAM installed                                                   |
+| used       | RAM currently in use                                                  |
+| free       | Completely unused RAM                                                 |
+| buff/cache | RAM used for filesystem cache (Linux can free this if needed)         |
+| available  | Memory available for starting new applications without heavy swapping |
+| Swap       | Disk space used as extra memory when RAM is full                      |
+
+What do you observe?
+Total RAM = 8 GB
+Used RAM = 7.5 GB
+Free RAM = 200 MB
+Swap usage = 1.8 GB
+
+This indicates the system is under memory pressure because almost all RAM is used and swap is also heavily utilized.
+
+Step 2: Identify the Process Using the Most Memory
+
+Command:
+
+ps -eo pid,user,%mem,%cpu,comm --sort=-%mem | head
+
+Example Output:
+
+PID    USER    %MEM   %CPU   COMMAND
+2500   mysql    45.5   30.0   mysqld
+3100   root     20.0   10.0   java
+4500   nginx     5.0    2.0   nginx
+
+Explanation
+
+Here:
+
+MySQL is using 45.5% of RAM.
+Java is using 20% of RAM.
+
+Now you know which applications are consuming the most memory.
+
+Step 3: Check Running Processes
+
+Command:
+
+top
+
+or
+
+htop
+Example:
+
+PID   USER   RES     COMMAND
+2500  mysql  3.5G    mysqld
+3100  root   1.6G    java
+
+This gives you a live view of memory usage.
+
+Step 4: Check Swap Usage
+
+Command:
+
+swapon --show
+
+Example Output:
+
+NAME      TYPE  SIZE  USED
+/swapfile file   2G   1.8G
+
+Why is this important?
+
+When RAM becomes full, Linux starts using swap, which is disk space acting as temporary memory.
+
+Disk access is much slower than RAM, so high swap usage often causes poor performance.
+
+Step 5: Check System Logs
+
+Ubuntu
+
+tail -50 /var/log/syslog
+
+RHEL
+
+tail -50 /var/log/messages
+
+Look for:
+
+Out of Memory (OOM) messages
+Application crashes
+Memory allocation failures
+
+You can also search specifically:
+
+dmesg | grep -i oom
+
+or
+
+journalctl -k | grep -i oom
+                                              

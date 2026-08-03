@@ -1,0 +1,39 @@
+Step 1: Check CPU usage
+
+top
+
+or
+
+htop
+
+If any process is using very high CPU, I will identify it.
+
+Step 2: Check Memory Usage
+
+free -h
+
+If RAM is full and swap usage is high, it may cause slowness.
+
+Step 3: Check Disk Space
+
+df -h
+
+If a filesystem is 100% full, applications may stop working.
+
+Step 4: Check Running Processes
+
+ps -ef
+
+Find processes consuming excessive CPU or memory.
+
+Step 5: Check System Logs
+
+Ubuntu
+
+tail -50 /var/log/syslog.
+
+RHEL
+
+tail -50 /var/log/messages
+
+Look for errors or warnings.

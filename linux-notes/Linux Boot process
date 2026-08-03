@@ -1,0 +1,427 @@
+The Linux boot process is the sequence of steps that occur from pressing the Power Button until the Login Screen appears.
+
+There are 6 major stages.
+
+Power ON
+    │
+    ▼
+1. BIOS / UEFI
+    │
+    ▼
+2. MBR / GPT (ESP)
+    │
+    ▼
+3. GRUB Bootloader
+    │
+    ▼
+4. Linux Kernel + initramfs
+    │
+    ▼
+5. systemd
+    │
+    ▼
+Login Screen
+
+a) Stage 1: Power ON
+
+When you press the power button:
+
+Power Supply (PSU) supplies electricity.
+Motherboard becomes active.
+CPU resets itself.
+BIOS/UEFI starts executing.
+
+b) Stage 2: BIOS / UEFI
+What is BIOS?
+
+BIOS (Basic Input Output System) is firmware or a chip stored on the motherboard.
+
+Older computers use BIOS.
+
+Newer computers use UEFI.
+
+==> What BIOS Does
+
+BIOS performs a POST (Power-On Self-Test).
+
+It checks:
+
+CPU
+RAM
+Keyboard
+Hard Disk / SSD
+Graphics
+
+If RAM is faulty:
+
+Beep Beep Beep
+
+The system stops booting.
+
+==> BIOS Reads Boot Order
+
+Example Boot Order:
+
+1. SSD
+2. USB
+3. DVD
+
+BIOS looks for a bootable device.
+
+Stage 3: MBR / GPT (ESP)
+
+This depends on the partition style.
+
+MBR (Old Method)
+
+BIOS reads the first 512 bytes of the disk.
+
+These 512 bytes contain:
+
+Bootloader Code
+Partition Table
+Boot Signature
+
+The bootloader code points to GRUB.
+
+c) Stage 3: MBR / GPT (ESP)
+
+This depends on the partition style.
+
+==> MBR (Old Method)
+
+BIOS reads the first 512 bytes of the disk.
+
+These 512 bytes contain:
+
+Bootloader Code
+Partition Table
+Boot Signature
+
+The bootloader code points to GRUB.
+
+==> GPT + UEFI
+
+Instead of MBR,
+
+UEFI reads the
+
+EFI System Partition (ESP)
+
+Usually mounted as
+
+/boot/efi
+
+Inside ESP you'll find:
+
+EFI/
+ ├── ubuntu
+ ├── grubx64.efi
+
+UEFI loads grubx64.efi
+
+d) Stage 4: GRUB (Grand Unified Bootloader)
+
+GRUB is the Bootloader.
+
+Its job is:
+
+Show Boot Menu
+Load Linux Kernel
+Load initramfs
+Pass kernel parameters
+
+*********
+Why GRUB Loads vmlinuz Instead of vmlinux?
+
+You'll often see:
+
+/boot/vmlinuz
+
+instead of
+
+vmlinux
+
+It's because vmlinux is large, Uncompressed, Contains debugging information, Not used during normal boot.
+
+Where as vmlinuz is Compressed kernel, Much smaller, Loads faster.
+
+That's why GRUB loads vmlinuz instead of vmlinux.
+
+e) Stage 5: Linux Kernel
+
+Now GRUB gives control to Linux Kernel.
+
+Kernel starts.
+
+Kernel responsibilities:
+
+Detect CPU
+Detect RAM
+Detect Hardware
+Detect Drivers
+
+******
+What is initramfs?
+
+Kernel cannot immediately access your root filesystem.
+
+So it first loads
+
+initramfs
+
+Think of initramfs as a temporary mini Linux system stored in RAM.
+
+Its job is to:
+
+Load essential storage drivers (SATA, NVMe, RAID, LVM, etc.).
+Find the real root (/) filesystem.
+Mount the real root filesystem.
+Hand control over to the real system.
+
+Without initramfs, the kernel might not know how to access the disk containing the operating system.
+********
+
+*******
+Why is Root Filesystem Mounted Read-Only First?
+
+Kernel first mounts / as Read Only (RO)
+
+Why?
+
+Because before allowing writes,
+
+Linux wants to check the filesystem.
+
+If filesystem corruption exists,
+
+Writing immediately could make things worse.
+
+After checks complete,
+
+Kernel remounts it as
+
+Read Write (RW)
+********
+
+f) Stage 6: systemd
+
+Kernel starts
+
+systemd
+
+systemd is the first userspace process.
+
+PID:
+
+1
+
+Verify:
+
+ps -p 1
+
+Output:
+
+systemd
+
+==> systemd starts:
+
+Network
+SSH
+Docker
+Nginx
+Cron
+Login Screen
+
+Note:- Now I'll ask some questions and will give solutions according to it.
+
+1. What happens if you remove the root (/) entry from /etc/fstab? Why does Linux still boot?
+
+Many people think:
+
+Remove /
+
+↓
+
+Linux won't boot
+
+Actually,
+
+Linux usually still boots.
+
+Why?
+
+==> First Understand What /etc/fstab Is
+
+/etc/fstab is a configuration file that tells Linux which filesystems to mount after the kernel has already mounted the root filesystem.
+
+Example:
+
+UUID=xxxx    /        ext4 defaults 0 1
+UUID=yyyy    /home    ext4 defaults 0 2
+UUID=zzzz    /data    ext4 defaults 0 2
+
+==> Who Mounts the Root (/) Filesystem?
+
+Not fstab.
+
+During boot:
+
+GRUB
+↓
+
+Kernel
+↓
+
+initramfs
+↓
+
+Kernel mounts /
+
+The kernel (with help from initramfs) mounts the root filesystem before systemd reads /etc/fstab.
+
+==> Then Why Is / Listed in /etc/fstab?
+
+It serves purposes such as:
+
+Defining mount options (defaults, ro, rw, etc.).
+Providing the filesystem check (fsck) pass number.
+Documenting the system's mount configuration.
+
+
+2. What does "CPU resets itself" mean?
+
+When you press the Power Button, the CPU (processor) was previously off. It doesn't know:
+
+Which program to run
+Where the operating system is
+What instructions to execute
+
+So, the first thing that happens is a CPU Reset.
+
+Simple Definition:
+
+CPU Reset means the processor returns to its initial (starting) state and begins executing instructions from a predefined memory location where the BIOS/UEFI firmware is stored.
+
+3. At which stage of the Linux boot process do GRUB Rescue, dracut, Emergency Mode, and Rescue Mode appear?
+OR
+If the boot process fails, where does it stop, and which recovery mode will you see?
+
+==> GRUB Rescue
+Where does it occur?
+Power
+   │
+BIOS
+   │
+MBR
+   │
+GRUB
+   │
+❌ GRUB cannot find its files
+   │
+▼
+GRUB Rescue
+Why does it happen?
+
+GRUB cannot find:
+
+/boot/grub/grub.cfg
+
+Example causes:
+
+Deleted /boot/grub
+Damaged bootloader
+Wrong partition
+Corrupted disk
+
+==> dracut (RHEL)
+Where does it occur?
+Power
+   │
+BIOS
+   │
+GRUB
+   │
+Kernel
+   │
+initramfs (dracut)
+   │
+❌ Root filesystem not found
+   │
+▼
+dracut Shell
+
+Example:
+
+dracut:/#
+
+Why?
+
+Kernel started successfully.
+
+But initramfs cannot find:
+
+Root filesystem
+LVM
+RAID
+UUID
+Storage driver
+
+So boot stops.
+
+==> Emergency Mode
+Where does it occur?
+Power
+   │
+BIOS
+   │
+GRUB
+   │
+Kernel
+   │
+Root Mounted
+   │
+systemd
+   │
+❌ Critical boot failure
+   │
+▼
+Emergency Mode
+
+Example reasons:
+
+/etc/fstab contains incorrect entries.
+Root filesystem is damaged.
+Required filesystems fail to mount.
+
+Screen:
+
+Welcome to emergency mode!
+
+==> Rescue Mode
+Where does it occur?
+
+Rescue Mode is not a separate automatic stage in the normal boot sequence.
+
+It is usually started manually.
+
+For example:
+
+Choose Rescue Mode from the GRUB menu.
+Boot from a Linux installation DVD/ISO and select Rescue a system.
+Add systemd.unit=rescue.target to the kernel boot parameters.
+
+Then:
+
+GRUB
+   │
+Kernel
+   │
+systemd
+   │
+Starts only essential services
+   │
+▼
+Rescue Mode
+
+Only minimal services are started so you can repair the system.

@@ -345,4 +345,14 @@ All devices show the same emails because IMAP keeps them synchronized.
 
 port: 143
 
-p
+Note:-
+
+What happens when you open https://github.com in your browser?", you can explain the flow:
+
+You enter https://github.com.
+DNS converts the domain name to an IP address.
+TCP establishes a connection using the 3-way handshake.
+HTTPS encrypts the communication using SSL/TLS.
+The browser sends the HTTP request.
+The server responds with the webpage.
+The browser displays the GitHub page.

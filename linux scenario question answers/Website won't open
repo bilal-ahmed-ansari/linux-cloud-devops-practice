@@ -1,0 +1,22 @@
+"Interviewer
+The website is down.
+
+Answer
+Check if the web server is running.
+
+systemctl status nginx
+or
+
+systemctl status apache2
+
+Check port.
+
+ss -tulpn
+
+Check logs.
+
+tail -50 /var/log/nginx/error.log
+
+Test locally.
+
+curl http://localhost

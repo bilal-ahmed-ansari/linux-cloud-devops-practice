@@ -1,0 +1,29 @@
+1. What is Solaris?
+
+Solaris is a Unix Operating System developed by Oracle.
+
+Think of it like this:
+
+Windows → Desktop OS
+Ubuntu/RHEL → Linux OS
+Solaris → Unix OS
+
+2. Example:
+
+A bank has 500 servers.
+
+350 servers run Linux.
+150 servers run Solaris because their banking application was designed for Solaris.
+
+A Linux administrator and a Solaris administrator both manage servers, but the commands and features differ slightly.
+
+3. Solaris vs Linux
+
+| Linux                  | Solaris                   |
+| ---------------------- | ------------------------- |
+| Open source            | Oracle product            |
+| Used almost everywhere | Used in large enterprises |
+| apt, yum, dnf          | pkg                       |
+| ext4, XFS              | ZFS                       |
+| systemctl              | svcadm                    |
+

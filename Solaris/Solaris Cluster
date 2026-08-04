@@ -1,0 +1,123 @@
+1. What is a Solaris Cluster?
+
+A Solaris Cluster is a group of two or more Solaris servers connected together to provide High Availability (HA).
+
+High Availability means:
+
+If one server fails, another server automatically takes over so the application keeps running.
+
+2. Why do we need a Cluster?
+
+Imagine a bank has only one server.
+
+Customers
+    │
+    ▼
+Server A
+
+If Server A crashes because of a hardware problem,
+
+❌ Internet Banking stops.
+
+❌ ATM services stop.
+
+❌ Customers cannot transfer money.
+
+This causes downtime and business loss.
+
+3. Solution: Solaris Cluster
+
+Instead of one server, the company uses two servers.
+
+Customers
+     │
+     ▼
+-------------------
+|                 |
+Server A      Server B
+(Active)      (Standby)
+
+Normally:
+
+Server A runs the application.
+Server B waits in standby mode.
+
+If Server A fails,
+
+➡️ Server B automatically starts the application.
+
+Customers continue using the service with very little interruption.
+
+This is called Failover (Automatically moving an application from a failed server to a healthy server).
+
+4. Components of a Solaris Cluster
+a) Node
+
+A Node is simply a server.
+
+Example:
+
+Node 1 = Server A
+
+Node 2 = Server B
+
+A cluster must have at least two nodes.
+
+b) Shared Storage
+
+Both servers use the same storage.
+
+          Shared Storage
+          (Disk)
+          /      \
+         /        \
+   Server A    Server B
+
+Why?
+
+Because the application data should be available even if one server fails.
+
+Example:
+
+Bank customer data is stored in shared storage.
+
+If Server A crashes,
+
+Server B can still access the same customer data.
+
+c) Heartbeat
+
+The servers continuously check whether the other server is alive.
+
+This is called a Heartbeat.
+
+Example:
+
+Every few seconds,
+
+Server A → "Are you alive?"
+
+Server B → "Yes"
+
+Server A → "Okay"
+
+If there is no response,
+
+Server A → "Are you alive?"
+
+(No reply)
+
+Server A → "Server B has failed."
+
+The cluster immediately starts failover.
+
+5. Solaris Cluster vs Solaris Zones
+
+| Solaris Zones                                        | Solaris Cluster                          |
+| ---------------------------------------------------- | ---------------------------------------- |
+| Creates multiple isolated environments on one server | Connects multiple servers together       |
+| Used for application isolation                       | Used for High Availability               |
+| Shares one Solaris kernel                            | Uses two or more separate servers        |
+| Saves hardware resources                             | Prevents downtime during server failures |
+
+

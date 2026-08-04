@@ -1,0 +1,75 @@
+1. What is Patching?
+
+Patching means installing software updates on the operating system to:
+
+Fix bugs
+Fix security vulnerabilities
+Improve system stability
+Improve performance
+Add small improvements
+
+Think of it like updating apps on your mobile phone.
+
+2. Real-Life Example
+
+Suppose your phone has WhatsApp.
+
+One day, WhatsApp releases a new update.
+
+Why?
+
+Fix bugs
+Improve security
+Add new features
+
+You update WhatsApp.
+
+This is called patching.
+
+Similarly, Oracle releases patches for Solaris.
+
+The administrator installs those patches.
+
+3. Patching Process
+Step 1: Check Current Version
+
+The administrator checks the current Solaris version.
+
+Example command:
+
+uname -a
+
+or
+
+pkg info entire
+
+Step 2: Check Available Updates
+
+The administrator checks whether new patches are available.
+
+Example:
+
+pkg update -nv
+
+This only checks what would be updated without actually installing anything.
+
+Step 3: Install the Patch
+
+Install the updates:
+
+pkg update
+
+Solaris downloads and installs the latest patches.
+
+Step 4: Reboot (if required)
+
+Some kernel or system patches require a reboot.
+
+init 6
+
+or
+
+reboot
+
+After reboot, the new patch becomes active.
+

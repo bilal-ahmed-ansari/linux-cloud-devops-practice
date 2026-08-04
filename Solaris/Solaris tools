@@ -1,0 +1,75 @@
+1. format
+
+Lists disks and can be used for partitioning.
+
+format
+
+Similar to checking disks in Linux (lsblk or fdisk -l).
+
+2. zpool
+
+Creates and manages a ZFS storage pool.
+
+Example:
+
+zpool create datapool c1t0d0
+
+Check pools:
+
+zpool list
+
+Show detailed status:
+
+zpool status
+
+3. zfs
+
+Creates and manages filesystems within a ZFS pool.
+
+Example:
+
+zfs create datapool/projects
+
+List datasets:
+
+zfs list
+
+4. metastat
+
+Displays Solaris Volume Manager status.
+
+metastat
+
+Similar to viewing LVM information.
+
+5. metainit
+
+Creates a volume (metadevice).
+
+metainit
+
+Used to create storage devices in Solaris Volume Manager.
+
+6. metattach
+
+Adds another disk to an existing volume (for expansion or mirroring).
+
+metattach
+
+7. metadb
+
+Manages the Solaris Volume Manager configuration database.
+
+metadb
+
+8. Linux LVM vs Solaris Tools
+
+| Task                   | Linux                    | Solaris                                          |
+| ---------------------- | ------------------------ | ------------------------------------------------ |
+| Check disks            | `lsblk`                  | `format`                                         |
+| Create storage pool    | `vgcreate`               | `zpool create`                                   |
+| View storage pool      | `vgs`                    | `zpool list`                                     |
+| Create logical storage | `lvcreate`               | `zfs create`                                     |
+| View logical storage   | `lvs`                    | `zfs list`                                       |
+| Extend storage         | `lvextend`               | `zfs set` / `zpool add` (depends on requirement) |
+| Show storage status    | `vgdisplay`, `lvdisplay` | `zpool status`, `metastat`                       |

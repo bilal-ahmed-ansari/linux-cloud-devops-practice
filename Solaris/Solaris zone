@@ -1,0 +1,177 @@
+1. What is a Solaris Zone?
+
+A Solaris Zone is an isolated environment (mini server) created inside one Solaris operating system.
+
+Think of it as creating multiple independent servers on one physical server.
+
+2. Real-life example
+
+Imagine you own a 3 BHK flat.
+
+There is:
+
+One electricity connection
+One water connection
+One building
+
+But you divide it into 3 separate rooms.
+
+Room 1 → Rahul
+Room 2 → Ahmed
+Room 3 → Priya
+
+Each person:
+
+Has their own key
+Keeps their own belongings
+Cannot interfere with the others
+
+The whole flat is one building, but each room works independently.
+
+A Solaris Zone works in the same way.
+
+3. Without Zones
+
+Suppose a company has three applications:
+
+Payroll
+Banking
+HR
+
+Without Zones:
+
+Application 1
+Application 2
+Application 3
+---------------------
+Solaris OS
+---------------------
+Physical Server
+
+If the Payroll application crashes or consumes all the memory, the Banking and HR applications may affected.
+
+4. With Zones
+
+Now the administrator creates three Zones.
+
+Payroll Zone
+----------------
+
+Banking Zone
+----------------
+
+HR Zone
+----------------
+
+Global Zone
+----------------
+
+Physical Server
+
+Each application runs in its own Zone.
+
+If the Payroll Zone crashes,
+
+Banking Zone keeps running.
+
+HR Zone keeps running.
+
+5. What is the Global Zone?
+
+The Global Zone is the main (parent) Zone.
+
+It is created automatically when Solaris is installed.
+
+The Global Zone is used to:
+
+Create new Zones
+Delete Zones
+Start and stop Zones
+Allocate CPU and memory
+Monitor all Zones
+
+Think of it as the administrator's control room.
+
+6. What are Non-Global Zones?
+
+The Zones you create are called Non-Global Zones.
+
+Example:
+
+Global Zone
+   |
+-------------------------
+| HR | Finance | Testing |
+
+Each one is a Non-Global Zone.
+
+Users inside one Zone cannot access another Zone unless specifically allowed.
+
+7. Why do companies use Zones?
+a) Security
+
+Suppose an attacker gets access to the HR Zone.
+
+They cannot directly access the Finance Zone because both Zones are isolated.
+
+b) Better Resource Usage
+
+Instead of buying three physical servers,
+
+A company buys one powerful server and creates three Zones.
+
+Example:
+
+Server
+
+|
+|---- Zone1
+|---- Zone2
+|---- Zone3
+
+This saves:
+
+Hardware cost
+Electricity
+Rack space
+
+7. Is a Zone the same as VMware?
+
+Not exactly.
+
+a) VMware
+Physical Server
+
+|
+VM1 (Own OS)
+
+VM2 (Own OS)
+
+VM3 (Own OS)
+
+Each VM has its own operating system and kernel
+
+b) Solaris Zones
+Physical Server
+
+|
+
+Solaris Kernel
+
+|
+
+Zone1
+
+Zone2
+
+Zone3
+
+All Zones share the same Solaris kernel.
+
+This makes Zones:
+
+Faster
+Lighter
+Use less memory
+Start quickly
+

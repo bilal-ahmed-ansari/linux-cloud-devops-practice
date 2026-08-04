@@ -1,0 +1,115 @@
+1. Since you already know Solaris Cluster, understanding SUSE Cluster/Pacemaker will be much easier. The concept is almost the same, but Pacemaker is used on Linux.
+
+2. What is SUSE Cluster?
+
+A SUSE Cluster is a group of two or more Linux servers working together to provide High Availability (HA).
+
+The cluster ensures that if one server fails, another server automatically takes over.
+
+Example:
+
+A company has two SUSE Linux servers running a payroll application.
+
+If one server crashes, the second server immediately starts the application.
+
+Employees can continue using the payroll system.
+
+3. What is Pacemaker?
+
+Pacemaker is a cluster management software.
+
+It continuously checks whether servers and applications are healthy.
+
+If something fails, Pacemaker automatically takes action.
+
+4. Real-Life Example
+
+Imagine a school has two teachers.
+
+Teacher A is teaching the class.
+Teacher B is sitting nearby as a backup.
+
+If Teacher A suddenly becomes sick,
+
+Teacher B immediately starts teaching.
+
+Students continue learning without interruption.
+
+Here,
+
+Teacher A = Server 1
+Teacher B = Server 2
+School Principal = Pacemaker
+
+The principal decides who should teach.
+
+Similarly, Pacemaker decides which server should run the application.
+
+5. Components of a SUSE Cluster
+a) Nodes
+
+A Node means a server.
+
+Example:
+
+Node 1 = Server1
+
+Node 2 = Server2
+
+A cluster usually has two or more nodes.
+
+b) Pacemaker
+
+Pacemaker is responsible for:
+
+Monitoring servers
+Monitoring applications
+Detecting failures
+Starting services on another server
+Preventing downtime.
+
+it acts like brain of the cluster.
+
+c) Corosync
+
+Pacemaker works together with Corosync.
+
+Corosync is responsible for communication between servers.
+
+It sends heartbeat messages.
+
+Example:
+
+Every second,
+
+Server1 → "I'm alive."
+
+Server2 → "I'm alive."
+
+If Server2 stops receiving messages,
+
+it informs Pacemaker.
+
+Pacemaker then starts the application on Server2 (or another healthy node).
+
+Think of Corosync as the messenger, and Pacemaker as the decision-maker.
+
+d) Shared Storage
+
+Both servers usually access the same storage.
+
+            Shared Storage
+           /             \
+      Server1         Server2
+
+Example:
+
+A customer uploads a document.
+
+The document is stored in shared storage.
+
+If Server1 fails,
+
+Server2 can still access the same document.
+
+No data is lost.

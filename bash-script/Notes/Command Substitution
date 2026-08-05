@@ -1,0 +1,35 @@
+1. Command Substitution
+
+Store command output inside a variable.
+
+a)!Old method
+
+TODAY=`date`
+
+b) Recommended method
+
+TODAY=$(date)
+
+Print
+
+echo $TODAY
+
+c) Example
+
+CURRENT_USER=$(whoami)
+
+echo $CURRENT_USER
+
+Output
+
+bilal
+
+d) Another Example
+
+CURRENT_PATH=$(pwd)
+
+echo $CURRENT_PATH
+
+Output
+
+/home/bilal

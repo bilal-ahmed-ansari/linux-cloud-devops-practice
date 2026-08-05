@@ -182,3 +182,13 @@ sudo lvremove /dev/myvg/data_snap
 ❌ If the original disk fails, the snapshot is also lost because it is stored on the same storage.
 
 ❌ Snapshots should not be kept for a long time because they can affect performance and consume space as more data changes.
+
+9. lvm snapshots bs backup
+
+| LVM Snapshot                 | Backup                                          |
+| ---------------------------- | ----------------------------------------------- |
+| Point-in-time copy           | Separate copy of data                           |
+| Stored on same storage       | Usually stored on another disk or backup server |
+| Fast to create               | Takes longer                                    |
+| Used for short-term recovery | Used for long-term disaster recovery            |
+| Not safe if the disk fails   | Safe even if the original disk fails            |

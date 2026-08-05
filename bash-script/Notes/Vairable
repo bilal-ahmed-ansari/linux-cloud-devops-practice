@@ -1,0 +1,254 @@
+1. What is a Variable?
+
+A variable is a name used to store a value.
+
+Instead of writing the same value multiple times, we store it in a variable and use the variable name whenever needed.
+
+Example
+
+NAME="Bilal"
+
+echo $NAME
+
+Output
+
+Bilal
+
+2. Why do we use Variables?
+
+Variables make scripts:
+
+Easy to read
+Easy to update
+Reusable
+Less error-prone
+
+Without variable
+
+echo "Bilal"
+echo "Bilal"
+echo "Bilal"
+
+If the name changes, you must update every line.
+
+With variable
+
+NAME="Bilal"
+
+echo $NAME
+echo $NAME
+echo $NAME
+
+Now you only need to change one line.
+
+3. Variable Syntax
+VARIABLE_NAME=value
+
+Example
+
+CITY=Mumbai
+
+Print it
+
+echo $CITY
+
+Output
+
+Mumbai
+
+4. Rules for Naming Variables
+Rule 1: Start with a letter or underscore
+
+Correct
+
+name="Bilal"
+_age=25
+
+Wrong
+
+1name="Bilal"
+
+Rule 2: No spaces
+
+Wrong
+
+name = Bilal
+
+Correct
+
+name=Bilal
+
+Rule 3: Do not use special characters
+
+Wrong
+
+user-name=Bilal
+
+Correct
+
+user_name=Bilal
+
+Rule 4: Variable names are case-sensitive
+NAME="Linux"
+
+name="Ubuntu"
+
+echo $NAME
+echo $name
+
+Output
+
+Linux
+Ubuntu
+
+NAME and name are different variables.
+
+5. Assigning Values
+
+Example
+
+course="Linux"
+
+version=9
+
+price=100
+
+Print
+
+echo $course
+echo $version
+echo $price
+
+6. Accessing Variables
+
+Use $ before the variable name.
+
+Example
+
+NAME="Bilal"
+
+echo $NAME
+
+Without $
+
+echo NAME
+
+Output
+
+NAME
+
+7. Using Variables Inside Sentences
+NAME="Bilal"
+
+echo "Welcome $NAME"
+
+Output
+
+Welcome Bilal
+
+8. Using Curly Braces
+
+Curly braces make variable names clear.
+
+NAME="Bilal"
+
+echo "${NAME}Ahmed"
+
+Output
+
+BilalAhmed
+
+Without braces
+
+echo "$NAMEAhmed"
+
+Shell looks for a variable named NAMEAhmed, which may not exist.
+
+9. User-Defined Variables
+
+Variables created by the user.
+
+Example
+
+EMPLOYEE="John"
+
+AGE=30
+
+CITY="Delhi"
+
+10. System Variables
+
+Linux already provides many variables.
+
+a) Check current user
+
+echo $USER
+
+Output
+
+bilal
+
+b) Current home directory
+
+echo $HOME
+
+Example
+
+/home/bilal
+
+c) Current shell
+
+echo $SHELL
+
+Example
+
+/bin/bash
+
+d) Current working directory
+
+echo $PWD
+
+Example
+
+/home/bilal/Documents
+
+e) Previous directory
+
+echo $OLDPWD
+
+f) Terminal type
+
+echo $TERM
+
+g) Current process ID
+
+echo $$
+
+h) Hostname
+
+echo $HOSTNAME
+
+10. Environment Variables
+
+Environment variables are available to programs and child processes.
+
+View all environment variables
+
+printenv
+
+or
+
+env
+
+Example
+
+printenv HOME
+
+Output
+
+/home/bilal
+
+11. Display All Shell Variables
+set
+
+This displays shell variables, functions, and environment variables.

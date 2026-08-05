@@ -14,6 +14,8 @@ Example:
 
 zpool create datapool c1t0d0
 
+The zpool create command creates a new ZFS storage pool. In this example, datapool is the name of the storage pool, and c1t0d0 is the physical disk used to create it. After the pool is created, we can create ZFS filesystems inside it.
+
 Check pools:
 
 zpool list

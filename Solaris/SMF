@@ -1,0 +1,89 @@
+1. What is SMF?
+
+SMF (Service Management Facility) is the service management system in Solaris.
+
+It is used to:
+
+Start services
+Stop services
+Restart services
+Enable services
+Disable services
+Check service status
+
+It is similar to systemd in Linux.
+
+2. Real-Life Example
+
+Think of a hotel manager.
+
+The manager can:
+
+Open the restaurant
+Close the restaurant
+Restart kitchen operations
+Check if the restaurant is open
+
+Similarly, SMF manages services in Solaris.
+
+3. Linux vs Solaris
+
+| Linux     | Solaris       |
+| --------- | ------------- |
+| systemd   | SMF           |
+| systemctl | svcs / svcadm |
+
+4. Important Commands
+a) Check Service Status
+svcs
+
+Example Output:
+
+STATE          STIME    FMRI
+online         10:00    ssh
+online         10:00    network
+disabled       10:00    ftp
+
+Meaning:
+
+online → Running
+disabled → Stopped
+maintenance → Service has failed and needs attention
+
+b) Check a Specific Service
+svcs ssh
+
+Output:
+
+online
+
+Meaning:
+
+SSH service is running.
+
+c) Start a Service
+svcadm enable ssh
+Meaning:
+
+Start the SSH service.
+
+d) Stop a Service
+svcadm disable ssh
+
+Meaning:
+
+Stop the SSH service.
+
+e) Restart a Service
+svcadm restart ssh
+
+Meaning:
+
+Restart the SSH service.
+
+f) Refresh a Service
+svcadm refresh ssh
+
+Meaning:
+
+Reload the service configuration without completely restarting it (if the service supports it).

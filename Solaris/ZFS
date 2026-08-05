@@ -1,0 +1,204 @@
+1. What is ZFS?
+
+ZFS (Zettabyte File System) is a modern filesystem developed by Sun Microsystems (now Oracle).
+
+Unlike Linux, where you use LVM + ext4/XFS, Solaris uses ZFS, which manages both storage and filesystems.
+
+Real-Life Example
+
+Imagine you build a new house.
+
+Normally you need:
+
+One person to build the rooms.
+Another person to manage the land.
+
+With ZFS,
+
+One person does both jobs.
+
+Similarly,
+LVM manages storage
+ext4/XFS manages files
+
+In Solaris,
+
+ZFS does both.
+
+2. Linux vs Solaris
+Linux
+Disk
+
+↓
+
+LVM
+
+↓
+
+Logical Volume
+
+↓
+
+ext4 / XFS
+
+↓
+
+Files
+
+You need two technologies.
+
+Solaris
+Disk
+
+↓
+
+ZFS
+
+↓
+
+Files
+
+One technology manages everything.
+
+3. Why was ZFS developed?
+
+Older filesystems had limitations.
+
+Companies wanted:
+
+Easy storage management
+Better performance
+Data protection
+Snapshots
+Compression
+
+Oracle introduced ZFS to provide all these features.
+
+4. Main Features of ZFS
+a) Storage Pool
+
+ZFS combines disks into one storage pool.
+
+Example:
+
+You have
+
+Disk1 = 500 GB
+
+Disk2 = 500 GB
+
+Create a pool.
+
+zpool create datapool c1t0d0 c1t1d0
+
+Now,
+
+Storage Pool
+
+↓
+
+1000 GB
+b) Filesystem Creation
+
+Create a filesystem.
+
+zfs create datapool/projects
+
+Now users can store project files.
+
+c) Snapshots
+
+Suppose your database contains customer records.
+
+Before patching,
+
+Create a snapshot.
+
+zfs snapshot datapool/projects@before_patch
+
+If the patch fails,
+
+Restore the snapshot.
+
+This is similar to LVM Snapshots, but ZFS snapshots are generally more efficient and easier to manage.
+
+d) Compression
+
+Suppose you have
+
+100 GB of text files.
+
+Enable compression.
+
+zfs set compression=on datapool/projects
+
+Now the files may occupy much less space (the exact savings depend on the data).
+
+e) Data Integrity
+
+ZFS automatically checks whether data is corrupted.
+
+If corruption is detected and redundant copies exist (for example, with mirrors or RAID-Z), ZFS can repair the data automatically.
+
+This is one of ZFS's biggest advantages.
+
+f) Dynamic Expansion
+
+Suppose your pool is
+
+500 GB
+
+Later,
+
+add another disk.
+
+Now,
+
+1000 GB
+
+No need to recreate everything.
+
+5. Common ZFS Commands
+a);Create Storage Pool
+zpool create datapool c1t0d0
+
+Creates a pool.
+
+b) View Pools
+zpool list
+
+Example:
+
+NAME
+
+datapool
+
+c) Check Pool Health
+zpool status
+
+Shows whether disks are healthy.
+
+Example:
+
+pool: datapool
+
+state: ONLINE
+
+d) List Filesystems
+zfs list
+
+Example:
+
+NAME
+
+datapool
+
+datapool/projects
+
+e) List Snapshots
+zfs list -t snapshot
+
+f) Destroy Snapshot
+zfs destroy datapool/projects@backup1
+
+Deletes the snapshot.

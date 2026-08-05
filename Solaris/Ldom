@@ -1,0 +1,154 @@
+1. What is LDOM?
+
+LDOM (Logical Domain) is a technology that allows you to divide one physical SPARC server into multiple virtual servers.
+
+Each LDOM works like an independent server.
+
+Each LDOM has:
+
+Its own CPU
+Its own RAM
+Its own Storage
+Its own Network
+Its own Solaris Operating System
+
+2. Real-Life Example
+
+Imagine you own a 4-floor building.
+
+Instead of giving the whole building to one company,
+
+you rent each floor to different companies.
+
+Building
+
+├── Floor 1 → Company A
+├── Floor 2 → Company B
+├── Floor 3 → Company C
+└── Floor 4 → Company D
+
+Each company works independently.
+
+If Company B has a problem,
+
+Company A, C, and D continue working.
+
+An LDOM works exactly like this.
+
+3.Without LDOM
+
+Suppose you have one SPARC server.
+
+Physical SPARC Server
+
+↓
+
+Solaris
+
+↓
+
+One Banking Application
+
+Only one operating system is running.
+
+Many hardware resources remain unused.
+
+4. With LDOM
+
+Now divide the same server into four LDOMs.
+
+Physical SPARC Server
+
+│
+├── LDOM1 → Solaris → HR Application
+├── LDOM2 → Solaris → Banking Application
+├── LDOM3 → Solaris → Database
+└── LDOM4 → Solaris → Testing
+
+Now one physical server behaves like four separate servers.
+
+5. Example
+
+A company buys a powerful SPARC server.
+
+Specifications:
+
+CPU = 32 Cores
+RAM = 128 GB
+
+Instead of using all resources for one OS,
+
+the administrator creates:
+
+LDOM1
+CPU = 8 Cores
+RAM = 32 GB
+
+LDOM2
+CPU = 8 Cores
+RAM = 32 GB
+
+LDOM3
+CPU = 8 Cores
+RAM = 32 GB
+
+LDOM4
+CPU = 8 Cores
+RAM = 32 GB
+
+Each department gets its own virtual server.
+
+6. Why do Companies Use LDOM?
+a) Better Hardware Utilization
+
+Instead of buying four physical servers,
+
+buy one powerful server and create four LDOMs.
+
+This saves money.
+
+b) Isolation
+
+If one LDOM crashes,
+LDOM1 ❌
+
+LDOM2 ✅
+
+LDOM3 ✅
+
+LDOM4 ✅
+
+The other LDOMs continue working.
+
+c) Resource Allocation
+
+Each LDOM gets its own resources.
+
+Example:
+
+HR
+
+CPU = 4 Cores
+
+RAM = 16 GB
+
+---------------------
+
+Database
+
+CPU = 16 Cores
+
+RAM = 64 GB
+
+Resources are assigned based on application needs.
+
+7. LDOM vs VMware
+
+Both create virtual machines, but they are used in different environments.
+
+| VMware                                        | LDOM                                     |
+| --------------------------------------------- | ---------------------------------------- |
+| Works on Intel/AMD servers                    | Works only on Oracle SPARC servers       |
+| Creates Virtual Machines (VMs)                | Creates Logical Domains (LDOMs)          |
+| Managed using VMware ESXi/vCenter             | Managed using Oracle VM Server for SPARC |
+| Mostly used in Linux and Windows environments | Mostly used in Solaris environments      |

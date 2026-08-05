@@ -1,0 +1,410 @@
+1. Operators are symbols that perform operations on values or variables.
+
+Example
+
+A=10
+B=5
+
+Now we can use operators to:
+
+Add numbers
+Compare values
+Check conditions
+Perform logical operations
+Check files and directories
+
+2.Types of Operators
+
+Shell scripting mainly uses:
+
+Arithmetic Operators
+Assignment Operators
+Relational (Comparison) Operators
+Logical Operators
+String Operators
+File Test Operators
+
+3. Arithmetic Operators
+
+Arithmetic operators perform mathematical calculations.
+
+| Operator | Meaning             | Example       |
+| -------- | ------------------- | ------------- |
+| +        | Addition            | A+B           |
+| -        | Subtraction         | A-B           |
+| *        | Multiplication      | A*B           |
+| /        | Division            | A/B           |
+| %        | Modulus (Remainder) | A%B           |
+| ++       | Increment           | Increase by 1 |
+| --       | Decrement           | Decrease by 1 |
+
+Method 1: Using Double Parentheses
+
+This is the most common method.
+
+Example
+
+A=20
+B=10
+
+echo $((A+B))
+
+Output
+
+30
+
+a) Increment (++)
+
+Increase value by 1.
+
+A=10
+
+((A++))
+
+echo $A
+
+Output
+
+11
+
+Method 2: Using expr
+
+Older method.
+
+a) expr 10 + 5
+
+Output
+
+15
+
+b) Multiplication
+
+expr 10 \* 5
+
+Output
+
+50
+
+Note: * must be escaped with \.
+
+4. Assignment Operators
+
+Used to assign values.
+
+Example
+
+A=10
+
+Meaning
+
+Store 10 in variable A.
+
+a) Add and Assign
+
+A=10
+
+((A+=5))
+
+echo $A
+
+Output
+
+15
+
+b) Subtract and Assign
+
+A=10
+
+((A-=2))
+
+echo $A
+
+Output
+
+8
+
+5. Relational (Comparison) Operators
+
+Used to compare numbers.
+
+Mostly used with if statements.
+
+| Operator | Meaning               |
+| -------- | --------------------- |
+| -eq      | Equal                 |
+| -ne      | Not Equal             |
+| -gt      | Greater Than          |
+| -lt      | Less Than             |
+| -ge      | Greater Than or Equal |
+| -le      | Less Than or Equal    |
+
+a) Equal
+
+Equal
+
+A=10
+B=10
+
+[ $A -eq $B ]
+echo $?
+
+Output
+
+0
+
+0 means True.
+
+b) Not Equal
+
+A=10
+B=5
+
+[ $A -ne $B ]
+echo $?
+
+Output
+
+0
+
+6. Understanding Exit Status
+
+Every Linux command returns an exit status.
+
+Check it using:
+
+echo $?
+
+Meaning
+| Exit Status | Meaning         |
+| ----------- | --------------- |
+| 0           | Success / True  |
+| Non-zero    | Failure / False |
+
+a) Example
+
+ls
+echo $?
+
+Output
+
+0
+
+b) Wrong command
+
+abcd
+echo $?
+
+Output
+
+127
+
+Meaning
+
+Command not found.
+
+7. Logical Operators
+
+Used to combine multiple conditions.
+
+| Operator | Meaning |
+| -------- | ------- |
+| &&       | AND     |
+| ||       | OR      |
+| !        | NOT     |
+
+a) AND Operator
+
+Both conditions must be true.
+
+Example
+
+[ 10 -gt 5 ] && echo "True"
+
+Output
+
+True
+
+b) Another Example
+
+mkdir project && cd project
+
+Explanation
+
+Create directory.
+If successful, enter the directory.
+
+c) OR Operator
+
+If the first command fails, run the second.
+
+Example
+
+mkdir test || echo "Directory already exists"
+
+d) NOT Operator
+
+Reverse the result.
+
+Example
+
+! [ 10 -eq 5 ]
+
+echo $?
+
+Output
+
+0
+
+Because 10 is not equal to 5.
+
+8. String Operators
+
+Used with text.
+
+a) Equal
+
+NAME="Bilal"
+
+[ "$NAME" = "Bilal" ]
+echo $?
+
+Output
+
+0
+
+b) Not Equal
+
+[ "$NAME" != "Ahmed" ]
+echo $?
+
+Output
+
+0
+
+c) Check Empty String
+
+NAME=""
+
+[ -z "$NAME" ]
+echo $?
+
+Output
+
+0
+
+-z means string length is zero.
+
+d) Check Non-Empty String
+
+NAME="Linux"
+
+[ -n "$NAME" ]
+echo $?
+
+Output
+
+0
+
+-n means string is not empty.
+
+9. File Test Operators
+
+Very important for Linux Administrators.
+
+These operators check files and directories.
+
+a) Check if File Exists
+
+[ -f file.txt ]
+
+Example
+
+touch test.txt
+
+[ -f test.txt ]
+
+echo $?
+
+Output
+
+0
+
+b) Check Directory Exists
+
+[ -d Documents ]
+
+Example
+
+[ -d /home/bilal ]
+
+c) Check File is Readable
+
+[ -r file.txt ]
+
+d) Check File is Writable
+
+[ -w file.txt ]
+
+e) Check File is Executable
+
+[ -x script.sh ]
+
+f) Check File is Not Empty
+
+[ -s file.txt ]
+
+Returns true if the file size is greater than zero.
+
+g) Check File Exists (File or Directory)
+
+[ -e file.txt ]
+
+
+Practical Example
+FILE="/etc/passwd"
+
+if [ -f "$FILE" ]
+then
+    echo "File exists"
+else
+    echo "File not found"
+fi
+
+Output
+
+File exists
+
+
+Another Practical Example
+DIR="/backup"
+
+if [ -d "$DIR" ]
+then
+    echo "Backup directory found"
+else
+    echo "Backup directory does not exist"
+fi
+
+Note:-
+1. Best Practices
+Put spaces inside test brackets.
+
+Correct
+
+[ "$A" -eq "$B" ]
+
+Wrong
+
+[$A -eq $B]
+
+2. Always quote string variables.
+
+Correct
+
+[ "$NAME" = "Bilal" ]
+
+Wrong
+
+[ $NAME = Bilal ]
+
+3. Use (( )) for arithmetic operations instead of expr in modern Bash scripts.

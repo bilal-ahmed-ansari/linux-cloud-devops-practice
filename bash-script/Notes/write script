@@ -1,0 +1,203 @@
+1.Creating Your First Script
+
+a) Create file
+
+nano hello.sh
+
+b) Write
+
+#!/bin/bash
+
+echo "Hello World"
+
+c) Save
+
+Ctrl + O
+
+Enter
+
+Ctrl + X
+
+d) Run
+
+bash hello.sh
+
+Output
+
+Hello World
+
+2. What is Shebang?
+
+First line
+
+#!/bin/bash
+
+This is called the Shebang.
+
+It tells Linux which interpreter should execute the script.
+
+Without it
+
+echo "Hello"
+
+may still work if you run:
+
+bash hello.sh
+
+But if you execute the script directly:
+
+./hello.sh
+
+the shebang tells Linux to use Bash.
+
+3. Making Script Executable
+
+Give execute permission
+
+chmod +x hello.sh
+
+Run
+
+./hello.sh
+
+4. Different Ways to Run a Script
+
+Method 1
+
+bash hello.sh
+
+Method 2
+
+sh hello.sh
+
+Method 3
+
+./hello.sh
+
+(Requires execute permission.)
+
+5. Comments
+
+Comments are ignored by the shell.
+
+a) Single-line comment
+
+# This is a comment
+
+Example
+
+#!/bin/bash
+
+# Print today's date
+date
+
+b) Multiple-Line Comments
+
+Bash has no official multi-line comment syntax, but a common technique is:
+
+: <<'COMMENT'
+This is ignored.
+Multiple lines can be written here.
+COMMENT
+
+6. echo Command
+
+Used to print output.
+
+Example
+
+echo "Welcome"
+
+Output
+
+Welcome
+
+a) Multiple lines
+
+echo "Linux"
+echo "Shell"
+echo "Script"
+
+Output
+
+Linux
+Shell
+Script
+
+7. clear Command
+
+Clear terminal
+
+clear
+
+8. exit Command
+
+Exit the script immediately.
+
+Example
+
+echo "Start"
+
+exit
+
+echo "End"
+
+Output
+
+Start
+
+The second echo is never executed.
+
+9. Script Execution Flow
+
+Example
+
+#!/bin/bash
+
+echo "Step 1"
+
+echo "Step 2"
+
+echo "Step 3"
+
+Output
+
+Step 1
+
+Step 2
+
+Step 3
+
+Commands execute from top to bottom unless control statements (like if, for, or while) change the flow.
+
+10. Real-Life Example
+
+A Linux Administrator checks server health every morning.
+
+Instead of running:
+
+uptime
+
+free -h
+
+df -h
+
+whoami
+
+they create:
+
+#!/bin/bash
+
+echo "Server Health"
+
+echo "--------------"
+
+uptime
+
+free -h
+
+df -h
+
+whoami
+
+Running one script gives all the required information at once.

@@ -1,0 +1,154 @@
+1. What is Shell?
+
+A shell is a program that accepts commands from the user and passes them to the Linux kernel for execution.
+
+In simple words,
+
+Shell is a bridge between the user and the Linux operating system.
+
+Example
+
+pwd
+
+Output
+
+/home/bilal
+
+Here,
+
+You typed the command.
+Shell understood it.
+Shell asked Linux to execute it.
+Linux returned the result.
+
+2. What is Shell Scripting?
+
+A shell script is a file that contains multiple Linux commands.
+
+Instead of typing commands one by one every day, we can store them in a file and execute them together.
+
+Example
+
+a) Without script
+
+date
+whoami
+pwd
+
+b) With script
+
+#!/bin/bash
+
+date
+whoami
+pwd
+
+Save as info.sh
+
+Run
+bash info.sh
+
+Output
+
+Wed Aug 5
+bilal
+/home/bilal
+
+3. Why do we use Shell Scripting?
+
+Shell scripting is mainly used for automation.
+
+Examples
+
+User creation
+Backup
+Health check
+Log cleanup
+Disk monitoring
+Service monitoring
+Package installation
+File management
+Cron jobs
+Server maintenance
+
+Example
+
+Instead of checking disk space every day,
+
+df -h
+
+Create a script
+
+#!/bin/bash
+
+df -h
+
+Now run only
+
+bash disk.sh
+
+4. Advantages of Shell Scripting
+Saves time
+Reduces manual work
+Reduces mistakes
+Easy to automate tasks
+Can run through Cron
+
+5. Disadvantages
+Not suitable for complex applications
+Error handling is limited
+Difficult to manage very large projects
+
+6. Common Shells in Linux
+
+Different shells are available.
+
+| Shell | Description                        |
+| ----- | ---------------------------------- |
+| Bash  | Most commonly used shell           |
+| Sh    | Original Unix shell                |
+| Ksh   | Korn Shell                         |
+| Csh   | C Shell                            |
+| Tcsh  | Improved C Shell                   |
+| Zsh   | Advanced shell with extra features |
+
+Check current shell
+
+echo $SHELL
+
+Output
+
+/bin/bash
+
+7. What is Bash?
+
+Bash stands for
+
+Bourne Again Shell
+
+It is the default shell in most Linux distributions.
+
+Most shell scripts are written in Bash.
+
+8. How to Check Bash Version
+bash --version
+
+Example
+
+GNU bash, version 5.2
+
+9. Script File Extension
+
+Usually
+
+.sh
+
+Example
+
+backup.sh
+
+health.sh
+
+disk.sh
+
+The extension is not mandatory but is a common convention.

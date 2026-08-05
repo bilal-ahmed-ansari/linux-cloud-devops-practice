@@ -1,0 +1,17 @@
+Scenario 6: ZFS Pool is Faulty
+
+Check the pool.
+
+zpool status
+
+Example
+
+pool: datapool
+
+state: DEGRADED
+
+Meaning
+
+One disk has failed, but the pool is still working (if redundancy exists).
+
+Replace the failed disk and repair the pool.

@@ -1,0 +1,149 @@
+1. Read Input from User
+
+Use the read command.
+
+a) Example
+
+echo "Enter your name"
+
+read NAME
+
+echo "Welcome $NAME"
+
+Output
+
+Enter your name
+
+Bilal
+
+Welcome Bilal
+
+b) Read Multiple Inputs
+echo "Enter first name and last name"
+
+read FIRST LAST
+
+echo $FIRST
+echo $LAST
+
+2. Read Password
+
+Hide the typed password.
+
+read -s PASSWORD
+
+echo
+
+echo "Password saved"
+
+3. Prompt with read -p
+
+Instead of using echo and read separately:
+
+read -p "Enter your name: " NAME
+
+echo $NAME
+
+4. Read with Timeout
+
+Wait only a few seconds.
+
+read -t 5 -p "Enter name: " NAME
+
+If the user does not enter anything within 5 seconds, read exits.
+
+5. Default Value
+NAME=${NAME:-Guest}
+
+echo $NAME
+
+If NAME is empty or unset, the output is:
+
+Guest
+
+6. Readonly Variable
+
+Cannot be modified after declaration.
+
+readonly COMPANY="DNEG"
+
+echo $COMPANY
+
+Trying to change it:
+
+COMPANY="Google"
+
+Output
+
+bash: COMPANY: readonly variable
+
+7. Unset Variable
+
+Remove a variable.
+
+CITY="Mumbai"
+
+echo $CITY
+
+unset CITY
+
+echo $CITY
+
+Output
+
+Mumbai
+
+The second echo prints nothing because the variable no longer exists.
+
+8. Single Quotes vs Double Quotes
+a) Double Quotes
+
+Variables are expanded.
+
+NAME="Bilal"
+
+echo "Hello $NAME"
+
+Output
+
+Hello Bilal
+
+b) Single Quotes
+
+Variables are treated as plain text.
+
+NAME="Bilal"
+
+echo 'Hello $NAME'
+
+Output
+
+Hello $NAME
+
+9. No Quotes
+CITY=Mumbai
+
+echo $CITY
+
+Works fine for a single word.
+
+If the value contains spaces:
+
+CITY=New Delhi
+
+This causes an error.
+
+Correct:
+
+CITY="New Delhi"
+
+10. Concatenating Variables
+FIRST="Bilal"
+
+LAST="Ansari"
+
+echo "$FIRST $LAST"
+
+Output
+
+Bilal Ansari

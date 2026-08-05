@@ -1,0 +1,184 @@
+1. What is an LVM Snapshot?
+
+An LVM Snapshot is a point-in-time copy of a Logical Volume (LV).
+
+It captures the data exactly as it exists at that moment.
+
+Think of it like taking a photo.
+
+A photo captures how you look at that moment.
+An LVM snapshot captures how the data looks at that moment.
+
+2. Real-Life Example
+
+Suppose you are writing a project report.
+
+Current file:
+
+Project_Report.docx
+
+Before making major changes, you create a copy.
+
+Project_Report_Backup.docx
+
+Now you edit the original file.
+
+3. Why do we use Snapshots?
+
+Suppose your database contains important customer information.
+
+Before installing software updates or patches,
+
+the administrator creates a snapshot.
+
+Database LV
+
+↓
+
+Create Snapshot
+
+↓
+
+Install Patch
+
+If the patch fails,
+
+the administrator can restore the data from the snapshot.
+
+If something goes wrong,
+
+You can restore the backup.
+
+An LVM Snapshot works the same way.
+
+4. How Snapshots Work
+
+Initially,
+
+Original LV
+
+↓
+
+File1
+
+File2
+
+File3
+
+Create Snapshot.
+
+Original LV
+
+↓
+
+Snapshot
+
+Now someone edits File2.
+
+Original LV
+
+↓
+
+File2 (Modified)
+
+The snapshot still contains the old version of File2.
+
+That's why it is called a point-in-time copy.
+
+5. Important Point
+
+A snapshot is NOT a full copy of the Logical Volume.
+
+Instead,
+
+it uses a feature called Copy-on-Write (CoW).
+
+6. What is Copy-on-Write?
+
+Initially,
+
+Original LV
+
+↓
+
+Snapshot
+
+Both share the same data.
+
+No extra space is used.
+
+Suppose you modify a file.
+
+Before changing it,
+
+Linux copies the old block into the snapshot.
+
+Then it updates the original file.
+
+Example:
+
+Original
+
+Salary = 50,000
+
+User changes it to
+
+Salary = 60,000
+
+Before changing,
+
+LVM saves
+
+Salary = 50,000
+
+inside the snapshot.
+
+Now,
+
+Original LV
+
+Salary = 60,000
+
+Snapshot
+
+Salary = 50,000
+
+This is called Copy-on-Write.
+
+7. Practical Commands
+a) Create Snapshot
+
+sudo lvcreate -L 5G -s -n data_snap /dev/myvg/data
+
+Meaning
+-L 5G → Snapshot size
+-s → Create snapshot
+-n data_snap → Snapshot name
+/dev/myvg/data → Original Logical Volume
+
+Display Snapshots
+lvs
+
+Example:
+LV          VG
+
+data        myvg
+
+data_snap   myvg
+
+c)Mount Snapshot
+sudo mkdir /snapshot
+sudo mount /dev/myvg/data_snap /snapshot
+
+Now you can view the data stored in the snapshot.
+
+d) Remove Snapshot
+sudo lvremove /dev/myvg/data_snap
+
+8. Limitations
+
+❌ Not a replacement for backups.
+
+❌ If the original disk fails, the snapshot is also lost because it is stored on the same storage.
+
+❌ Snapshots should not be kept for a long time because they can affect performance and consume space as more data changes.

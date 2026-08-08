@@ -1,0 +1,190 @@
+1. Overview
+
+This lab demonstrates hands-on practice with Linux Logical Volume Manager (LVM) using Ubuntu.
+
+The lab covers:
+
+Physical Volume (PV)
+Volume Group (VG)
+Logical Volume (LV)
+Filesystem creation
+Mounting
+Extending LVM
+Shrinking LVM
+LVM snapshots
+
+2. Lab Environment
+OS: Ubuntu Linux
+Hypervisor: VMware Workstation
+VM CPU: 2 vCPU
+VM RAM: 4 GB
+Lab storage: 8 GB virtual disk created as a loop device
+
+3. LVM Structure
+Virtual Disk
+     ↓
+Physical Volume (PV)
+     ↓
+Volume Group (VG)
+     ↓
+Logical Volume (LV)
+     ↓
+Filesystem
+     ↓
+Mount Point
+
+4. Working
+Step 1: Create Lab Disk
+
+Created an 8 GB virtual disk file for safe LVM testing:
+
+truncate -s 8G ~/lvm-lab/lvm-disk.img
+
+Attached the file as a loop device:
+
+sudo losetup -fP ~/lvm-lab/lvm-disk.img
+
+Verified the device:
+
+sudo losetup -a
+lsblk
+
+Step 2: Create Physical Volume
+sudo pvcreate /dev/loop10
+
+Verified:
+
+sudo pvs
+
+Step 3: Create Volume Group
+
+Created a volume group named vgdata:
+
+sudo vgcreate vgdata /dev/loop10
+
+Verified:
+
+sudo vgs
+
+Step 4: Create Logical Volume
+
+Created a 3 GB logical volume:
+
+sudo lvcreate -L 3G -n lvdata vgdata
+
+Verified:
+
+sudo lvs
+
+Step 5: Create Filesystem and Mount
+
+Created an ext4 filesystem:
+
+sudo mkfs.ext4 /dev/vgdata/lvdata
+
+Created mount point:
+
+sudo mkdir /data
+
+Mounted the LV:
+
+sudo mount /dev/vgdata/lvdata /data
+
+Verified:
+
+df -h /data
+
+Step 6: Extend Logical Volume
+
+Extended the logical volume when additional space was available in the volume group.
+
+sudo lvextend -L 5G /dev/vgdata/lvdata
+
+Resized the ext4 filesystem:
+
+sudo resize2fs /dev/vgdata/lvdata
+
+Alternatively, both operations can be performed together:
+
+sudo lvextend -r -L 7G /dev/vgdata/lvdata
+
+Verified the new filesystem size:
+
+df -h /data
+
+Step 7: Shrink Logical Volume
+
+Practiced safely reducing the size of an ext4 logical volume.
+
+General process:
+
+Unmount filesystem
+       ↓
+Run filesystem check
+       ↓
+Shrink filesystem
+       ↓
+Reduce logical volume
+       ↓
+Check filesystem
+       ↓
+Mount filesystem
+       ↓
+Verify
+
+Commands used:
+
+sudo umount /data
+sudo e2fsck -f /dev/vgdata/lvdata
+sudo resize2fs /dev/vgdata/lvdata 5G
+sudo lvreduce -L 5G /dev/vgdata/lvdata
+sudo e2fsck -f /dev/vgdata/lvdata
+sudo mount /dev/vgdata/lvdata /data
+Important
+
+Shrinking is more risky than extending because reducing the LV before shrinking the filesystem can cause data loss.
+
+Step 8: LVM Snapshot
+
+Created an LVM snapshot to capture a point-in-time state of the logical volume:
+
+sudo lvcreate -L 1G -s -n lvdata-snap /dev/vgdata/lvdata
+
+Verified:
+sudo lvs
+
+Mounted the snapshot read-only:
+
+sudo mkdir /mnt/lvm-snapshot
+sudo mount -o ro /dev/vgdata/lvdata-snap /mnt/lvm-snapshot
+
+Used the snapshot to view data as it existed when the snapshot was created.
+
+==> Important LVM Commands
+Physical Volumes
+pvs
+pvdisplay
+
+Volume Groups
+vgs
+vgdisplay
+
+Logical Volumes
+lvs
+lvdisplay
+
+Disk and filesystem
+lsblk
+df -h
+blkid
+
+Note:- Key Learning
+
+PV represents storage prepared for LVM.
+VG acts as a storage pool.
+LV provides flexible logical storage from the VG.
+Filesystems can be created on logical volumes.
+LVM allows logical volumes to be extended when free space is available.
+Shrinking requires the filesystem to be reduced before reducing the LV.
+LVM snapshots provide a point-in-time view of an LV.
+pvs, vgs, and lvs are useful commands for monitoring LVM.

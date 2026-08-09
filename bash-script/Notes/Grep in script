@@ -1,0 +1,19 @@
+grep searches for text.
+
+#!/bin/bash
+
+if grep -q "root" /etc/passwd; then
+    echo "root user exists"
+else
+    echo "root user not found"
+fi
+
+-q means quiet mode.
+
+It doesn't display the matching line. It only gives an exit status.
+
+Linux Admin example
+
+Check whether SSH is configured:
+
+grep "PermitRootLogin" /etc/ssh/sshd_config

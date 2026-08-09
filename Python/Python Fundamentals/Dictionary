@@ -1,0 +1,28 @@
+Think:
+
+key → value
+
+Program:
+server = {
+    "hostname": "web01",
+    "ip": "192.168.1.10",
+    "os": "Ubuntu",
+    "environment": "production"
+}
+
+Access:
+print(server["hostname"])
+print(server["ip"])
+
+Output:
+web01
+192.168.1.10
+
+This structure becomes extremely useful when working with:
+
+JSON
+APIs
+AWS
+Ansible
+configuration data
+server inventories

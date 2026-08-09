@@ -1,0 +1,23 @@
+1. #!/bin/bash
+
+for FILE in /etc/*.conf
+do
+    echo "$FILE"
+done
+
+This displays .conf files inside /etc.
+
+2. Example: check multiple directories
+
+#!/bin/bash
+
+for DIR in /home /tmp /var /backup
+do
+    echo "Checking $DIR"
+
+    if [ -d "$DIR" ]; then
+        echo "$DIR exists"
+    else
+        echo "$DIR does not exist"
+    fi
+done

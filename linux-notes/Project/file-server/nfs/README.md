@@ -113,26 +113,45 @@ df -h /mnt/nfs
 Useful commands practiced:
 
 sudo systemctl status nfs-server
-sudo exportfs -v
-df -h
-mount | grep nfs
-journalctl -u nfs-server
-Troubleshooting Approach
-NFS share not working
-        ↓
-Check NFS service
-        ↓
-Check /etc/exports
-        ↓
-Run exportfs -ra
-        ↓
-Check exportfs -v
-        ↓
-Check mount
-        ↓
-Check filesystem permissions
- ↓
-Check journalctl
-Result
 
-Successfully configured and tested an NFS file share on Ubuntu, including exporting, mounting, persistent mounting, file access, and basic troubleshooting.
+sudo exportfs -v
+
+df -h
+
+mount | grep nfs
+
+journalctl -u nfs-server
+
+Troubleshooting Approach
+
+NFS share not working
+
+        ↓
+
+Check NFS service
+
+        ↓
+
+Check /etc/exports
+
+        ↓
+
+Run exportfs -ra
+
+        ↓
+        
+Check exportfs -v
+
+        ↓
+        
+Check mount
+
+        ↓
+        
+Check filesystem permissions
+
+ ↓
+
+Check journalctl
+
+Result: Successfully configured and tested an NFS file share on Ubuntu, including exporting, mounting, persistent mounting, file access, and basic troubleshooting.

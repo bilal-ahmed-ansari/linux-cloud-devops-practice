@@ -1,0 +1,238 @@
+1. Variables
+
+A variable is simply a name that stores some information..
+
+Example:
+
+name = "Bilal"
+age = 30
+server = "linux01"
+
+Print:
+
+print(name)
+print(age)
+print(server)
+
+Create:
+
+nano variables.py
+
+Put:
+
+name = "Bilal"
+age = 30
+server = "linux01"
+
+Note:- You can think like a box
+
+server
+  ↓
+┌─────────┐
+│ linux01 │
+└─────────┘
+
+disk
+  ↓
+┌─────────┐
+│  /var   │
+└─────────┘
+
+print("Name:", name)
+print("Age:", age)
+print("Server:", server)
+
+Run:
+
+python3 variables.py
+
+2. Now let's connect this to Linux administration
+
+Suppose your Linux server has this directory:
+
+/var
+
+You want to check its disk usage.
+
+Normally, from Linux, you might run:
+
+df -h /var
+
+You get something like
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3        20G   15G  5G   75% /var
+
+Instead of hardcoding everything throughout your Python script, you store the information in variables.
+
+For example:
+server = "linux01"
+disk = "/var"
+
+print("Server:", server)
+print("Checking disk:", disk)
+
+Output:
+Server: linux01
+Checking disk: /var
+
+3. A better practical example
+
+Let's say you want to check three directories:
+
+/
+/var
+/home
+
+You could write:
+
+disk1 = "/"
+disk2 = "/var"
+disk3 = "/home"
+
+print(disk1)
+print(disk2)
+print(disk3)
+
+But this becomes difficult when you have 20 or 50 directories.
+
+Later, you'll learn lists, which are better for this:
+
+disks = ["/", "/var", "/home"]
+
+for disk in disks:
+    print("Checking:", disk)
+
+Output:
+
+Checking: /
+Checking: /var
+Checking: /home
+
+4. So there is a progression:
+
+Variable
+   ↓
+server = "linux01"
+
+List
+   ↓
+disks = ["/", "/var", "/home"]
+
+Loop
+   ↓
+check every disk
+
+5. Let's make it a REAL Linux Python example
+
+Python can actually execute the Linux df command.
+
+import subprocess
+
+disk = "/var"
+
+result = subprocess.run(
+    ["df", "-h", disk],
+    capture_output=True,
+    text=True
+)
+
+print(result.stdout)
+
+**********
+a) subprocess is a Python module that allows Python to run external commands/programs. So subprocess allows Python to execute Linux commands and work with their output.
+
+b) subprocess.run() = tell python to run linux command
+
+Think:
+
+Linux command
+     ↓
+subprocess.run()
+     ↓
+result
+
+c) Why are there square brackets?
+
+This:
+
+["df", "-h", "/var"]
+
+is a Python list.
+
+Each item is a separate part of the command:
+
+["df", "-h", "/var"]
+   ↑     ↑      ↑
+   │     │      │
+command option argument
+
+d) capture_output=True   ==> Capture the output produced by the Linux command so that my Python program can use it.
+
+e) stdout = Print the output that Linux gave to Python.
+
+f) text=True   ===> Give me the command output as normal text/string rather than raw bytes.
+**********
+
+Here:
+
+disk = "/var"
+
+is the variable.
+
+Python effectively builds this Linux command:
+
+df -h /var
+
+==> The important idea is:
+
+Python variable
+      ↓
+disk = "/var"
+      ↓
+Python uses the variable
+      ↓
+df -h /var
+      ↓
+Linux gives disk information
+
+6. What if you want to check /home instead?
+
+You only change:
+
+disk = "/home"
+
+You don't need to change the rest of your script.
+
+The same script now executes:
+
+df -h /home
+
+That's one of the major reasons variables are useful in automation.
+
+6. Another example: Server name
+
+Suppose you're creating a health-check script.
+
+You might have:
+
+server = "linux01"
+
+Then:
+
+print("Starting health check for:", server)
+print("Checking CPU on:", server)
+print("Checking memory on:", server)
+print("Checking disk on:", server)
+
+Output:
+
+Starting health check for: linux01
+Checking CPU on: linux01
+Checking memory on: linux01
+Checking disk on: linux01
+
+If tomorrow the server changes to linux02, you change only:
+
+server = "linux02"
+
+The rest of the script remains unchanged.

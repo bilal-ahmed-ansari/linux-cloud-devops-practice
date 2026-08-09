@@ -1,0 +1,16 @@
+if / elif / else
+
+This is one of the most important Python concepts for automation.
+
+Eg:
+
+disk_usage = 90
+
+if disk_usage >= 90:
+    print("CRITICAL")
+elif disk_usage >= 80:
+    print("WARNING")
+else:
+    print("OK")
+
+Output: CRITICAL

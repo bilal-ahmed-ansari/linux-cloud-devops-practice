@@ -1,0 +1,868 @@
+Practical Lab
+
+Step1: As I have cloned my ubuntu VM, so I have reduce VM resources as per my local host specification 
+
+1. First, reduce your VM resources
+
+Before starting the lab, shut down your existing Ubuntu VM.
+
+In VMware:
+
+VM → Settings → Memory
+
+For the iSCSI Server:
+
+Memory: 1536 MB
+Processors: 1
+
+For the iSCSI Client:
+
+Memory: 1024–1536 MB
+Processors: 1
+
+If Ubuntu Server is being used, 1 GB can be enough for this lab.
+
+If you're using Ubuntu Desktop, I'd prefer:
+
+Server VM: 1.5 GB
+Client VM: 1.5 GB
+
+Also close unnecessary Windows applications while both VMs are running.
+
+Step2: Don't create two new VMs, I am using only 1 vm as my local host specification is low
+
+Add a second virtual disk
+
+Since everything is inside one VM, create an additional virtual disk in VMware.
+
+VMware
+Power off Ubuntu.
+Open VMware Workstation.
+Select your Ubuntu VM.
+Go to VM Settings.
+Click Add.
+Select Hard Disk.
+Select SCSI.
+Create a new virtual disk.
+Give it something like:
+5 GB
+Finish.
+Start Ubuntu.
+
+Now check:
+
+lsblk
+
+You should see a new disk, for example:
+
+sda     30G
+sdb      5G
+
+Your new disk may be /dev/sdb.
+
+Do not blindly assume /dev/sdb; always confirm with lsblk
+
+Step 3: Install iSCSI target software
+
+Ubuntu uses LIO as the kernel target framework, commonly managed through targetcli.
+
+Install it:
+
+sudo apt update
+sudo apt install targetcli-fb -y
+
+Check:
+
+targetcli
+
+You should enter something similar to:
+
+/> 
+
+Exit:
+
+/> exit
+
+Step4: Identify your new disk
+
+Run:
+
+lsblk
+
+Suppose your output shows:
+
+NAME   SIZE
+sda     30G
+sdb      5G
+
+We'll use:
+
+/dev/sdb
+
+as the iSCSI storage.
+
+VERY IMPORTANT
+
+Before continuing, make sure /dev/sdb is really the new empty disk.
+
+You can check:
+
+sudo fdisk -l
+
+Step5: Create the iSCSI Target
+
+Start:
+
+sudo targetcli
+
+You will see:
+
+/>
+
+First create a backstore using your new disk:
+
+/backstores/block create iscsi_disk /dev/sdb
+
+Check:
+
+ls
+
+You should see:
+
+backstores
+
+Then:
+
+/backstores/block ls
+
+You should see something like:
+
+o- block ........................................ [Storage Objects: 1]
+  o- iscsi_disk ........ [/dev/sdb]
+
+Step6: Create an iSCSI target
+
+Inside targetcli:
+
+/iscsi create iqn.2026-08.local.lab:storage
+
+You have now created an iSCSI target.
+
+Think of it like:
+
+Target
+   |
+   └── "Here is the storage I am offering"
+
+Check:
+
+/iscsi ls
+
+You should see:
+
+iqn.2026-08.local.lab:storage
+
+Step7: Create a LUN
+
+Now connect your storage disk to the iSCSI target.
+
+Run:
+
+/iscsi/iqn.2026-08.local.lab:storage/tpg1/luns create /backstores/block/iscsi_disk
+
+Check:
+
+/iscsi/iqn.2026-08.local.lab:storage/tpg1/luns ls
+
+You should see:
+
+lun0
+
+So your structure is now:
+
+/dev/sdb
+   ↓
+Backstore
+   ↓
+LUN 0
+   ↓
+iSCSI Target
+
+Step8: Enable the iSCSI target
+
+Inside targetcli:
+
+/iscsi/iqn.2026-08.local.lab:storage/tpg1 set attribute authentication=0
+
+For this lab only, we'll keep authentication simple.
+
+Now check the portal:
+
+/iscsi/iqn.2026-08.local.lab:storage/tpg1/portals ls
+
+You should normally have:
+
+0.0.0.0:3260
+
+Port 3260 is the standard iSCSI TCP port.
+
+Exit:
+
+exit
+
+Save the configuration:
+
+sudo targetctl save
+
+Check the service:
+
+sudo systemctl status rtslib-fb-targetctl
+
+Step9: Install the iSCSI Initiator
+
+Now comes an important concept.
+
+The same Ubuntu VM will act as the iSCSI client/initiator.
+
+Install the initiator:
+
+sudo apt install open-iscsi -y
+
+Enable it:
+
+sudo systemctl enable --now iscsid
+
+Check:
+
+sudo systemctl status iscsid
+
+Step9: Find your iSCSI Initiator IQN
+
+Run:
+
+cat /etc/iscsi/initiatorname.iscsi
+
+You'll see something similar to:
+
+InitiatorName=iqn.1993-08.org.debian:01.xxxxxxxxx
+
+This is the identity of your iSCSI client.
+
+Think:
+
+Target
+   = Storage server
+
+Initiator
+   = Storage client
+
+In our single-VM lab:
+
+Ubuntu VM
+ ├── Target
+ └── Initiator
+
+Step10: Discover the iSCSI Target
+
+So far, you created the iSCSI Target on your Ubuntu VM.
+
+Think of it like this:
+
+Your Ubuntu VM
+│
+├── iSCSI Target
+│      │
+│      └── Storage/LUN
+│
+└── iSCSI Initiator
+       ↑
+       We now need to find the Target
+
+The Initiator needs to ask:
+
+Are there any iSCSI storage targets available at this IP address?
+
+==> In my case the Target and Initiator are on the same VM, we can use:
+
+127.0.0.1
+
+This means:
+
+“This computer itself.”
+
+You don't need to find another server's IP for this single-VM lab.
+
+==> Run the discovery command
+
+Run:
+
+sudo iscsiadm -m discovery -t sendtargets -p 127.0.0.1
+
+Let's break it down:
+
+sudo
+ ↓
+Run with administrator privileges
+
+iscsiadm
+ ↓
+iSCSI administration command
+
+-m discovery
+ ↓
+Discovery mode
+
+-t sendtargets
+ ↓
+Ask the iSCSI server to send me its available targets
+
+-p 127.0.0.1
+ ↓
+Look for the target on this machine
+
+You should get something similar to:
+
+127.0.0.1:3260,1 iqn.2026-08.local.lab:storage
+What does this mean?
+127.0.0.1
+     ↓
+Your Ubuntu VM
+
+3260
+     ↓
+iSCSI port
+
+iqn.2026-08.local.lab:storage
+     ↓
+Your iSCSI Target name
+
+So the result basically says:
+
+“I found an iSCSI target at 127.0.0.1, using port 3260, and its name is iqn.2026-08.local.lab:storage.”
+
+Step11: Login to the iSCSI Target
+
+Now we move from discovery → login.
+
+Discovery only means:
+
+"I found the storage."
+
+Login means:
+
+"I want to connect to and use this storage."
+
+Run:
+
+sudo iscsiadm -m node --login
+
+You should get something similar to:
+
+Logging in to [iface: default, target: iqn.2026-08.local.lab:storage, portal: 127.0.0.1,3260]
+Login to [iface: default, target: iqn.2026-08.local.lab:storage, portal: 127.0.0.1,3260] successful.
+Then check the iSCSI session
+
+Run:
+
+sudo iscsiadm -m session
+
+You should see something like:
+
+tcp: [1] 127.0.0.1:3260,1 iqn.2026-08.local.lab:storage
+
+This means:
+
+iSCSI Initiator
+       │
+       │ LOGIN
+       ↓
+127.0.0.1:3260
+       │
+       ↓
+iSCSI Target
+       │
+       ↓
+LUN / Storage
+
+**************
+
+Note:- 
+
+==> In my case, Initially, discovery worked:
+
+127.0.0.1:3260,1 iqn.2026-08.local.lab:storage
+
+This proved:
+
+Initiator ────────> Target
+         Discovery
+             ✅
+
+But when you tried:
+
+sudo iscsiadm -m node --login
+
+you received:
+
+iSCSI login failed due to authorization failure
+
+==> Why did it happen?
+
+The iSCSI target knew about the initiator, but the initiator was not authorized through the Target Portal Group ACL.
+
+Your initiator had this IQN:
+
+iqn.2004-10.com.ubuntu:01:b071b9e1d734
+
+But that IQN wasn't present in the target's ACL.
+
+Think of an ACL like an access list:
+
+Target
+  |
+  └── ACL
+       |
+       ├── Initiator A ✅
+       ├── Initiator B ✅
+       └── My Initiator ❌
+
+So:
+
+Discovery
+   ↓
+Target found ✅
+   ↓
+Login
+   ↓
+Authorization check
+   ↓
+Initiator not in ACL ❌
+   ↓
+Login rejected
+
+==> How we fixed it
+
+We created an ACL for your Initiator IQN:
+
+/iscsi/iqn.2026-08.local.lab:storage/tpg1/acls create iqn.2004-10.com.ubuntu:01:b071b9e1d734
+
+This effectively told the target:
+
+"Allow this initiator to access my iSCSI target."
+
+Then we checked the authentication configuration and disabled authentication for this lab environment:
+
+/iscsi/iqn.2026-08.local.lab:storage/tpg1 set attribute authentication=0
+
+After that:
+
+sudo iscsiadm -m node --login
+
+worked successfully.
+
+************
+
+Now we have successfully completed:
+1. Create Target       ✅
+2. Create LUN          ✅
+3. Configure ACL       ✅
+4. Discover Target     ✅
+5. Login               ✅
+6. Active Session      ✅
+
+Now we need to check whether the iSCSI LUN has appeared as a disk.
+
+Step12: Identify the iSCSI Disk
+
+Run:
+
+lsblk
+
+Don't format anything yet.
+
+Also run:
+
+sudo fdisk -l
+
+And run, you will get
+
+ls -l /dev/disk/by-path/ | grep iscsi
+
+Output:
+
+ip-127.0.0.1:3260-iscsi-iqn.2026-08.local.lab:storage-lun-0 -> ../../sdd
+
+*******
+==> What does this mean?
+
+The important part is:
+
+-> ../../sdd
+
+So your iSCSI LUN is:
+
+/dev/sdd
+
+********
+
+And we can see the complete relationship:
+
+127.0.0.1:3260
+       ↓
+iSCSI Target
+iqn.2026-08.local.lab:storage
+       ↓
+LUN 0
+       ↓
+/dev/sdd
+
+Step14: It's a safety/verification step. It is very important because mkfs can erase a disk.
+
+We discovered this:
+
+iSCSI LUN 0 -> /dev/sdd
+
+So we think /dev/sdd is our iSCSI disk.
+
+But before doing:
+
+sudo mkfs.ext4 /dev/sdd
+
+we need to be 100% sure that /dev/sdd is the correct disk.
+
+Why?
+
+Because:
+
+mkfs.ext4 /dev/sdd
+
+means:
+
+Create a new filesystem on /dev/sdd. Existing data on that disk can be destroyed.
+
+So we don't want to accidentally format your Ubuntu OS disk.
+
+*********
+
+Imagine you have three disks:
+
+/dev/sda → Ubuntu operating system
+/dev/sdb → Some other data
+/dev/sdd → iSCSI LUN
+
+We want:
+
+/dev/sdd
+   ↓
+Format
+   ↓
+ext4
+
+But if we accidentally run:
+
+sudo mkfs.ext4 /dev/sda
+
+we could damage the Ubuntu installation.
+
+Therefore:
+
+Part 13
+   ↓
+Find the iSCSI disk
+   ↓
+/dev/sdd
+   ↓
+Part 14
+   ↓
+VERIFY /dev/sdd
+   ↓
+Part 15
+   ↓
+Format /dev/sdd
+
+********
+
+Step15: Create filesystem on the iSCSI LUN
+
+Once confirmed, run:
+
+sudo mkfs.ext4 /dev/sdd
+
+You should get output similar to:
+
+Creating filesystem with ...
+Filesystem UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+What just happened?
+
+We took:
+
+/dev/sdd
+
+which is a raw block device, and created an ext4 filesystem on it.
+
+Think:
+
+Raw LUN
+   ↓
+/dev/sdd
+   ↓
+mkfs.ext4
+   ↓
+ext4 filesystem
+   ↓
+Ready to mount
+
+Step16: Create mount point
+
+Create a directory:
+
+sudo mkdir /mnt/iscsi
+
+Mount the iSCSI LUN:
+
+sudo mount /dev/sdd /mnt/iscsi
+
+Check:
+
+df -h /mnt/iscsi
+
+You should see something similar to:
+
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd        4.8G   ...  ...   ... /mnt/iscsi
+
+At this point, your iSCSI storage is actually usable.
+
+*******
+
+The complete flow you've now built
+
+This is worth remembering for your interview:
+
+VMware Virtual Disk
+       ↓
+   iSCSI Target
+       ↓
+     LUN 0
+       ↓
+ iSCSI Initiator
+       ↓
+    /dev/sdd
+       ↓
+   ext4 filesystem
+       ↓
+   /mnt/iscsi
+       ↓
+      Files
+
+*********
+
+Step17: Test read/write
+
+We should do a read/write test:
+
+echo "iSCSI lab test" | sudo tee /mnt/iscsi/test.txt
+
+Then:
+
+cat /mnt/iscsi/test.txt
+
+Expected:
+
+iSCSI lab test
+
+Step18: Check the iSCSI session
+
+Run:
+
+sudo iscsiadm -m session
+
+You should see:
+
+tcp: [2] 127.0.0.1:3260,1 iqn.2026-08.local.lab:storage (non-flash)
+
+This confirms that the iSCSI connection is still active.
+
+Step19: Unmount the iSCSI filesystem
+
+Now we'll test disconnecting the storage.
+
+First, make sure you're not currently inside /mnt/iscsi:
+
+cd ~
+
+Then:
+
+sudo umount /mnt/iscsi
+
+Verify:
+
+df -h | grep iscsi
+
+You should get no output.
+
+==> You can also check:
+
+mount | grep iscsi
+
+Again, no output means it is unmounted.
+
+*********
+
+Why are we doing this?
+
+We're testing:
+
+Mounted
+   ↓
+Use storage
+   ↓
+Unmount
+
+*******
+
+Step20: Logout from the iSCSI target
+
+Now disconnect the iSCSI session:
+
+sudo iscsiadm -m node --logout
+
+Expected:
+
+Logging out of session [sid: 2, target: iqn.2026-08.local.lab:storage, portal: 127.0.0.1,3260]
+Logout of [sid: 2, target: iqn.2026-08.local.lab:storage, portal: 127.0.0.1,3260] successful.
+
+Check:
+
+sudo iscsiadm -m session
+
+You should get something like:
+
+iscsiadm: No active sessions.
+
+This means:
+
+iSCSI session
+     ↓
+   Logged out
+
+Step21: Check the disk after logout
+
+Run:
+
+lsblk
+
+The iSCSI disk /dev/sdd may no longer appear as an active iSCSI device.
+
+==> Why is this useful?
+
+It demonstrates that the block device was provided through the iSCSI session.
+
+Step22: Login again
+
+Now let's reconnect.
+
+Run:
+
+sudo iscsiadm -m node --login
+
+Expected:
+
+Login to [iface: default, target: iqn.2026-08.local.lab:storage, portal: 127.0.0.1,3260] successful.
+
+Check:
+
+sudo iscsiadm -m session
+
+You should again see:
+
+tcp: [2] 127.0.0.1:3260,1 iqn.2026-08.local.lab:storage
+
+Step22: Verify the LUN again
+
+Run:
+
+lsblk
+
+Then:
+
+ls -l /dev/disk/by-path/ | grep iscsi
+
+You should again see:
+
+...iscsi-iqn.2026-08.local.lab:storage-lun-0 -> ../../sdd
+
+So:
+
+Logout
+   ↓
+LUN disappears
+   ↓
+Login
+   ↓
+LUN appears again
+
+Step23: Mount the iSCSI LUN again
+
+Mount it:
+
+sudo mount /dev/sdd /mnt/iscsi
+
+Check:
+
+df -h /mnt/iscsi
+
+Step24: Verify the old data
+
+This is the important test.
+
+Run:
+
+cat /mnt/iscsi/test.txt
+
+You should still get:
+
+This data is stored on iSCSI LUN
+
+This proves that the data survived:
+
+Write data
+    ↓
+Unmount
+    ↓
+Logout
+    ↓
+Login again
+    ↓
+Mount
+    ↓
+Data still exists
+
+*********
+
+Our complete pratical LAB
+
+                    iSCSI LAB
+                        │
+       ┌────────────────┴────────────────┐
+       │                                 │
+  iSCSI TARGET                     iSCSI INITIATOR
+       │                                 │
+       ↓                                 ↓
+  Backstore                         Discovery
+       │                                 ↓
+       ↓                               Login
+     LUN 0                              ↓
+       │                            Session
+       │                                 ↓
+       └──────────────┬──────────────────┘
+                      ↓
+                   /dev/sdd
+                      ↓
+                  ext4 filesystem
+                      ↓
+                  /mnt/iscsi
+                      ↓
+                  test.txt
+
+**********

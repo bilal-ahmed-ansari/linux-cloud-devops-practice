@@ -4,12 +4,15 @@ A string is a sequence of characters.
 
 A string can contain:
 
-Letters
-Numbers
-Special characters
-Spaces
+=>Letters
 
-Examples
+=>Numbers
+
+=>Special characters
+
+=>Spaces
+
+Examples:
 
 NAME="Bilal"
 
@@ -22,13 +25,12 @@ PASSWORD="Admin@123"
 All of the above are strings.
 
 2. Create a String
+   
 NAME="Bilal"
 
 echo "$NAME"
 
-Output
-
-Bilal
+Output: Bilal
 
 3. String Length
 
@@ -38,8 +40,7 @@ NAME="Linux"
 
 echo ${#NAME}
 
-Output
-5
+Output: 5
 
 4. Concatenate Strings
 
@@ -53,9 +54,7 @@ FULL="$FIRST $LAST"
 
 echo "$FULL"
 
-Output
-
-Bilal Ansari
+Output: Bilal Ansari
 
 5. Compare Strings
 
@@ -64,78 +63,82 @@ Use = or ==.
 NAME="Bilal"
 
 if [ "$NAME" = "Bilal" ]
+
 then
+
     echo "Matched"
+    
 fi
 
-Output
-
-Matched
+Output: Matched
 
 6. Check Strings are Not Equal
+   
 NAME="Bilal"
 
 if [ "$NAME" != "Ahmed" ]
+
 then
+
     echo "Not Matched"
+    
 fi
 
-Output
-
-Not Matched
+Output: Not Matched
 
 7. Check Empty String
+   
 NAME=""
 
 if [ -z "$NAME" ]
+
 then
+
     echo "String is Empty"
+    
 fi
 
-Output
-
-String is Empty
+Output: String is Empty
 
 -z checks whether the string length is zero.
 
 8. Check Non-Empty String
+   
 NAME="Linux"
 
 if [ -n "$NAME" ]
+
 then
+
     echo "String is Not Empty"
+    
 fi
 
-Output
-
-String is Not Empty
+Output: String is Not Empty
 
 9. Convert to Uppercase
+    
 NAME="linux"
 
 echo "${NAME^^}"
 
-Output
-
-LINUX
+Output: LINUX
 
 10. Convert to Lowercase
+    
 NAME="LINUX"
 
 echo "${NAME,,}"
 
-Output
-
-linux
+Output: linux
 
 11. Capitalize First Letter
+    
 NAME="linux"
 
 echo "${NAME^}"
 
-Output
-
-Linux
+Output: Linux
 
 12. Extract Substring
 
@@ -149,9 +152,7 @@ NAME="LinuxAdministration"
 
 echo "${NAME:0:5}"
 
-Output
-
-Linux
+Output: Linux
 
 a) Another Example
 
@@ -159,114 +160,117 @@ NAME="BilalAhmed"
 
 echo "${NAME:5:5}"
 
-Output
-
-Ahmed
+Output: Ahmed
 
 13. Remove Characters from Beginning
+14. 
 FILE="/home/bilal/file.txt"
 
 echo "${FILE#/home/}"
 
-Output
+Output:
 
 bilal/file.txt
 
 14. Remove Longest Match from Beginning
+    
 FILE="/home/bilal/docs/file.txt"
 
 echo "${FILE##*/}"
 
-Output
+Output: file.txt
 
-file.txt
-
-Explanation
+Explanation:
 
 Everything before the last / is removed.
 
 15. Remove Characters from End
+    
 FILE="backup.tar.gz"
 
 echo "${FILE%.gz}"
 
-Output
+Output:
 
 backup.tar
 
 16. Remove Longest Match from End
+    
 FILE="backup.tar.gz"
 
 echo "${FILE%%.*}"
 
-Output
-
-backup
+Output: backup
 
 17. Replace First Match
+    
 TEXT="Linux Server"
 
 echo "${TEXT/Linux/Ubuntu}"
 
-Output
-
-Ubuntu Server
+Output: Ubuntu Server
 
 18. Replace All Matches
+    
 TEXT="Linux Linux Linux"
 
 echo "${TEXT//Linux/Ubuntu}"
 
-Output
+Output:
 
 Ubuntu Ubuntu Ubuntu
 
 19. Check String Starts With
+    
 NAME="LinuxServer"
 
 if [[ $NAME == Linux* ]]
+
 then
+    
     echo "Starts with Linux"
+
 fi
 
-Output
-
-Starts with Linux
+Output: Starts with Linux
 
 20. Check String Ends With
+
 FILE="backup.tar.gz"
 
 if [[ $FILE == *.gz ]]
+
 then
+   
     echo "Compressed File"
+
 fi
 
-Output
-
-Compressed File
+Output: Compressed File
 
 21. Search Inside String
+
 TEXT="Linux Administration"
 
 if [[ "$TEXT" == *Admin* ]]
+
 then
+    
     echo "Found"
+
 fi
 
-Output
-
-Found
+Output: Found
 
 22. Join Strings
+
 FIRST="Linux"
 
 SECOND="Server"
 
 echo "$FIRST $SECOND"
 
-Output
-
-Linux Server
+Output: Linux Server
 
 23. Reverse a String
 
@@ -274,11 +278,10 @@ Using the rev command.
 
 echo "Linux" | rev
 
-Output
-
-xuniL
+Output: xuniL
 
 24. Read String from User
+
 read -p "Enter your name: " NAME
 
 echo "Welcome $NAME"
@@ -290,6 +293,7 @@ Enter your name: Bilal
 Welcome Bilal
 
 25. Pattern Matching
+
 FILE="backup.tar.gz"
 
 case $FILE in
@@ -315,48 +319,54 @@ echo "Unknown"
 esac
 
 26. Regular Expression Example
+
 EMAIL="admin@gmail.com"
 
 if [[ "$EMAIL" =~ @gmail\.com$ ]]
+
 then
+   
     echo "Valid Gmail Address"
+
 fi
 
-Output
+Output:
 
 Valid Gmail Address
 
 27. Practical Example 1 - Check Log File
+
 FILE="/var/log/messages"
 
 if [[ "$FILE" == *.log || "$FILE" == */messages ]]
+
 then
+    
     echo "Log File Found"
 fi
 
 28. Practical Example 2 - Rename Backup Files
+
 FILE="backup.tar.gz"
 
 NEW_NAME="${FILE/.tar.gz/.zip}"
 
 echo "$NEW_NAME"
 
-Output
-
-backup.zip
+Output: backup.zip
 
 29. Practical Example 3 - Convert Username
+
 USERNAME="Bilal"
 
 echo "${USERNAME,,}"
 
-Output
-
-bilal
+Output: bilal
 
 Useful when usernames should always be lowercase.
 
 30. Practical Example 4 - Extract Filename
+
 PATH_NAME="/home/bilal/scripts/backup.sh"
 
 echo "${PATH_NAME##*/}"
@@ -366,25 +376,37 @@ Output
 backup.sh
 
 31. Mini Project - Username Validator
+
 #!/bin/bash
 
 read -p "Enter username: " USERNAME
 
 if [[ -z "$USERNAME" ]]
+
 then
+    
     echo "Username cannot be empty"
+
 elif [[ ${#USERNAME} -lt 4 ]]
+
 then
+   
     echo "Username must contain at least 4 characters"
+
 else
+    
     echo "Valid Username"
+   
     echo "Lowercase Username: ${USERNAME,,}"
+
 fi
 
-Example Output
+Output:
+
 Enter username: Bilal
 
 Valid Username
+
 Lowercase Username: bilal
 
 Note:-

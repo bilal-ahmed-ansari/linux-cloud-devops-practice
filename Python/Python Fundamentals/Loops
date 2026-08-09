@@ -1,0 +1,18 @@
+Suppose you have
+
+server01
+server02
+server03
+server04
+server05
+
+You don't want to write the same code five times.
+
+Use a loop.
+
+Program:
+servers = ["server01", "server02", "server03"]
+
+for server in servers:
+    print("Checking:", server)
+

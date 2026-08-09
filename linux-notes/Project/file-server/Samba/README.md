@@ -70,19 +70,26 @@ sudo nano /etc/samba/smb.conf
 Added the following configuration at the end of the file:
 
 [FileShare]
+
    path = /data/samba-share
+   
    browseable = yes
+   
    read only = no
+   
    valid users = smbuser
    
 Configuration Explanation
 
-Setting	            Meaning
-[FileShare]	        Name of the Samba share
-path	              Linux directory being shared
-browseable = yes	  Allows the share to be visible
-read only = no	    Allows users to write to the share
-valid users	        Specifies which user can access the share
+a)[FileShare]	-> Name of the Samba share
+
+b)path -> Linux directory being shared
+
+c)browseable = yes	  Allows the share to be visible
+
+d)read only = no	    Allows users to write to the share
+
+e)valid users	        Specifies which user can access the share
 
 6. Validate Samba Configuration
 
@@ -153,8 +160,11 @@ This confirmed that the Windows client could access the Linux Samba share.
 Useful commands practiced:
 
 sudo systemctl status smbd
+
 testparm
+
 smbclient -L localhost -U smbuser
+
 ls -ld /data/samba-share
 journalctl -u smbd
 
@@ -163,33 +173,53 @@ Check Samba ports:
 ss -tulpn | grep -E '139|445'
 
 ==> Troubleshooting Approach
+
 Windows cannot access Samba share
+
           ↓
+
 Check Ubuntu IP
+
           ↓
+
 Check smbd service
+
           ↓
+
 Run testparm
+
           ↓
+
 Check smb.conf
+
           ↓
+
 Check Samba user
+
           ↓
+
 Check Linux permissions
+
           ↓
+
 Check Samba logs
+
           ↓
+
 Test share again
 
 ==> Result
 
 Successfully configured Ubuntu as a Samba file server, created an authenticated SMB share, configured user-based access, and tested read/write access from a Windows client.
 
-==> Key Learning
+Key Learning:
 
-Samba provides SMB/CIFS file sharing between Linux and Windows.
-/etc/samba/smb.conf is the main Samba configuration file.
-smbpasswd is used to manage Samba user passwords.
-testparm validates Samba configuration.
+=>Samba provides SMB/CIFS file sharing between Linux and Windows.
+
+=>/etc/samba/smb.conf is the main Samba configuration file.
+
+=>smbpasswd is used to manage Samba user passwords.
+
+=>testparm validates Samba configuration.
 systemctl is used to manage the Samba service.
 Both Samba configuration and Linux filesystem permissions can affect access to a shared directory.

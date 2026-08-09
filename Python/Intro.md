@@ -125,17 +125,22 @@ python3 -m pip install psutil
 
 psutil lets Python obtain information about things like:
 
-CPU usage
-Memory usage
-Disk usage
-Running processes
-System information
+=>CPU usage
+
+=>Memory usage
+
+=>Disk usage
+
+=>Running processes
+
+=>System information
 
 For example:
 
 import psutil
 
 print("CPU:", psutil.cpu_percent(), "%")
+
 print("Memory:", psutil.virtual_memory().percent, "%")
 
 Note:- One important practice for your Linux lab: use python3 -m pip rather than simply pip, because it makes sure you're using pip associated with the Python 3 interpreter you're running.

@@ -16,16 +16,18 @@ Run:
 
 bash hello.sh Bilal
 
-Output
+Output:
 
 Hello Bilal
 
 Here,
 
-hello.sh is the script.
-Bilal is the command line argument.
+=>hello.sh is the script.
+
+=>Bilal is the command line argument.
 
 3. Syntax
+   
 bash script.sh arg1 arg2 arg3
 
 Example
@@ -106,17 +108,23 @@ Output
 Linux Ubuntu Bash
 
 8. Loop Through All Arguments
+9. 
 #!/bin/bash
 
 for ARG in "$@"
+
 do
+
     echo "$ARG"
+    
 done
 
-Output
+Output:
 
 Linux
+
 Ubuntu
+
 Bash
 
 Each argument is treated separately.
@@ -142,35 +150,47 @@ bash demo.sh "Linux Admin" Ubuntu
 Using "$@"
 
 for ARG in "$@"
+
 do
+
     echo "$ARG"
+    
 done
 
-Output
+Output:
 
 Linux Admin
+
 Ubuntu
 
 b) Using "$@"
 
 for ARG in "$@"
+
 do
+
     echo "$ARG"
+    
 done
 
 Output
 
 Linux Admin
+
 Ubuntu
 
 Using "$*"
 
 echo "$*"
 
-Output
+Output:
+
 Linux Admin Ubuntu
+
 Interview Tip
+
 "$@" keeps each argument separate.
+
 "$*" combines all arguments into one string.
 
 For most scripts, "$@" is preferred.
@@ -198,6 +218,7 @@ Shows whether the previous command succeeded or failed.
 Example
 
 ls
+
 echo $?
 
 Output
@@ -211,14 +232,14 @@ Meaning:
 Now try an invalid command:
 
 abc
+
 echo $?
 
-Output
+Output:
 
 127
-Meaning:
 
-Command not found.
+=>Meaning: Command not found.
 
 13. $! - Background Process ID
 
@@ -239,6 +260,7 @@ Output
 This is the PID of the background process.
 
 14. Practical Example 1 - Greeting User
+15. 
 #!/bin/bash
 
 echo "Welcome $1"
@@ -252,6 +274,7 @@ Output
 Welcome Bilal
 
 Practical Example 2 - Add Two Numbers
+
 #!/bin/bash
 
 echo $(($1+$2))
@@ -263,7 +286,9 @@ bash add.sh 10 20
 Output
 
 30
+
 Practical Example 3 - Create User
+
 #!/bin/bash
 
 echo "Creating User: $1"
@@ -277,6 +302,7 @@ Run
 bash create_user.sh bilal
 
 Practical Example 4 - Backup Directory
+
 #!/bin/bash
 
 tar -czf backup.tar.gz "$1"
@@ -288,11 +314,15 @@ bash backup.sh /home
 The script creates a backup of the /home directory.
 
 Practical Example 5 - Multiple Directories
+
 #!/bin/bash
 
 for DIR in "$@"
+
 do
+
     echo "Backing up $DIR"
+    
 done
 
 Run
@@ -302,7 +332,9 @@ bash backup.sh /home /etc /var
 Output
 
 Backing up /home
+
 Backing up /etc
+
 Backing up /var
 
 15. Shift Command
@@ -323,15 +355,18 @@ Run
 
 bash demo.sh Linux Ubuntu Bash
 
-Output
+Output:
 
 Linux
+
 Ubuntu
 
 After shift:
 
 Before	After
+
 $1 = Linux	$1 = Ubuntu
+
 $2 = Ubuntu	$2 = Bash
 
 16. Validate Number of Arguments
@@ -341,9 +376,13 @@ Example
 #!/bin/bash
 
 if [ $# -ne 2 ]
+
 then
+
     echo "Usage: $0 <num1> <num2>"
+    
     exit 1
+    
 fi
 
 echo $(($1+$2))
@@ -357,18 +396,26 @@ Output
 Usage: add.sh <num1> <num2>
 
 17. Mini Project - Backup Script
+18. 
 #!/bin/bash
 
 if [ $# -lt 1 ]
+
 then
+
     echo "Usage: $0 <directory1> <directory2> ..."
+    
     exit 1
 fi
 
 for DIR in "$@"
+
 do
+
     echo "Creating backup of $DIR"
+    
     tar -czf "$(basename "$DIR").tar.gz" "$DIR"
+    
 done
 
 echo "Backup completed."
@@ -382,22 +429,24 @@ bash backup.sh /home /etc
 Output
 
 Creating backup of /home
+
 Creating backup of /etc
+
 Backup completed.
 
-Note:-
-1. Common Mistakes
-Forgetting Quotes
+Note:- Common Mistakes
 
-Wrong
+a)Forgetting Quotes
+
+Wrong:
 
 echo $1
 
-Better
+Better:
 
 echo "$1"
 
-2. Using Arguments Without Validation
+b)Using Arguments Without Validation
 
 Wrong
 

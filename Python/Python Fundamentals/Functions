@@ -1,0 +1,21 @@
+Instead of writing the same code repeatedly:
+a)Program:
+
+def check_server():
+    print("Checking server")
+
+#Call:
+check_server()
+
+Output: Checking server
+
+b)Program: With an argument
+
+def check_servers(server):
+    print("Checking", server)
+
+check_servers("web01")
+
+Output: Checking web01
+
+Functions are essential for building maintainable automation scripts.

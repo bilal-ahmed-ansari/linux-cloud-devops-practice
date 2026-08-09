@@ -1,0 +1,15 @@
+set -e tells Bash to stop the script when a command fails.
+
+#!/bin/bash
+
+set -e
+
+echo "Starting script"
+
+mkdir /tmp/test
+
+echo "Script completed"
+
+If an important command fails, the script stops.
+
+This is useful for automation scripts where continuing after an error could cause problems.

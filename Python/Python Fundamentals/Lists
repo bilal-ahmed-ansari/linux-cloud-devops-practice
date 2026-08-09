@@ -1,0 +1,14 @@
+A list stores multiple values
+
+servers = ["db01", "web01"]
+
+print(servers[0])
+
+servers.append("app01")
+
+servers.remove("web01")
+
+Output:
+db01
+db01
+

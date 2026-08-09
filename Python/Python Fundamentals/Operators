@@ -1,0 +1,24 @@
+a) Arithmetic
+cpu = 4
+ram = 16
+
+print(cpu + 2)
+print(ram * 2)
+
+Output:
+6
+32
+
+b) Comparison
+disk_usage = 85
+print(disk_usage > 80)
+
+if disk_usage > 80:
+    print("WARNING, disk usage is high")
+
+Output: 
+True
+True
+WARNING, disk usage is high
+
+Note:- Python does not allow 'hyphen (-) inside a variable name.

@@ -1,0 +1,62 @@
+Exit Status / Return Code
+
+Every Linux command returns a number called an exit status.
+
+0 = success
+Non-zero = failure/error
+
+Eg:
+#!/bin/bash
+
+ls /home
+
+echo "Exit status: $?"
+
+a)If ls succeeds
+
+Exit status: 0
+
+b)If the command fails:
+ls /abc
+echo $?
+
+You may get:
+
+ls: cannot access '/abc': No such file or directory
+2
+
+c)Using exit status with if
+
+#!/bin/bash
+
+ls /home
+
+if [ $? -eq 0 ]; then
+    echo "Command successful"
+else
+    echo "Command failed"
+fi
+
+=> Better approach
+
+Instead of checking $? separately:
+
+if ls /home; then
+    echo "Command successful"
+else
+    echo "Command failed"
+fi
+
+=> Why is this useful for Linux Admin?
+
+Suppose you restart a service:
+
+systemctl restart ssh
+
+You can check whether it succeeded:
+
+if systemctl restart ssh; then
+    echo "SSH service restarted successfully"
+else
+    echo "Failed to restart SSH"
+fi

@@ -297,13 +297,20 @@ Hello
 Welcome
 
 15. Check User Exists
+
 check_user() {
 
+    
     if id "$1" >/dev/null 2>&1
+    
     then
+       
         echo "User exists"
+   
     else
+       
         echo "User not found"
+    
     fi
 
 }
@@ -311,14 +318,19 @@ check_user() {
 check_user bilal
 
 16. Check Service Status
+
 check_service() {
 
     systemctl is-active --quiet "$1"
 
     if [ $? -eq 0 ]
+    
     then
+       
         echo "$1 is running"
+   
     else
+       
         echo "$1 is stopped"
     fi
 
@@ -327,6 +339,7 @@ check_service() {
 check_service ssh
 
 17. Backup Function
+
 backup() {
 
     tar -czf backup.tar.gz "$1"
@@ -338,6 +351,7 @@ backup() {
 backup /home
 
 18. Health Check Function
+
 health_check() {
 
     echo "Hostname"

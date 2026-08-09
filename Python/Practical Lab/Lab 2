@@ -1,0 +1,29 @@
+Disk Alert
+
+=> Create nano disk_alert.py
+
+Program:
+
+disk_usage = int(input("Enter disk usage percentage: "))
+
+if disk_usage >= 90:
+    print("CRITICAL: Disk usage is very high")
+elif disk_usage >= 80:
+    print("WARNING: Disk usage is high")
+else:
+    print("OK: Disk usage is normal")
+
+Run:
+python3 disk_alert.py
+
+Test:
+Enter disk usage percentage: 95
+CRITICAL: Disk usage is very high
+
+Then:
+Enter disk usage percentage: 85
+WARNING: Disk usage is high
+
+Then:
+Enter disk usage percentage: 50
+OK: Disk usage is normal

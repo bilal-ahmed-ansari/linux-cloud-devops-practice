@@ -1,0 +1,88 @@
+Let's improve our run_command() function.
+
+=> Create:
+
+nano command_error.py
+
+=> Program:
+import subprocess
+
+
+def run_command(command):
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+
+        return result.stdout
+
+    except:
+        return "Command failed"
+
+
+print(run_command(["hostname"]))
+
+print(run_command(["abc123"]))
+
+=> Run:
+
+python3 command_error.py
+
+=> You should get something similar to:
+
+bilal-ahmed-ansari-VMware20-1
+
+Command failed
+
+************
+
+What is check=True
+
+If the Linux command fails, Python should treat that as an exception.
+
+***********
+
+=> Instead, we can catch the specific error:
+
+except subprocess.CalledProcessError:
+
+=> Let's show the actual Linux error
+
+Instead of simply saying:
+
+Command failed
+
+we can return the actual error.
+
+=>Program:
+import subprocess
+
+
+def run_command(command):
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+
+        return result.stdout
+
+    except subprocess.CalledProcessError as error:
+        return error.stderr
+
+
+print(run_command(["hostname"]))
+print(run_command(["abc123"]))
+
+=>You should get an error similar to:
+
+bilal-ahmed-ansari-VMware20-1
+
+/bin/sh: abc123: command not found
+
+Note:- Here error is a variable.

@@ -1,0 +1,84 @@
+a) Without a domain — each computer manages its own users
+
+Imagine you have 3 Windows computers:
+
+PC-1
+PC-2
+PC-3
+
+And
+
+PC-1 → User accounts stored on PC-1
+PC-2 → User accounts stored on PC-2
+PC-3 → User accounts stored on PC-3
+
+Suppose you create a user:
+
+Username: bilal
+Password: ******
+
+on PC-1.
+
+That user exists only on PC-1.
+
+If you want Bilal to log in to PC-2, you would need to create another account on PC-2:
+
+PC-1 → bilal
+PC-2 → bilal
+PC-3 → bilal
+
+Each computer independently manages its own users and passwords.
+
+b) With Domain
+
+Administrator can create user account in form of domain.
+
+Suppose your company wants to use:
+
+company.local
+
+You create a Windows domain:
+
+company.local
+
+Then users can have accounts such as:
+
+bilal@company.local
+ahmed@company.local
+john@company.local
+
+Computers can become members of this domain:
+
+PC001
+PC002
+PC003
+SERVER01
+SERVER02
+
+Now suppose you have a Windows Server running Active Directory Domain Services (AD DS).
+
+For eg
+
+              Windows Server
+              Domain Controller
+              example.local
+                   |
+        ┌──────────┼──────────┐
+        ↓          ↓          ↓
+       PC-1       PC-2       PC-3
+
+You create the user bilal in Active Directory:
+
+Username: bilal
+Password: ******
+
+The account is stored in the Active Directory database on the Domain Controller.
+
+Now Bilal can use his domain account to log in to domain-joined computers:
+
+PC-1 → bilal
+PC-2 → bilal
+PC-3 → bilal
+
+You don't need to create a separate local Bilal account on every computer.
+

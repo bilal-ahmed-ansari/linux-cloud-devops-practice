@@ -19,3 +19,139 @@ check_servers("web01")
 Output: Checking web01
 
 Functions are essential for building maintainable automation scripts.
+
+=> Let's create a function for Linux commands
+
+Create a new test file:
+
+nano function_test.py
+
+Program:
+import subprocess
+
+def run_command(command):
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True
+    )
+
+    return result.stdout
+
+print(run_command(["hostname"]))
+
+Run
+python3 function_test.py
+
+You should see your hostname
+
+*********
+
+i)Understand this function carefully
+
+This is the important part:
+
+def run_command(command):
+
+We're creating a function called:
+
+run_command
+
+command is a parameter.
+
+Think:
+
+run_command()
+     ↑
+     |
+ command comes here
+
+When we call:
+run_command(["hostname"])
+
+Python receives
+
+command = ["hostname"]
+
+Then:
+
+subprocess.run(
+    command,
+    capture_output=True,
+    text=True
+)
+
+becomes effectively:
+
+subprocess.run(
+    ["hostname"],
+    capture_output=True,
+    text=True
+)
+
+ii)What does return mean?
+
+We have:
+
+return result.stdout
+
+return sends a value back from the function.
+
+Think:
+
+run_command()
+     ↓
+execute Linux command
+     ↓
+get output
+     ↓
+return output
+
+So:
+print(run_command(["hostname"]))
+
+means:
+run Linux hostname command
+        ↓
+get output
+        ↓
+return output
+        ↓
+print it
+
+*************
+
+=> Now test multiple Linux commands
+
+Change your program to:
+
+import subprocess
+
+def run_command(command):
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True
+    )
+
+    return result.stdout
+
+
+print("Hostname:")
+print(run_command(["hostname"]))
+
+print("Uptime:")
+print(run_command(["uptime"]))
+
+print("Memory:")
+print(run_command(["free", "-h"]))
+
+print("Disk:")
+print(run_command(["df", "-h", "/"]))
+
+Run:
+python3 function_test.py
+
+Now one function is handling four different Linux commands.
+
+That's much better.

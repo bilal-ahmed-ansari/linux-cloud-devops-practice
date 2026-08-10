@@ -38,3 +38,16 @@ access
 policies
 authentication
 permissions
+
+=> Things you can do in AD
+
+Create employee → Active Directory
+Disable employee → Active Directory
+Reset password → Active Directory
+Add user to group → Active Directory
+
+=> Note:-
+
+Authentication → Who are you?
+Authorization  → What are you allowed to do?
+Active Directory → Central place to manage identities, users, groups and policies.

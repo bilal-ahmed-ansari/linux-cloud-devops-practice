@@ -1,0 +1,91 @@
+=> Think of trap as:
+
+"When something happens to my script, perform this action."
+
+For example:
+
+User presses Ctrl+C → do something
+Script finishes → clean up temporary files
+Script receives a termination signal → perform some action
+
+The basic syntax is:
+
+trap 'command' SIGNAL
+
+For example:
+
+trap 'echo "Hello"' INT
+
+This means:
+
+"If the script receives INT, execute echo "Hello"."
+
+=> What is INT?
+
+INT means Interrupt.
+
+When you press:
+
+Ctrl + C
+
+Linux sends an INT signal to the running process.
+
+Normally, Ctrl+C stops a script.
+
+For example:
+
+#!/bin/bash
+
+while true
+do
+    echo "Running..."
+    sleep 2
+done
+
+Run it:
+
+./test.sh
+
+You will see:
+
+Running...
+Running...
+Running...
+
+Now press:
+
+Ctrl + C
+
+The script stops.
+
+=> Now let's use trap
+
+Create:
+
+nano test.sh
+
+Program:
+
+#!/bin/bash
+
+trap 'echo "Script interrupted"' INT
+
+while true
+do
+    echo "Running..."
+    sleep 2
+done
+
+Output:
+
+Running...
+Running...
+Running...
+
+Now press:
+
+Ctrl + C
+
+Instead of simply stopping, you may see:
+
+Script interrupted

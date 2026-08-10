@@ -1,0 +1,57 @@
+Python Disk Usage Monitoring
+
+=> Objective
+
+The goal of this mini project is to monitor Linux disk usage using Python.
+
+The script:
+
+Runs the Linux df -h / command.
+Captures the command output.
+Extracts the disk usage percentage.
+Converts the value into an integer.
+Compares it with a predefined threshold.
+Displays OK or WARNING based on disk usage.
+
+=> Program:
+
+import subprocess
+
+result = subprocess.run(
+    ["df", "-h", "/"],
+    capture_output=True,
+    text=True
+)
+
+lines = result.stdout.splitlines()
+
+parts = lines[1].split()
+
+disk_usage = parts[4].replace("%", "")
+
+disk_usage = int(disk_usage)
+
+disk_threshold = 80
+
+print("Disk Usage:", disk_usage, "%")
+
+if disk_usage >= disk_threshold:
+    print("WARNING: Disk usage is high")
+else:
+    print("Disk usage is OK")
+
+=> Run:
+
+python3 disk_threshold.py
+
+You might get:
+
+Disk Usage: 75 %
+Disk usage is OK
+
+Or:
+
+Disk Usage: 85 %
+WARNING: Disk usage is high
+
+depending on your VM.

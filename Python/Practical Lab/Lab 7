@@ -1,3 +1,114 @@
+Error Handling When Running Linux Commands with Python
+
+==> Objective
+
+When Python runs a Linux command using subprocess, the command may fail.
+
+For example:
+
+hostname
+
+is a valid command, but:
+
+abc123
+
+does not normally exist.
+
+A good automation script should not crash when a command fails. It should handle the error and provide useful information.
+
+Python provides try and except for handling such errors.
+
+=> What is try and except?
+
+The basic structure is:
+
+try:
+    # Code that may produce an error
+except:
+    # What to do if an error occurs
+
+For example:
+
+try:
+    result = subprocess.run(...)
+except:
+    print("Command failed")
+
+Python first tries to execute the command.
+
+If an error occurs, Python moves to the except block.
+
+=> Using check=True
+
+Consider:
+
+result = subprocess.run(
+    command,
+    capture_output=True,
+    text=True,
+    check=True
+)
+
+The important part is:
+
+check=True
+
+When check=True is used, Python checks whether the command completed successfully.
+
+Successful command
+
+For example:
+
+subprocess.run(
+    ["hostname"],
+    check=True
+)
+
+If hostname executes successfully, Python continues normally.
+
+Failed command
+
+For example:
+
+subprocess.run(
+    ["abc123"],
+    check=True
+)
+
+If the command fails, subprocess.run() raises an exception.
+
+That exception can then be handled using except.
+
+=> Why Should We Avoid a Generic except?
+
+This works:
+
+except:
+    return "Command failed"
+
+but it is not ideal for production-quality code.
+
+The problem is that it catches almost any exception.
+
+For better error handling, we should catch the specific exception related to a failed command.
+
+=> subprocess.CalledProcessError
+
+When subprocess.run() is used with:
+
+check=True
+
+and the command returns a non-zero exit status, Python raises:
+
+subprocess.CalledProcessError
+
+Therefore, we can specifically catch this exception:
+
+except subprocess.CalledProcessError:
+    return "Command failed"
+
+This is better because we are handling the specific error produced by the failed command.
+
 Let's improve our run_command() function.
 
 => Create:

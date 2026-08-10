@@ -1,0 +1,16 @@
+Instead of only displaying messages, you can write them to a log file.
+
+#!/bin/bash
+
+LOGFILE="/tmp/script.log"
+
+echo "$(date): Script started" >> "$LOGFILE"
+
+echo "$(date): Checking disk" >> "$LOGFILE"
+
+df -h >> "$LOGFILE"
+
+echo "$(date): Script completed" >> "$LOGFILE"
+
+Check:
+cat /tmp/script.log

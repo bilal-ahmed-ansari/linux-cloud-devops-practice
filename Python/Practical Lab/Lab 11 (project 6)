@@ -1,0 +1,36 @@
+=> Developed a Python script using subprocess to execute Linux df -h commands, parse filesystem output, and display disk capacity, used space, available space, utilization percentage, and mount point.
+
+import subprocess
+
+result = subprocess.run(
+    ["df", "-h", "/"],
+    capture_output=True,
+    text=True
+)
+
+lines = result.stdout.splitlines()
+
+data = lines[1].split()
+
+filesystem = data[0]
+size = data[1]
+used = data[2]
+available = data[3]
+usage = data[4]
+mount = data[5]
+
+print("Filesystem:", filesystem)
+print("Total Size:", size)
+print("Used:", used)
+print("Available:", available)
+print("Usage:", usage)
+print("Mounted on:", mount)
+
+Output:
+
+Filesystem: /dev/sda2
+Total Size: 29G
+Used: 14G
+Available: 13G
+Usage: 53%
+Mounted on: /

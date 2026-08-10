@@ -34,3 +34,45 @@ Used: 14G
 Available: 13G
 Usage: 53%
 Mounted on: /
+
+*******
+
+Remove %
+
+We need:
+
+75
+
+instead of:
+
+75%
+
+We can use:
+
+disk_usage = parts[4].replace("%", "")
+
+Then:
+
+print(disk_usage)
+
+Output:
+
+75
+
+But there is one more thing.
+
+It's currently a string:
+
+"75"
+
+We need a number so that we can compare it with 80.
+
+Use:
+
+disk_usage = int(disk_usage)
+
+Now:
+
+"75" → 75
+
+*********

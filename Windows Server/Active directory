@@ -1,0 +1,40 @@
+This is the first major concept you need to understand.
+
+Suppose a company has:
+
+1000 employees
+500 computers
+50 servers
+
+Without centralized management, you could have
+
+Computer 1 → local users
+Computer 2 → local users
+Computer 3 → local users
+...
+Computer 500 → local users
+
+This becomes difficult to manage.
+
+Instead, the company creates a central system:
+
+                Active Directory
+                       |
+        +--------------+--------------+
+        |              |              |
+      Users         Computers       Groups
+        |              |              |
+     Bilal           PC-001         Linux-Team
+     Ahmed           PC-002         HR-Team
+     John            PC-003         IT-Team
+
+Active Directory allows administrators to centrally manage:
+
+users
+computers
+groups
+passwords
+access
+policies
+authentication
+permissions

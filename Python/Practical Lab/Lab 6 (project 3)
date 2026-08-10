@@ -1,0 +1,71 @@
+Create:
+
+nano loop_commands.py
+
+Program:
+import subprocess
+
+
+def run_command(command):
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True
+    )
+
+    return result.stdout
+
+
+commands = [
+    ["hostname"],
+    ["uptime"],
+    ["free", "-h"],
+    ["df", "-h", "/"]
+]
+
+
+for command in commands:
+    print(run_command(command))
+
+=> You'll get output from all four commands.
+
+=> What just happened?
+
+You created:
+
+commands = [
+    ["hostname"],
+    ["uptime"],
+    ["free", "-h"],
+    ["df", "-h", "/"]
+]
+
+This is a list containing multiple command lists.
+
+Then:
+
+for command in commands:
+
+means:
+
+Take each command one at a time.
+
+First:
+
+command = ["hostname"]
+
+Then:
+
+command = ["uptime"]
+
+Then:
+
+command = ["free", "-h"]
+
+Then:
+
+command = ["df", "-h", "/"]
+
+And each one gets sent to:
+
+run_command(command)

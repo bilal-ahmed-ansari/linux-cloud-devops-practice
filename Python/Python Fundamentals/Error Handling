@@ -1,0 +1,81 @@
+There is one problem with our current function.
+
+Suppose we try:
+
+run_command(["abc123"])
+
+Linux doesn't have a command called abc123.
+
+We'll get an error.
+
+A good automation script shouldn't simply fail unexpectedly.
+
+So we are learning
+
+try
+except
+
+and we'll improve our function to handle Linux command errors.
+
+1. First understand the problem
+
+Try this in your terminal:
+
+df -h /var
+
+It works.
+
+Now try:
+
+df -h /something-that-does-not-exist
+
+You'll get an error.
+
+2. What is try / except?
+
+try:
+    # Try to do something
+except:
+    # If something goes wrong
+
+Think of it as:
+
+TRY
+ ↓
+Run the operation
+ ↓
+Did it work?
+ ├── YES → continue
+ └── NO  → EXCEPT → handle the error
+
+3. Create nano error_test.py
+
+Program:
+try:
+    number = int(input("Enter a number: "))
+    print("You entered:", number)
+
+except:
+    print("Please enter a valid number")
+
+Run:
+
+python3 error_test.py
+
+Enter:
+
+50
+
+Output:
+
+You entered: 50
+
+Now run it again and enter:
+
+hello
+
+Output:
+
+Please enter a valid number
+
+Without try/except, Python would stop with an error message.

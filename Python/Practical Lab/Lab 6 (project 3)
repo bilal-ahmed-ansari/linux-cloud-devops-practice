@@ -1,4 +1,68 @@
-Create:
+=> Objective
+
+The goal of this exercise is to use Python to execute multiple Linux commands automatically.
+
+Instead of writing:
+
+hostname
+uptime
+free -h
+df -h /
+
+one by one in the terminal, Python can execute all of them using the subprocess module.
+
+=> Python subprocess Module
+
+Python provides the subprocess module to execute operating-system commands from a Python program.
+
+For example:
+
+import subprocess
+
+result = subprocess.run(
+    ["hostname"],
+    capture_output=True,
+    text=True
+)
+
+print(result.stdout)
+
+Here:
+
+subprocess.run() executes the Linux command.
+["hostname"] is the command and its arguments.
+capture_output=True captures the command output.
+text=True converts the output into readable text.
+result.stdout contains the command's standard output.
+
+=> Creating a Function
+
+Instead of writing subprocess.run() repeatedly, we can create a function:
+
+def run_command(command):
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True
+    )
+
+    return result.stdout
+
+The function accepts a command as an argument.
+
+For example:
+
+run_command(["hostname"])
+
+The value:
+
+["hostname"]
+
+is passed to the command parameter.
+
+The function then executes that command and returns its output.
+
+=> Create:
 
 nano loop_commands.py
 
@@ -69,3 +133,50 @@ command = ["df", "-h", "/"]
 And each one gets sent to:
 
 run_command(command)
+
+=> Storing Multiple Commands in a List
+
+We can store multiple Linux commands inside one Python list:
+
+commands = [
+    ["hostname"],
+    ["uptime"],
+    ["free", "-h"],
+    ["df", "-h", "/"]
+]
+
+This is called a list of lists.
+
+The outer list contains four commands.
+
+=> How the Program Works
+
+The overall flow is:
+
+Python Program
+      |
+      v
+commands list
+      |
+      v
+for loop
+      |
+      +----> hostname
+      |
+      +----> uptime
+      |
+      +----> free -h
+      |
+      +----> df -h /
+      |
+      v
+subprocess.run()
+      |
+      v
+Linux executes command
+      |
+      v
+Command output
+      |
+      v
+Python displays output

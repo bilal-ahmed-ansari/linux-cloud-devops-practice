@@ -1,0 +1,174 @@
+Your first complete project
+
+Now your health_check.py should look like:
+
+import subprocess
+
+print("================================")
+print("      Linux Health Check")
+print("================================")
+
+# Hostname
+result = subprocess.run(
+    ["hostname"],
+    capture_output=True,
+    text=True
+)
+
+print("Hostname:", result.stdout)
+
+# Uptime
+result = subprocess.run(
+    ["uptime"],
+    capture_output=True,
+    text=True
+)
+
+print("\nUptime:")
+print(result.stdout)
+
+# Disk usage
+result = subprocess.run(
+    ["df", "-h", "/"],
+    capture_output=True,
+    text=True
+)
+
+print("\nDisk Usage:")
+print(result.stdout)
+
+# Memory usage
+result = subprocess.run(
+    ["free", "-h"],
+    capture_output=True,
+    text=True
+)
+
+print("\nMemory Usage:")
+print(result.stdout)
+
+# Running processes
+result = subprocess.run(
+    ["ps", "aux"],
+    capture_output=True,
+    text=True
+)
+
+print("\nRunning Processes:")
+print(result.stdout)
+
+Run:
+python3 health_check.py
+
+Output:
+
+================================
+      Linux Health Check
+================================
+Hostname: bilal-ahmed-ansari-VMware20-1
+
+
+Uptime
+ 10:39:35 up 6 min,  1 user,  load average: 0.36, 1.09, 0.71
+
+
+Disk Usage:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda2        29G   15G   13G  53% /
+
+
+Memory Usage:
+               total        used        free      shared  buff/cache   available
+Mem:           1.6Gi       914Mi        75Mi       3.0Mi       773Mi       679Mi
+Swap:          3.8Gi       329Mi       3.4Gi
+
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.1  22500 14000 ?        Ss   Aug09   0:05 /sbin/init
+root         500  0.0  0.2  50000 20000 ?        Ss   Aug09   0:01 /usr/sbin/sshd
+bilal       1200  0.1  1.0 100000 50000 pts/0    Ss   10:20   0:00 bash
+
+
+=> This is what I built.
+
+                  health_check.py
+                         |
+                 import subprocess
+                         |
+          ┌──────────────┼──────────────┐
+          ↓              ↓              ↓
+      hostname         uptime         df -h
+          |              |              |
+          └──────────────┼──────────────┘
+                         ↓
+                    Linux output
+                         |
+                         ↓
+                       Python
+                         |
+                         ↓
+                       print
+
+=> Why this is useful for a Linux administrator
+
+Normally, you might manually run:
+
+hostname
+uptime
+df -h /
+free -h
+
+four separate commands.
+
+Your Python script lets you run:
+
+python3 health_check.py
+
+and collect all of that information at once. That's the basic idea of automation.
+
+Instead of:
+
+Administrator
+     ↓
+Run command 1
+     ↓
+Run command 2
+     ↓
+Run command 3
+     ↓
+Run command 4
+
+You can have:
+
+Administrator
+     ↓
+python3 health_check.py
+     ↓
+All checks
+     ↓
+Report
+
+=> One improvement using a variable
+
+Remember our discussion about variables?
+
+Instead of:
+
+["df", "-h", "/"]
+
+we can create
+
+disk = "/"
+
+Then
+
+result = subprocess.run(
+    ["df", "-h", disk],
+    capture_output=True,
+    text=True
+)
+
+Now you can easily change
+
+disk = "/var"
+
+without changing the rest of the command.

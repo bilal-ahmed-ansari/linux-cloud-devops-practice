@@ -1,0 +1,132 @@
+=> Create service_check.py 
+
+Program:
+
+import subprocess
+
+service = "ssh"
+
+result = subprocess.run(
+    ["systemctl", "is-active", service],
+    capture_output=True,
+    text=True
+)
+
+print("Service:", service)
+print("Status:", result.stdout)
+
+Run:
+
+python3 service_check.py
+
+You should see:
+
+Service: ssh
+Status: active
+
+If ssh doesn't exist on your VM, try:
+
+service = "cron"
+
+=> Let's check multiple services
+
+Suppose you want to check:
+
+ssh
+cron
+
+Create a list:
+
+services = ["ssh", "cron"]
+
+Then use a loop.
+
+Create:
+
+nano multiple_services.py
+
+Program:
+import subprocess
+
+services = ["ssh", "cron"]
+
+for service in services:
+
+    result = subprocess.run(
+        ["systemctl", "is-active", service],
+        capture_output=True,
+        text=True
+    )
+
+    print("Service:", service)
+    print("Status:", result.stdout)
+
+Run:
+
+python3 multiple_services.py
+
+You might see:
+
+Service: ssh
+Status: active
+
+Service: cron
+Status: active
+
+=> Now let's make the script say OK or WARNING
+
+If:
+
+active
+
+the service is running.
+
+If not:
+
+inactive
+
+So:
+
+if status == "active":
+    print("OK")
+else:
+    print("WARNING")
+
+*********
+
+Also, systemctl is-active usually returns a newline (active\n), so use .strip().
+
+**********
+
+Program:
+
+import subprocess
+
+services = ["ssh", "cron"]
+
+for service in services:
+    result = subprocess.run(
+        ["systemctl", "is-active", service],
+        capture_output=True,
+        text=True
+    )
+
+    status = result.stdout.strip()
+
+    print("Service:", service)
+    print("Status:", status)
+
+    if status == "active":
+        print("Result: OK")
+    else:
+        print("Result: Warning")
+
+Output:
+
+Service: ssh
+Status: inactive
+Result: Warning
+Service: cron
+Status: active
+Result: OK
+

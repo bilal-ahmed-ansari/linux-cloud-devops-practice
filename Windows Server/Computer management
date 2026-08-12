@@ -1,0 +1,31 @@
+AD doesn't manage only users.
+
+It also knows about computers.
+
+For example:
+
+Active Directory
+      |
+      +-- Computers
+           |
+           +-- CLIENT01
+           +-- CLIENT02
+           +-- CLIENT03
+
+When you join CLIENT01 to the domain:
+
+CLIENT01
+    |
+    | Join domain
+    ↓
+lab.local
+    |
+    ↓
+SERVER01
+    |
+    ↓
+Computer account created
+
+Now the Domain Controller knows:
+
+"CLIENT01 is one of the computers in my domain."

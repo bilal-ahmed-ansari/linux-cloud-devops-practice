@@ -1,0 +1,38 @@
+Active Directory depends heavily on DNS.
+
+You already know DNS from Linux:
+
+google.com → IP address
+
+For example:
+
+google.com
+     ↓
+142.x.x.x
+
+In an Active Directory environment, DNS does more than simply resolve names.
+
+It helps computers find the Domain Controller and Active Directory services.
+
+For eg:
+
+PC01
+  |
+  | "Where is my Domain Controller?"
+  ↓
+DNS
+  |
+  ↓
+SERVER01
+
+Your lab will look like:
+
+             SERVER01
+        Windows Server 2025
+                 |
+       +---------+---------+
+       |                   |
+      AD DS               DNS
+       |
+       ↓
+Domain Controller

@@ -96,3 +96,136 @@ corp.example
       └── Finance Security GPO
 
 So GPO works very closely with Active Directory.
+
+4. GPO has two major sections:
+
+a) Computer Configuration
+b) User Configuration
+
+=> Computer Configuration
+
+Controls the computer.
+
+Computer Configuration
+       |
+       +-- Windows Firewall
+       +-- Security settings
+       +-- Windows Update
+       +-- Software settings
+       +-- System settings
+
+This applies to the computer regardless of which user logs in.
+
+=> User Configuration
+
+Controls the user.
+
+Example:
+
+User Configuration
+       |
+       +-- Control Panel restrictions
+       +-- Desktop settings
+       +-- Start Menu settings
+       +-- User environment settings
+
+This follows the user.
+
+For example:
+
+John logs into PC001
+        ↓
+User Policy applies to John
+
+If John logs into another domain computer:
+
+John → PC002
+       ↓
+John's applicable User Policy
+
+can still apply.
+
+5. What does "Link a GPO" mean?
+
+This terminology is important.
+
+Creating a GPO doesn't automatically mean that every computer receives it.
+
+You generally:
+
+Create GPO
+    ↓
+Configure settings
+    ↓
+Link GPO to domain / site / OU
+
+6. GPO does not mean only security
+
+Many beginners think:
+
+GPO = password policy
+
+That's not correct.
+
+GPO can configure many things.
+
+For example:
+
+=>Security:
+Password policies
+Account lockout
+Windows Firewall
+Security settings
+Audit policies
+
+=>User interface:
+Control Panel
+Start Menu
+Desktop
+Screen settings
+
+=>Windows configuration:
+Windows Update
+Windows Defender settings
+Services
+Registry-based settings
+
+=>Software
+Depending on the configuration:
+
+Software deployment
+Application configuration
+
+
+=>You can configure scripts:
+
+Startup scripts
+Shutdown scripts
+Logon scripts
+Logoff scripts
+
+7. How does a Windows computer get the GPO?
+
+This is another important concept.
+
+A domain-joined Windows computer communicates with the domain environment.
+
+When Group Policy is processed, Windows determines:
+
+"Which policies apply to this computer and this user?"
+
+Then it processes the applicable policies.
+
+A simplified flow is:
+
+Windows PC
+    ↓
+Domain Controller
+    ↓
+Find applicable GPOs
+    ↓
+Process policies
+    ↓
+Apply settings
+
+You don't normally have to manually configure each PC.

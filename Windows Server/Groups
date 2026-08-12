@@ -1,0 +1,18 @@
+Groups are extremely important in real Windows administration.
+
+Instead of assigning permissions individually:
+
+bilal → permission
+john  → permission
+sara  → permission
+david → permission
+
+you create a group:
+
+IT-Support
+     |
+     +-- bilal
+     +-- john
+     +-- sara
+
+Now everyone in the group gets the appropriate access.

@@ -1,0 +1,34 @@
+Suppose your company has:
+
+1000 employees
+
+Instead of creating users separately on every computer, the administrator can create users in Active Directory.
+
+For eg:
+
+Active Directory
+      |
+      +-- Users
+           |
+           +-- bilal
+           +-- john
+           +-- david
+           +-- sara
+
+You can manage things such as:
+
+Create user
+Disable user
+Delete user
+Reset password
+Unlock account
+Add user to groups
+Set account restrictions
+
+For example:
+
+bilal
+  |
+  +-- Member of → IT-Support
+  |
+  +-- Member of → Server-Admins

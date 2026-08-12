@@ -207,3 +207,29 @@ User authentication
 Access granted
 
 DHCP is not involved in checking the password.
+
+10. One important Windows Server point
+
+When you install the DHCP Server role on Windows Server, in an AD domain environment you normally need to authorize the DHCP server in Active Directory.
+
+Why?
+
+To prevent an unauthorized DHCP server from distributing incorrect IP configuration on the domain network.
+
+Think:
+
+DHCP Server
+     ↓
+"Can I provide DHCP services?"
+     ↓
+Active Directory
+     ↓
+Authorized ✓
+     ↓
+DHCP can operate
+
+An unauthorized DHCP server can cause serious network problems because clients might receive the wrong:
+
+IP
+Gateway
+DNS

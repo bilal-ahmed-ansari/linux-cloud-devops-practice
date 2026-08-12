@@ -1,0 +1,98 @@
+1. GPO = Group Policy Object
+
+A GPO is basically a collection of rules/settings that a Windows administrator can apply centrally to:
+
+Users
+Computers
+Groups
+Organizational Units (OUs)
+
+Think of it like this:
+
+GPO = "Set these rules for these Windows users/computers."
+
+2. Why do we need GPO?
+
+Imagine a company has 500 Windows computers.
+
+The administrator wants:
+
+Password must be at least 12 characters
+Windows Firewall must be enabled
+Users should not access Control Panel
+USB storage should be restricted
+Screen should lock after 10 minutes
+
+Without GPO, the administrator might have to configure each computer individually:
+
+PC001 → configure manually
+PC002 → configure manually
+PC003 → configure manually
+...
+PC500 → configure manually
+
+This is obviously difficult.
+
+With GPO:
+
+             Active Directory
+                    |
+                   GPO
+                    |
+       +------------+------------+
+       |            |            |
+     PC001        PC002        PC003
+       |            |            |
+     Policy       Policy       Policy
+
+You configure the policy once, and Windows applies it to the computers/users that are within the GPO's scope.
+
+3. Where does GPO fit into Active Directory?
+
+This is important.
+
+You learned earlier:
+
+Windows Server
+      ↓
+Install AD DS
+      ↓
+Promote to Domain Controller
+      ↓
+Create Domain
+      ↓
+corp.example
+
+Now you can organize your domain:
+
+corp.example
+│
+├── Users
+│
+├── Computers
+│
+├── IT OU
+│
+├── HR OU
+│
+└── Finance OU
+
+You can then create GPOs and apply them to these OUs.
+
+For example:
+
+corp.example
+│
+├── IT OU
+│     │
+│     └── IT Security GPO
+│
+├── HR OU
+│     │
+│     └── HR Policy GPO
+│
+└── Finance OU
+      │
+      └── Finance Security GPO
+
+So GPO works very closely with Active Directory.

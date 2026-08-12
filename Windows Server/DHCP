@@ -1,0 +1,209 @@
+DHCP is to think of it as the service that automatically gives IP addresses to computers, while AD handles users, computers, authentication, and policies.
+
+1. First understand: AD and DHCP are different
+
+In a typical Windows environment, you may have:
+
+Windows Server
+│
+├── Active Directory Domain Services (AD DS)
+│      └── Manages users and computers
+│
+├── DNS
+│      └── Resolves names to IP addresses
+│
+└── DHCP
+       └── Automatically gives IP addresses
+
+They are different services, but they commonly work together.
+
+For example:
+
+Domain: corp.example
+
+Server:
+IP: 192.168.1.10
+
+Client PC:
+DHCP → gets 192.168.1.20
+
+2. First understand: AD and DHCP are different
+
+In a typical Windows environment, you may have:
+
+Windows Server
+│
+├── Active Directory Domain Services (AD DS)
+│      └── Manages users and computers
+│
+├── DNS
+│      └── Resolves names to IP addresses
+│
+└── DHCP
+       └── Automatically gives IP addresses
+
+They are different services, but they commonly work together.
+
+For example:
+
+Domain: corp.example
+
+Server:
+IP: 192.168.1.10
+
+Client PC:
+DHCP → gets 192.168.1.20
+
+3. Example of a real company
+
+Suppose you create this domain:
+
+corp.example
+
+Your Windows Server has:
+
+Server Name: DC01
+IP Address: 192.168.1.10
+
+You install:
+
+AD DS
+DNS
+DHCP
+
+Your DHCP configuration might be:
+
+Scope: 192.168.1.100 - 192.168.1.200
+
+Subnet Mask:
+255.255.255.0
+
+Gateway:
+192.168.1.1
+
+DNS Server:
+192.168.1.10
+
+Domain:
+corp.example
+
+Now a client computer joins the network.
+
+4. Client PC starts
+
+The PC doesn't know its IP.
+
+It sends:
+
+DHCP Discover
+
+DHCP responds:
+
+IP Address:
+192.168.1.100
+
+Subnet Mask:
+255.255.255.0
+
+Gateway:
+192.168.1.1
+
+DNS:
+192.168.1.10
+
+Domain:
+corp.example
+
+Now the PC has network connectivity.
+
+7. Then the PC joins Active Directory
+
+For eg
+
+Client PC
+    │
+    │ Join Domain
+    ↓
+corp.example
+    │
+    ↓
+Domain Controller
+    │
+    ↓
+Computer account created
+
+The computer gets an account inside Active Directory.
+
+For example:
+
+Active Directory
+│
+└── Computers
+     │
+     ├── PC01
+     ├── PC02
+     └── PC03
+
+8. Very important: DHCP doesn't join the PC to AD
+
+This is a common misunderstanding.
+
+DHCP:
+
+Gives IP configuration
+
+AD:
+
+Manages users/computers
+
+DNS:
+
+Helps computers find each other and AD services
+
+So:
+
+DHCP
+ ↓
+Gives PC an IP
+ ↓
+DNS
+ ↓
+Finds Domain Controller
+ ↓
+AD
+ ↓
+Authenticates/manages the computer and user
+
+9. What happens when a user logs in?
+
+Suppose your user is:
+
+bilal
+
+They enter:
+
+Username: bilal
+Password: ********
+Domain: corp.example
+
+The computer communicates with the Domain Controller.
+
+PC01
+  │
+  │ "I need to authenticate bilal"
+  ↓
+DNS
+  │
+  ↓
+Domain Controller
+  │
+  ↓
+Active Directory
+  │
+  ↓
+User authentication
+  │
+  ↓
+Access granted
+
+DHCP is not involved in checking the password.

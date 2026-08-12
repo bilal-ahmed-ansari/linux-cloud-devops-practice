@@ -229,3 +229,13 @@ Process policies
 Apply settings
 
 You don't normally have to manually configure each PC.
+
+8. For example, a user says:
+
+"The policy is not working."
+
+You can check:
+
+gpresult /r
+
+and see which GPOs were actually applied.

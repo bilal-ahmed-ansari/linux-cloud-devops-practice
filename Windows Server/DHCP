@@ -233,3 +233,115 @@ An unauthorized DHCP server can cause serious network problems because clients m
 IP
 Gateway
 DNS
+
+11. What is a DHCP Scope?
+
+A scope is basically the range of IP addresses that DHCP is allowed to give to clients.
+
+Example:
+
+Scope: 192.168.1.100 - 192.168.1.200
+
+So DHCP can give:
+
+PC01 → 192.168.1.100
+PC02 → 192.168.1.101
+PC03 → 192.168.1.102
+PC04 → 192.168.1.103
+...
+
+But it shouldn't give:
+
+192.168.1.10
+
+12. DHCP Reservation
+
+Suppose you have:
+
+Printer
+MAC Address: AA-BB-CC-DD-EE-FF
+
+You want it always to get:
+
+192.168.1.50
+
+You can create a DHCP reservation.
+
+Then:
+
+Printer
+   ↓
+DHCP
+   ↓
+MAC = AA-BB-CC-DD-EE-FF
+   ↓
+192.168.1.50
+
+Every time that printer requests an IP, DHCP gives it the reserved address.
+
+12. How DHCP works — DORA
+
+The basic DHCP process is called DORA.
+
+D → Discover
+O → Offer
+R → Request
+A → Acknowledge
+
+Let's understand it simply.
+
+Step 1 — Discover
+
+A new computer starts.
+
+It doesn't have an IP address.
+
+It broadcasts:
+
+"Is there any DHCP server here? I need an IP!"
+
+PC
+ ↓
+DHCP Discover
+ ↓
+Network
+
+Step 2 — Offer
+
+The DHCP server receives the request.
+
+It says:
+
+"Yes. You can use 192.168.1.20."
+
+DHCP Server
+     ↓
+DHCP Offer
+     ↓
+192.168.1.20
+
+Step 3 — Request
+
+The PC says:
+
+"Okay, I want that IP."
+
+PC
+ ↓
+DHCP Request
+ ↓
+192.168.1.20
+
+Step 4 — Acknowledge
+
+The DHCP server confirms:
+
+"Done. You can use 192.168.1.20."
+
+DHCP Server
+ ↓
+DHCP ACK
+ ↓
+PC
+
+Now the PC has an IP.

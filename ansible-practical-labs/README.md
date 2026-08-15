@@ -16,8 +16,6 @@ Topics:
 - ssh-copy-id
 - Passwordless SSH
 
-[View Lab](./01-passwordless-ssh/)
-
 ### 2. SSH Password Authentication
 
 Configured password-based SSH authentication on another AWS EC2 instance.
@@ -27,8 +25,6 @@ Topics:
 - PasswordAuthentication
 - SSH configuration
 - Restarting SSH
-
-[View Lab](./02-password-authentication/)
 
 ### 3. Ansible Static Inventory
 
@@ -44,8 +40,6 @@ Topics:
 - ansible-inventory
 - Ansible ping
 - Ad-hoc commands
-
-[View Lab](./03-static-inventory/)
 
 ## Practice Environment
 

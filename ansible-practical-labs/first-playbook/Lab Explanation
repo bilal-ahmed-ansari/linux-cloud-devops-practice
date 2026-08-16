@@ -1,0 +1,276 @@
+# Ansible Apache Deployment Lab
+
+## About This Lab
+
+In this lab, I used WSL (Ubuntu) as the Ansible control node and an AWS EC2 Ubuntu server as the managed node.
+
+The goal was to use Ansible to install Apache and deploy a simple HTML webpage on the EC2 server.
+
+## Lab Setup
+
+Windows
+   |
+   └── WSL (Ubuntu)
+          |
+          | SSH
+          |
+          ↓
+      AWS EC2
+      Ubuntu
+          |
+          ├── Apache2
+          └── index.html
+
+### Components Used
+
+* Windows
+* WSL with Ubuntu
+* Ansible
+* AWS EC2
+* Ubuntu
+* Apache2
+* SSH
+* HTML
+
+## 1. Ansible Control Node
+
+I used WSL Ubuntu as my Ansible control node.
+
+Ansible was installed inside WSL and the EC2 server was managed from there.
+
+## 2. SSH Authentication
+
+I connected to the EC2 instance using SSH key-based authentication.
+
+The `.pem` private key was already configured in WSL.
+
+Example:
+
+ssh -i ~/.ssh/testing.pem ubuntu@EC2-PUBLIC-IP
+
+I first tested the SSH connection manually and then tested the connection using Ansible.
+
+## 3. Inventory
+
+I created an inventory file named `inventory.ini`.
+
+[app_key]
+ec2-1 ansible_host=EC2-PUBLIC-IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/testing.pem
+
+### What this means
+
+`[app_key]` is the group name.
+
+`ec2-1` is the name I gave to the EC2 server in the inventory.
+
+`ansible_host` contains the public IP address of the EC2 server.
+
+`ansible_user=ubuntu` tells Ansible to connect using the Ubuntu user.
+
+`ansible_ssh_private_key_file` tells Ansible which SSH private key to use.
+
+## 4. Test Ansible Connectivity
+
+Before running the playbook, I checked whether Ansible could connect to the EC2 server.
+
+ansible app_key -i inventory.ini -m ping
+
+The result was:
+
+ec2-1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+
+This confirmed that Ansible could successfully connect to the EC2 server.
+
+## 5. Playbook
+
+I created a playbook named:
+
+first-playbook.yaml
+
+The playbook contains two main tasks:
+
+1. Install Apache2
+2. Copy the HTML file to the Apache web directory
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Install Apache
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Copy index.html
+      ansible.builtin.copy:
+        src: index.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+
+## 6. Understanding the Playbook
+
+a) - hosts: all
+
+This tells Ansible to run the playbook on the hosts selected from the inventory.
+
+I used `--limit app_key` while running the playbook, so it was executed only on the EC2 server inside the `app_key` group.
+
+b) become: true
+
+
+This allows Ansible to perform tasks with elevated privileges, similar to using `sudo`.
+
+Installing Apache and copying files into `/var/www/html` require administrative privileges.
+
+c) Install Apache
+
+ansible.builtin.apt:
+  name: apache2
+  state: present
+  update_cache: yes
+
+This uses Ansible's `apt` module to install Apache2.
+
+`state: present` means Apache should be installed.
+
+`update_cache: yes` updates the package information before installing Apache.
+
+d) Copy HTML File
+
+ansible.builtin.copy:
+  src: index.html
+  dest: /var/www/html/index.html
+
+This copies my local `index.html` file from the Ansible project directory to the Apache web directory on the EC2 server.
+
+The file was copied to:
+
+/var/www/html/index.html
+
+e) File Ownership and Permissions
+
+owner: root
+group: root
+mode: '0644'
+
+The file is owned by `root`, belongs to the `root` group, and has permission `0644`.
+
+## 7. HTML File
+
+I created a simple `index.html` file.
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ansible Apache Lab</title>
+</head>
+<body>
+    <h1>My First Ansible Playbook</h1>
+
+    <h2>Apache Web Server</h2>
+
+    <p>This webpage was deployed using Ansible.</p>
+
+    <p>Control Node: WSL (Ubuntu)</p>
+
+    <p>Managed Node: AWS EC2</p>
+
+    <p>I am learning Ansible through hands-on practice.</p>
+</body>
+</html>
+
+## 8. Running the Playbook
+
+I ran the playbook using:
+
+ansible-playbook -i inventory.ini first-playbook.yaml --limit app_key
+
+The `--limit app_key` option tells Ansible to run the playbook only on hosts in the `app_key` group.
+
+## 9. Playbook Result
+
+The playbook completed successfully.
+
+ec2-1 : ok=3 changed=2 unreachable=0 failed=0
+
+### What the result means
+
+`ok=3`
+
+Three tasks completed successfully, including fact gathering.
+
+`changed=2`
+
+Two tasks made changes on the EC2 server:
+
+* Apache was installed
+* `index.html` was copied
+
+`unreachable=0`
+
+Ansible successfully connected to the EC2 server.
+
+`failed=0`
+
+No task failed.
+
+## 10. AWS Security Group
+
+After deploying Apache, I allowed HTTP traffic through the EC2 Security Group.
+
+Type       : HTTP
+Protocol   : TCP
+Port       : 80
+
+This allowed the web browser to access Apache running on the EC2 instance.
+
+## 11. Verify the Web Server
+
+I opened the EC2 public IP in my browser:
+
+http://EC2-PUBLIC-IP
+
+The custom HTML page was displayed successfully.
+
+This confirmed that:
+
+Ansible
+   ↓
+Connected to EC2
+   ↓
+Installed Apache
+   ↓
+Copied index.html
+   ↓
+Apache served the page
+   ↓
+Browser displayed the webpage
+
+## What I Learned
+
+Through this lab, I practiced:
+
+* Ansible control node and managed node
+* Ansible inventory
+* SSH key-based authentication
+* Ansible ping module
+* Ansible playbooks
+* `become: true`
+* `apt` module
+* `copy` module
+* File ownership and permissions
+* Apache installation
+* Static webpage deployment
+* AWS Security Groups
+* HTTP port 80
+* Playbook execution and verification
+
+This was my first practical Ansible deployment on AWS EC2. I am continuing to learn Ansible through hands-on labs and gradually moving towards more advanced topics like variables, handlers, templates and roles.

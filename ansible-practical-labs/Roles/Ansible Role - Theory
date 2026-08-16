@@ -49,3 +49,48 @@ Restart Apache
 This makes the project easier to manage.
 
 3. Role vs Playbook
+
+a) A Playbook is used to define what we want Ansible to do.
+
+A Role is used to organize that work into a proper structure.
+
+b) For example, a playbook can call an Apache role:
+
+- hosts: webservers
+  roles:
+    - apache
+
+The actual Apache work can be kept inside the apache role.
+
+c) So, we can think of it like this:
+
+Playbook → decides what role should run
+
+Role → contains the actual tasks, files, templates and configuration.
+
+d) Simple Example
+
+=> Without Role:
+
+site.yml
+  ├── Install Apache
+  ├── Copy HTML file
+  ├── Configure Apache
+  └── Restart Apache
+
+=> With Role:
+
+site.yml
+     ↓
+apache role
+     ├── Install Apache
+     ├── Copy HTML file
+     ├── Configure Apache
+     └── Restart Apache
+
+4. Basic Role Directory Structure
+
+When we create a role, Ansible provides a standard folder structure.
+
+Each folder has a different purpose.
+

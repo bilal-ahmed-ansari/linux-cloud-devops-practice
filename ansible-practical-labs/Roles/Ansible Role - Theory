@@ -94,3 +94,148 @@ When we create a role, Ansible provides a standard folder structure.
 
 Each folder has a different purpose.
 
+a) tasks/
+
+This is where we normally write the main tasks of the role.
+
+For example:
+
+tasks/main.yml
+
+It can contain tasks such as:
+
+- name: Install Apache
+  apt:
+    name: apache2
+    state: present
+
+- name: Start Apache
+  service:
+    name: apache2
+    state: started
+
+So, tasks/ contains the actual work that Ansible needs to perform.
+
+b) handlers/
+
+Handlers are used for tasks that should run only when they are notified.
+
+A common example is restarting Apache after its configuration changes.
+
+- name: Restart Apache
+  service:
+    name: apache2
+    state: restarted
+
+A task can notify this handler when required.
+
+notify: Restart Apache
+
+This is useful because we don't need to restart a service every time the playbook runs.
+
+c) files/
+
+This folder is used for files that we want to copy to the managed server.
+
+For example:
+
+files/
+└── index.html
+
+Ansible can copy this file to the web server.
+
+d) templates/
+
+This folder is used for template files.
+
+Templates normally use the Jinja2 format and can contain variables.
+
+For example:
+
+templates/
+└── apache.conf.j2
+
+We can use variables inside the template:
+
+ServerName {{ server_name }}
+
+Ansible replaces the variable with the actual value when the template is copied to the server.
+
+e) vars/
+
+This folder is used to store variables for the role.
+
+Example:
+
+apache_port: 80
+apache_package: apache2
+
+These variables can be used by the role.
+
+f) defaults/
+
+This is also used for variables, but these are the default values for the role.
+
+For example:
+
+apache_port: 80
+
+The values in defaults/main.yml have lower priority and can normally be overridden more easily.
+
+For beginners, remember:
+
+defaults → default values
+
+vars → role variables with higher priority.
+
+g) meta/
+
+This folder contains information about the role.
+
+It can also be used to define dependencies.
+
+For example, if one role requires another role to run first, that dependency can be defined here.
+
+5. Creating a Role
+
+We can create a role using:
+
+ansible-galaxy init apache
+
+This creates the standard role directory structure automatically.
+
+6. Calling a Role from a Playbook
+
+Once the role is created, we can call it from a playbook.
+
+Example:
+
+- name: Configure Web Server
+  hosts: webservers
+  become: true
+
+  roles:
+    - apache
+
+Here:
+
+a) hosts tells Ansible where to run the role.
+b) become: true gives the required privilege.
+c) roles tells Ansible which role to run.
+d) apache is the name of our role.
+
+Ansible will look for the apache role and execute its tasks.
+
+7. Why Roles are Useful
+
+Roles are mainly useful when the Ansible project becomes bigger.
+
+They help us:
+
+a) Keep files organized
+b) Reuse automation
+c) Make playbooks smaller
+d) Separate different types of work
+e) Make troubleshooting easier
+f) Maintain large Ansible projects
+g) Share automation with other people

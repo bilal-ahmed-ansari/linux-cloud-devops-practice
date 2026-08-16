@@ -1,0 +1,51 @@
+1. What is an Ansible Role?
+
+An Ansible Role is a way to organize Ansible automation into separate folders and files.
+
+When we start learning Ansible, we usually put everything inside one playbook:
+
+Install Apache
+Copy HTML file
+Start Apache
+Create users
+Install packages
+
+This is fine for small labs, but when the project becomes bigger, the playbook can become difficult to manage.
+
+2. Why do we use Roles?
+
+Imagine you have one large playbook:
+
+tasks:
+  - Install Apache
+  - Copy website
+  - Configure Apache
+  - Restart Apache
+  - Create users
+  - Install monitoring tools
+  - Configure firewall
+
+As the project grows, this becomes difficult to understand and maintain.
+
+Instead, we can separate the work:
+
+roles/
+├── apache/
+├── users/
+├── monitoring/
+└── firewall/
+
+Now each Role has a specific purpose.
+
+For example:
+
+apache Role
+    ↓
+Install Apache
+Configure Apache
+Deploy website
+Restart Apache
+
+This makes the project easier to manage.
+
+3. Role vs Playbook

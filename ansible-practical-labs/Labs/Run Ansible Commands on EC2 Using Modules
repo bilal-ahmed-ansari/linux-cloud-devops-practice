@@ -86,6 +86,11 @@ Use the copy module:
 
 ansible all -m copy -a "content='Created by Ansible Lab 2\n' dest=/tmp/ansible-lab.txt"
 
+********
+
+\n means new line at the end.
+
+********
 Now check:
 
 ansible all -m command -a "cat /tmp/ansible-lab.txt"

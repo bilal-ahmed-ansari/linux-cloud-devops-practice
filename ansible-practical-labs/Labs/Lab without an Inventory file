@@ -1,0 +1,177 @@
+In this lab, we will temporarily remove/rename the inventory file and give the EC2 hosts directly in the Ansible command.
+
+The idea is:
+
+Lab 2:
+
+command → EC2 servers
+          ↑
+       no inventory
+
+Step 1 — Check your current setup
+
+Go to your lab:
+
+cd ~/ansible-ec2-lab
+
+Check:
+
+ls
+
+You should currently have:
+
+ansible.cfg
+
+Your inventory looks like:
+
+[web]
+web1 ansible_host=15.252.123.99
+web2 ansible_host=3.108.215.242
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=~/testing.pem
+
+Step 2 — Temporarily remove the inventory
+
+Don't delete it permanently. Rename it:
+
+mv inventory inventory.backup
+
+Now:
+
+ls
+
+You should see:
+
+ansible.cfg
+inventory.backup
+
+There is no inventory file now.
+
+Step 3 — Check what happens normally
+
+Try:
+
+ansible all -m ping
+
+You may get something like:
+
+[WARNING]: No inventory was parsed
+[WARNING]: provided hosts list is empty
+
+Why?
+
+Because your ansible.cfg says:
+
+inventory = ./inventory
+
+But ./inventory doesn't exist anymore.
+
+So Ansible doesn't know which machines it should manage.
+
+Step 4 — Give the EC2 hosts directly
+
+Now we don't use the inventory file.
+
+We'll give the IP addresses directly using -i.
+
+Your two EC2 IPs are:
+
+EC2-1 → 15.252.123.99
+EC2-2 → 3.108.215.242
+
+Run:
+
+ansible all -i "15.252.123.99,3.108.215.242," -m ping
+
+But there is one problem
+
+Ansible knows the IP addresses, but it doesn't know:
+
+SSH username
+private key
+
+So we need to provide those too.
+
+Run:
+
+ansible all \
+-i "15.252.123.99,3.108.215.242," \
+-u ubuntu \
+--private-key ~/testing.pem \
+-m ping
+
+Step 5 — Understand the command
+
+Let's break this down.
+
+a) ansible all
+all
+
+Means:
+
+Run this against all hosts that I provide.
+
+b) -i
+-i "15.252.123.99,3.108.215.242,"
+
+Normally -i means:
+
+Use this inventory.
+
+But here we're giving the hosts directly.
+
+So:
+
+15.252.123.99
+3.108.215.242
+
+are our hosts.
+
+Why the comma at the end?
+
+This is important:
+
+"15.252.123.99,3.108.215.242,"
+                                      ↑
+                                    comma
+
+The comma tells Ansible:
+
+This is an inline list of hosts.
+
+Without the comma, Ansible may interpret the value as an inventory filename/path.
+
+c) -u ubuntu
+
+Means:
+
+Use the ubuntu account when connecting through SSH.
+
+d) --private-key
+--private-key ~/testing.pem
+
+Means:
+
+Use this private SSH key to connect to the EC2 machines
+
+e) -m ping
+-m ping
+
+Means:
+
+Use Ansible's ping module to test connectivity.
+
+Step 6: Expected Result
+
+web1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+web2 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+inventory

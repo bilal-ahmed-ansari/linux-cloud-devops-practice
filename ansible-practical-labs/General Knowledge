@@ -1,0 +1,87 @@
+1. [all:vars]
+ansible_user=ubuntu
+
+means these variables apply to all hosts in your inventory.
+
+Breaking it down
+
+=> [all:vars]
+
+all = all servers/hosts in the inventory
+vars = variables.
+
+So, [all:vars] means: "Define variables that should be used for all hosts."
+
+2. ansible_user=ubuntu
+
+This tells Ansible:
+
+When connecting to any server in this inventory, use the ubuntu user.
+
+3. So your inventory:
+
+[app]
+app1 ansible_host=<EC2-1-PUBLIC-IP>
+
+[db]
+db1 ansible_host=<EC2-2-PUBLIC-IP>
+
+[all:vars]
+ansible_user=ubuntu
+
+is effectively saying:
+
+app1 → connect using ubuntu
+db1  → connect using ubuntu
+
+But instead of writhing this separately, write
+
+app1 ansible_host=<EC2-1-PUBLIC-IP> ansible_user=ubuntu
+db1 ansible_host=<EC2-2-PUBLIC-IP> ansible_user=ubuntu
+
+=> One important point
+
+ansible_user=ubuntu is the Linux username, not the SSH password.
+
+4. ansible_ssh_private_key_file=/path/to/my-key.pem
+
+=> Break it down
+a) ansible_ssh_private_key_file → Ansible variable for the SSH private key
+b) /path/to/my-key.pem → location of your actual .pem file
+
+For example, if your key is in your home directory:
+
+ansible_ssh_private_key_file=~/testing.pem
+
+=> Why do we need it?
+
+When you connect to an AWS Ubuntu EC2 instance:
+
+ssh -i testing.pem ubuntu@13.203.154.149
+
+Here:
+
+a) testing.pem = your SSH private key
+b) ubuntu = username
+c) 13.203.154.149 = EC2 public IP
+
+Ansible needs the same information.
+
+5. In the inventory,
+
+a) [app]
+app1 ansible_host=13.203.154.149
+
+Here app is a group name that you create.
+
+b) app1 belong to the app group.
+
+Also app1 is the name you give to that server inside Ansible.
+
+It doesn't have to be the actual hostname of the EC2 server.
+
+c) ansible_host → Actual server address
+ansible_host=13.203.154.149
+
+
+

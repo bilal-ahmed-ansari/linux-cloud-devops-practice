@@ -1,0 +1,63 @@
+Goal: Use Ansible modules to check and manage your 2 EC2 servers.
+
+You already have:
+
+WSL
+ |
+ | Ansible
+ |
+ +---- EC2-1 (web1)
+ |
+ +---- EC2-2 (web2)
+
+And your directory:
+
+~/ansible-ec2-lab/
+├── ansible.cfg
+└── inventory
+
+Step 1 — Check both servers
+
+First:
+
+cd ~/ansible-ec2-lab
+
+Run:
+
+web1 | SUCCESS => {
+    "ping": "pong"
+}
+
+web2 | SUCCESS => {
+    "ping": "pong"
+}
+
+Step 2 — Check disk usage
+
+Run:
+
+ansible all -m command -a "df -h /"
+
+You'll get the root filesystem information from both servers.
+
+For example:
+
+Filesystem      Size  Used Avail Use%
+/dev/root        8G   3G    5G   38%
+
+Step 3 — Use the shell module
+
+Now let's try another module.
+
+ansible all -m shell -a "uptime && df -h /"
+
+Here we're running two commands:
+
+uptime
+
+and:
+
+df -h /
+
+The shell module is useful when you need shell features or multiple commands.
+ansible all -m ping

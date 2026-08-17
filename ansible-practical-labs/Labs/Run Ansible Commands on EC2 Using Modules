@@ -61,3 +61,81 @@ df -h /
 
 The shell module is useful when you need shell features or multiple commands.
 ansible all -m ping
+
+For basic single commands, command is generally preferred.
+
+Step 7 — Create a file on both EC2 servers
+
+Now let's actually change something.
+
+Run:
+
+ansible all -m file -a "path=/tmp/ansible-lab.txt state=touch"
+
+This tells Ansible:
+
+Create /tmp/ansible-lab.txt on every server.
+
+Check it:
+
+ansible all -m command -a "ls -l /tmp/ansible-lab.txt"
+
+Step 8 — Put some text into the file
+
+Use the copy module:
+
+ansible all -m copy -a "content='Created by Ansible Lab 2\n' dest=/tmp/ansible-lab.txt"
+
+Now check:
+
+ansible all -m command -a "cat /tmp/ansible-lab.txt"
+
+Expected:
+
+Created by Ansible Lab 2
+
+Step 9 — Install a package
+
+This is a good real-world example.
+
+Let's install tree:
+
+ansible all -m apt -a "name=tree state=present" --become
+
+=> What is --become?
+
+It allows Ansible to execute the task with elevated privileges, similar to:
+
+sudo
+
+Because installing a package requires administrator/root privileges.
+
+Then verify:
+
+Then verify:
+
+ansible all -m command -a "tree --version"
+
+Step 10 — Check the package
+
+You can also use:
+
+ansible all -m command -a "which tree"
+
+You should get:
+
+/usr/bin/tree
+
+Step 11 — Remove the test file
+
+Clean up your lab:
+
+ansible all -m file -a "path=/tmp/ansible-lab.txt state=absent"
+
+Check:
+
+ansible all -m command -a "ls -l /tmp/ansible-lab.txt"
+
+It should say the file doesn't exist.
+
+

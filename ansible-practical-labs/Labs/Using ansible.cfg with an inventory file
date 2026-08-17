@@ -1,0 +1,138 @@
+1. My setup:
+
+Windows Laptop
+     |
+    WSL
+     |
+     +------ EC2-1
+     |
+     +------ EC2-2
+
+Assume:
+
+EC2-1 = 1.2.3.4
+EC2-2 = 5.6.7.8
+
+Use your actual public IPs.
+
+Step 1: Create lab directory
+
+Inside WSL:
+
+mkdir ~/ansible-ec2-lab
+cd ~/ansible-lab
+
+Step 2: Create inventory
+nano inventory
+
+Add:
+
+[web]
+web1 ansible_host=1.2.3.4
+web2 ansible_host=5.6.7.8
+
+
+[all:vars]
+ansible_user=ubuntu
+
+Replace the IPs with your EC2 public IPs.
+
+Step 3: Configure SSH key
+
+If your EC2 key is in your WSL home directory:
+
+chmod 400 ~/my-key.pem
+
+Then add this to inventory:
+
+[web]
+web1 ansible_host=1.2.3.4 ansible_ssh_private_key_file=~/my-key.pem
+web2 ansible_host=5.6.7.8 ansible_ssh_private_key_file=~/my-key.pem
+
+
+[all:vars]
+ansible_user=ubuntu
+cd ~/ansible-ec2-la
+
+Step 4: Create ansible.cfg
+nano ansible.cfg
+
+Put:
+
+[defaults]
+inventory = ./inventory
+host_key_checking = False
+
+Now Ansible knows:
+
+Whenever I run Ansible from this directory, use ./inventory as my inventory.
+
+Step 5: Test
+
+Normally you would do:
+
+ansible all -i inventory -m ping
+
+But because ansible.cfg already specifies the inventory, you can simply do:
+
+ansible all -m ping
+
+Expected:
+
+web1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+web2 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+Note:- Before eunning ansible command, ssh your EC2 instance for testing.
+
+Suppose EC2-1 public IP is:
+
+13.123.45.67
+
+Run:
+
+ssh -i ~/testing.pem ubuntu@13.123.45.67
+
+If you get:
+
+Are you sure you want to continue connecting (yes/no/[fingerprint])?
+
+type:
+
+yes
+
+If you successfully get something like:
+
+ubuntu@ip-172-31-xx-xx:~$
+
+then your WSL → EC2 SSH connection is working.
+
+Exit:
+
+exit
+
+Do the same for EC2-2.
+
+2. What does this word "host_key_checking" means?
+
+=> host_key_checking is related to SSH host verification.
+
+When you connect to an EC2 server for the first time manually:
+
+ssh -i ~/testing.pem ubuntu@15.252.123.99
+
+SSH may ask:
+
+Are you sure you want to continue connecting (yes/no/[fingerprint])?
+
+This happens because your WSL machine has never connected to that server before.
+
+SSH stores the server's identity/fingerprint in:
+
+~/.ssh/known_hosts

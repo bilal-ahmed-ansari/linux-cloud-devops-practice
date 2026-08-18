@@ -24,6 +24,8 @@ cd ~/ansible-ec2-lab
 
 Run:
 
+ansible -m ping all
+
 web1 | SUCCESS => {
     "ping": "pong"
 }

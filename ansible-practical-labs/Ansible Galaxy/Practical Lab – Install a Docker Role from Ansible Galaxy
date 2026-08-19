@@ -1,0 +1,13 @@
+Lab Objective
+
+In this lab, we will:
+
+Search for a Docker role
+Install the role from Ansible Galaxy
+Check where the role is installed
+Create an Ansible inventory
+Test connectivity with an EC2 instance
+Create a playbook
+Use the Galaxy role in the playbook
+Run the playbook
+Verify Docker on the EC2 instance

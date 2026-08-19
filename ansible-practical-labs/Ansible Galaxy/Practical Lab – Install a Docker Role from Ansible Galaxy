@@ -1,13 +1,400 @@
-Lab Objective
+1. Lab Objective
 
 In this lab, we will:
 
-Search for a Docker role
-Install the role from Ansible Galaxy
-Check where the role is installed
-Create an Ansible inventory
-Test connectivity with an EC2 instance
-Create a playbook
-Use the Galaxy role in the playbook
-Run the playbook
-Verify Docker on the EC2 instance
+=> Search for a Docker role
+=> Install the role from Ansible Galaxy
+=> Check where the role is installed
+=> Create an Ansible inventory
+=> Test connectivity with an EC2 instance
+=> Create a playbook
+=> Use the Galaxy role in the playbook
+=> Run the playbook
+=> Verify Docker on the EC2 instance
+
+2. Explaination:-
+
+Step 1 – Search for Docker Roles
+
+From the Ansible Control Node:
+
+ansible-galaxy search docker
+
+This searches Ansible Galaxy for roles related to Docker.
+
+We selected:
+
+bsmeding.docker
+
+Step 2 – Install the Docker Role
+
+Run:
+
+ansible-galaxy role install bsmeding.docker
+
+Output:
+
+Starting galaxy role install process
+- downloading role 'docker', owned by bsmeding
+- downloading role from ...
+- extracting bsmeding.docker
+- bsmeding.docker was installed successfully
+
+This means the role has been downloaded to the Control Node.
+
+Step 3 – Check the Installed Role
+
+Ansible installed the role under:
+
+~/.ansible/roles/
+
+Check it:
+
+cd ~/.ansible/roles
+ls
+
+Output:
+
+bsmeding.docker
+
+he complete path on my system is:
+
+/home/bilal-ahmed-ansari/.ansible/roles/bsmeding.docker
+
+3. Important: Role Directory vs Project Directory
+
+The Galaxy role and our own project files are kept separately.
+
+a) Galaxy role:
+
+~/.ansible/roles/
+└── bsmeding.docker/
+
+b) Our project:
+
+~/ansible-galaxy-lab/
+├── inventory.ini
+└── docker-playbook.yml
+
+The role directory contains the downloaded role.
+
+Our project directory contains our own inventory and playbook.
+
+We do not need to copy the Galaxy role into our project.
+
+Step 4  – Create the Lab Directory
+
+Create a directory for the project:
+
+cd ~
+mkdir ansible-galaxy-lab
+cd ansible-galaxy-lab
+
+Now:
+
+~/ansible-galaxy-lab/
+
+will be working directory
+
+Step 5 – Create the Inventory
+
+Create:
+
+vim inventory.ini
+
+Example:
+
+[docker]
+ec2-1 ansible_host=<EC2-PUBLIC-IP>
+
+[docker:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/bilal-ahmed-ansari/testing.pem
+
+Example with an actual IP:
+
+[docker]
+ec2-1 ansible_host=3.7.254.17
+
+[docker:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/bilal-ahmed-ansari/testing.pem
+
+=> Understanding the Inventory
+
+a) [docker]
+
+creates an inventory group called docker.
+
+This:
+
+b) ec2-1 ansible_host=3.7.254.17
+
+means:
+
+ec2-1
+   |
+   +-- Actual server IP: 3.7.254.17
+
+c) [docker:vars]
+
+defines variables for all hosts in the docker group.
+
+d) ansible_user=ubuntu
+
+means Ansible will connect to the EC2 instance using the ubuntu user.
+
+e) ansible_ssh_private_key_file=/home/bilal-ahmed-ansari/testing.pem
+
+tells Ansible which SSH private key to use.
+
+Step 6 – Test Ansible Connectivity
+
+Before running the Docker role, first test whether Ansible can connect to the EC2 instance.
+
+Run:
+
+ansible -i inventory.ini -m ping docker
+
+Expected result:
+
+ec2-1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+If we get:
+
+"ping": "pong"
+
+it means Ansible can successfully connect to the EC2 server.
+
+=> SSH Host Key Verification
+
+During the first connection, SSH may show:
+
+Host key verification failed.
+
+In that case, connect manually once:
+
+ssh -i ~/testing.pem ubuntu@<EC2-PUBLIC-IP>
+
+If SSH asks:
+
+Are you sure you want to continue connecting?
+
+enter:
+
+yes
+
+SSH stores the server's host key in:
+
+~/.ssh/known_hosts
+
+After that, Ansible can normally connect to the server.
+
+Step 7 – Create the Playbook
+
+Create:
+
+vim docker-playbook.yml
+
+Add:
+
+---
+- name: Install Docker using Galaxy role
+  hosts: docker
+  become: true
+
+  roles:
+    - bsmeding.docker
+
+=> Understanding the Playbook
+
+a) hosts: docker
+
+The docker here refers to the inventory group:
+
+[docker]
+
+Therefore, the playbook will run against the servers inside that group.
+
+b) become: true
+
+This allows Ansible to perform tasks with elevated privileges, normally using sudo.
+
+Docker installation requires administrative privileges.
+
+c) roles:
+  - bsmeding.docker
+
+This tells Ansible:
+
+Use the bsmeding.docker role for the selected hosts.
+
+The role was previously downloaded using:
+
+ansible-galaxy role install bsmeding.docker
+
+Step 8 – Run the Playbook
+
+Use:
+
+ansible-playbook -i inventory.ini docker-playbook.yml
+
+Important:
+
+a) We use ansible-galaxy to install/manage Galaxy roles.
+
+b) We use ansible-playbook to execute our playbook.
+
+=> How the Automation Works
+
+The complete flow is:
+
+Ansible Control Node
+        |
+        | ansible-playbook
+        ↓
+inventory.ini
+        |
+        ↓
+[docker] group
+        |
+        ↓
+EC2 instance
+        |
+        ↓
+bsmeding.docker role
+        |
+        ↓
+Docker installation/configuration
+        |
+        ↓
+Docker service
+
+The role contains the actual Ansible tasks.
+
+Step 9 – Verify Docker on EC2
+
+After the playbook finishes, connect to the EC2 instance:
+
+ssh -i ~/testing.pem ubuntu@<EC2-PUBLIC-IP>
+
+Check Docker version:
+
+docker --version
+
+Example:
+
+Docker version 29.7.2
+
+Check Docker service:
+
+systemctl status docker
+
+We should see:
+
+Active: active (running)
+
+We can also check running containers:
+
+sudo docker ps
+
+If no containers are running, the output can be empty. That is normal.
+
+It only means Docker is running but there are currently no running containers.
+
+=> Understanding ok, changed and failed
+
+When running an Ansible playbook, we may see a summary like:
+
+ec2-1 : ok=10 changed=2 unreachable=0 failed=0
+
+a) ok
+
+The task completed successfully and no change was required.
+
+b) changed
+
+The task completed successfully and made a change to the server.
+
+c) failed
+
+The task failed.
+
+d) unreachable
+
+Ansible could not connect to the server.
+
+For example:
+
+failed=0
+unreachable=0
+
+is what we want to see.
+
+=> Idempotency
+
+One important feature of Ansible is idempotency.
+
+Suppose Docker is already installed.
+
+If we run the same playbook again, Ansible should not unnecessarily reinstall everything.
+
+Instead, many tasks may show:
+
+ok
+
+instead of:
+
+changed
+
+This means the system is already in the desired state.
+
+For example:
+
+a) First run:
+Docker not installed
+        ↓
+Docker installed
+        ↓
+changed
+
+b) Second run: Docker already installed > No unnecessary change > ok
+
+=> Inspecting the Galaxy Role
+
+Installing a role does not mean we should blindly use it.
+
+We can inspect the role:
+
+cd ~/.ansible/roles/bsmeding.docker
+
+List its files:
+
+ls
+
+We may find directories such as:
+
+tasks/
+handlers/
+defaults/
+vars/
+templates/
+files/
+meta/
+
+Check the README:
+
+cat README.md
+
+Check the main tasks:
+
+cat tasks/main.yml
+
+This is useful for learning because we can see how another Ansible user has written a real reusable role.
+
+
+
+=> 

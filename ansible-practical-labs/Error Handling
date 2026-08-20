@@ -450,3 +450,273 @@ when: output.failed
 means:
 
 Run this task only when output.failed is true
+
+13. Complete Docker Error Handling Lab
+
+Now let's create the complete practical.
+
+nano docker-error-handling.yml
+
+Use:
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Check if Docker is installed
+      ansible.builtin.command: docker --version
+      register: output
+      ignore_errors: yes
+
+    - name: Display Docker check result
+      ansible.builtin.debug:
+        var: output
+
+    - name: Install Docker if it is not installed
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+      when: output.failed
+
+Run:
+
+ansible-playbook -i inventory docker-error-handling.yml
+
+14. Understand This Playbook Step by Step
+
+a) Task 1
+
+- name: Check if Docker is installed
+  ansible.builtin.command: docker --version
+
+We ask the server:
+
+docker --version
+
+If Docker exists:
+
+Docker version 29.x.x
+
+If Docker doesn't exist:
+
+command not found
+
+b) Task 2
+register: output
+
+We save the result.
+
+Think of it like:
+
+output = result of docker --version
+
+c) Task 3
+ignore_errors: yes
+
+If Docker isn't installed, the command fails.
+
+But we don't want Ansible to stop.
+
+So:
+
+ignore_errors: yes
+
+allows Ansible to continue.
+
+d) Task 4
+- name: Display Docker check result
+  ansible.builtin.debug:
+    var: output
+
+This lets us see what happened.
+
+e) Task 5
+when: output.failed
+
+This is the important part.
+
+If:
+
+output.failed = true
+
+then:
+
+Install Docker
+
+runs.
+
+If:
+
+output.failed = false
+
+then:
+
+Install Docker
+
+is skipped.
+
+**********
+
+Let's go through it.
+
+1. Gathering Facts
+ok: [server1]
+
+Ansible successfully connected to your EC2 server and collected system information
+
+2. Docker check
+
+You got:
+
+TASK [Check if Docker is installed]
+changed: [server1]
+
+Ansible ran:
+
+docker --version
+
+And it worked.
+
+You can see:
+
+"stdout": "Docker version 29.7.2, build a7dcaa6"
+
+So your EC2 server has:
+
+3. The most important part: failed: false
+
+You got:
+
+"failed": false
+
+This means:
+
+The Docker check did NOT fail.
+
+Remember your previous run when Docker wasn't installed?
+
+You had:
+
+"failed": true
+
+Now Docker is installed, so:
+
+output.failed = false
+
+4. What does rc: 0 mean?
+
+You got:
+
+"rc": 0
+
+rc means return code.
+
+Generally:
+
+rc = 0     → command successful
+rc != 0    → command failed
+
+So:
+
+rc: 0
+
+confirms that:
+
+docker --version
+
+5. Why was Docker installation skipped?
+
+This is the most important part.
+
+Your task is:
+
+- name: Install Docker if it is not installed
+  ansible.builtin.apt:
+    name: docker.io
+    state: present
+    update_cache: yes
+  when: output.failed
+
+Your previous task produced:
+
+output.failed = false
+
+Therefore Ansible evaluates:
+
+when: output.failed
+
+Why was Docker installation skipped?
+
+This is the most important part.
+
+Your task is:
+
+- name: Install Docker if it is not installed
+  ansible.builtin.apt:
+    name: docker.io
+    state: present
+    update_cache: yes
+  when: output.failed
+
+Your previous task produced:
+
+output.failed = false
+
+Therefore Ansible evaluates:
+
+when: output.failed
+
+7. Your entire playbook flow
+
+Your first run, when Docker wasn't installed, was:
+
+Check Docker
+     ↓
+Docker not found
+     ↓
+failed = true
+     ↓
+ignore_errors
+     ↓
+Install Docker
+
+Now you ran it again:
+
+Check Docker
+     ↓
+Docker found
+     ↓
+failed = false
+     ↓
+when: output.failed = false
+     ↓
+Skip Docker installation
+
+That's exactly how conditional error handling works.
+
+7. Understand main output
+
+server1 : ok=3 changed=1 unreachable=0 failed=0 skipped=1 rescued=0 ignored=0
+
+Meaning:
+
+| Value           | Meaning                          |
+| --------------- | -------------------------------- |
+| `ok=3`          | 3 tasks completed successfully   |
+| `changed=1`     | 1 task made a change             |
+| `unreachable=0` | Server connection was successful |
+| `failed=0`      | No task failed                   |
+| `skipped=1`     | 1 task was skipped               |
+| `ignored=0`     | No errors were ignored this time |
+
+The skipped=1 is your:
+
+Install Docker if it is not installed
+
+task.
+
+************
+

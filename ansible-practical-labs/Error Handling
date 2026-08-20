@@ -427,3 +427,26 @@ Or:
 
 - ansible.builtin.debug:
     msg: "Docker check failed: {{ output.failed }}"
+
+12. Third Practical — when
+
+Now we combine everything.
+
+The logic is:
+
+Check whether Docker is installed.
+If Docker check fails, install Docker.
+
+This is where:
+
+when:
+
+becomes useful.
+
+Example:
+
+when: output.failed
+
+means:
+
+Run this task only when output.failed is true

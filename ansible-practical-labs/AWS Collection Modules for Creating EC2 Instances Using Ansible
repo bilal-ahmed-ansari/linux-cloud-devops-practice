@@ -103,3 +103,414 @@ sudo apt install aws-cli
 After installation, verify:
 
 aws --version
+
+7. Create IAM User / Access Credentials
+
+Ansible needs permission to communicate with AWS.
+
+For this lab, we need AWS credentials with permissions to work with EC2.
+
+The credentials normally contain:
+
+AWS Access Key ID
+AWS Secret Access Key
+
+Do not put these credentials directly inside your Ansible playbook.
+
+Also, never upload AWS access keys or secret keys to GitHub.
+
+For a lab environment, you can configure credentials using AWS CLI.
+
+8. Configure AWS CLI
+
+Run:
+
+aws configure
+
+AWS CLI will ask for:
+
+AWS Access Key ID:
+AWS Secret Access Key:
+Default region name:
+Default output format:
+
+Example:
+
+AWS Access Key ID: AKIAxxxxxxxxxxxx
+AWS Secret Access Key: xxxxxxxxxxxxxxxxx
+Default region name: ap-south-1
+Default output format: json
+
+For Mumbai region, use:
+
+ap-south-1
+
+You can leave the output format as:
+
+json
+
+9. Verify AWS CLI Configuration
+
+Run:
+
+aws sts get-caller-identity
+
+If your credentials are working, AWS will return information about the IAM identity.
+
+Example:
+
+{
+    "UserId": "XXXXXXXXXXXX",
+    "Account": "123456789012",
+    "Arn": "arn:aws:iam::123456789012:user/ansible-user"
+}
+
+This confirms that your AWS CLI can successfully communicate with AWS.
+
+10. Install Ansible AWS Collection
+
+Ansible collections contain modules and plugins that extend Ansible.
+
+For AWS, we will use:
+
+amazon.aws
+
+Install it using:
+
+ansible-galaxy collection install amazon.aws
+
+Check the installed collection:
+
+ansible-galaxy collection list
+
+You should find:
+
+amazon.aws
+
+11. What is the AWS Collection?
+
+The amazon.aws collection provides Ansible modules for managing AWS resources.
+
+For example, it can be used for:
+
+EC2 instances
+VPC
+Security Groups
+S3
+IAM
+EBS
+and other AWS resources
+
+In this lab, we will use the EC2 module to create an EC2 instance.
+
+12. Create the Ansible Inventory
+
+Because Ansible is only sending API requests to AWS, we don't need an EC2 server as an Ansible managed host for this particular task.
+
+We can run the playbook on the local machine.
+
+a) Create an inventory file:
+
+touch inventory
+
+b)Put this inside:
+
+[local]
+localhost ansible_connection=local
+
+=> Explanation:
+
+a) [local]
+
+This is the inventory group name.
+
+b) localhost
+
+This means the current machine.
+
+c) ansible_connection=local
+
+This tells Ansible:
+
+Run the Ansible task on the local machine instead of connecting to another server through SSH.
+
+13. Check the Inventory
+
+Run:
+
+ansible-inventory -i inventory --list
+
+You can also test localhost:
+
+ansible all -i inventory -m ping
+
+Expected result:
+
+localhost | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+14. Create the Ansible Playbook
+
+Create the playbook:
+
+touch create-ec2.yml
+
+Our directory will now look like:
+
+aws-ansible-lab/
+├── .venv/
+├── inventory
+└── create-ec2.yml
+
+15. EC2 Playbook
+
+Example playbook:
+
+---
+- name: Create EC2 Instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        name: ansible-ec2-lab
+        key_name: my-key
+        instance_type: t2.micro
+        image_id: ami-xxxxxxxxxxxxxxxxx
+        region: ap-south-1
+        count: 1
+        wait: true
+
+Important: Replace the following values with your actual AWS resources:
+
+16. Understanding the Playbook
+
+a) hosts: localhost
+
+The playbook will run on our local machine.
+
+We are not connecting to the EC2 server yet.
+
+We are using the local machine to send API requests to AWS.
+
+b) connection: local
+
+This tells Ansible to execute the task locally.
+
+There is no SSH connection to an EC2 server for this task.
+
+c) gather_facts: false
+
+Normally Ansible collects information about the target machine.
+
+For this task, we don't need that information.
+
+So we disable fact gathering.
+
+d) AWS EC2 Module
+
+The important part is:
+
+amazon.aws.ec2_instance:
+
+This is the Ansible module used to manage EC2 instances.
+
+The module comes from the:
+
+amazon.aws
+
+collection.
+
+e) EC2 Instance Name
+
+name: ansible-ec2-lab
+
+This is the name of the EC2 instance.
+
+AWS will show this name in the EC2 console.
+
+f) Key Pair
+key_name: my-key
+
+This must be the actual EC2 key pair name in AWS.
+
+For example, if your AWS EC2 Key Pair is named:
+
+ansible-key
+
+then use:
+
+key_name: ansible-key
+
+Do not write:
+
+ansible-key.pem
+
+The .pem file is your local private key file.
+
+key_name expects the AWS EC2 key pair name, not the filename.
+
+g) Instance Type
+instance_type: t2.micro
+
+This specifies the EC2 instance type.
+
+For example:
+
+t2.micro
+
+means we are requesting a small EC2 instance.
+
+The available instance types and pricing depend on the AWS account, region, and current AWS offerings.
+
+h) AWS Region
+region: ap-south-1
+
+This tells Ansible where to create the EC2 instance.
+
+For Mumbai:
+
+ap-south-1
+
+i) Number of Instances
+count: 1
+
+This tells Ansible to create one EC2 instance.
+
+If the configuration supports it, changing it to:
+
+count: 2
+
+would request two instances.
+
+For this lab, keep it as:
+
+count: 1
+
+j) Wait for the Instance
+wait: true
+
+This tells Ansible to wait for the EC2 instance operation instead of immediately finishing after sending the request.
+
+17. Run the Playbook
+
+Run:
+
+ansible-playbook -i inventory create-ec2.yml
+
+Ansible will:
+
+a) Read the inventory.
+b) Run the play on localhost.
+c) Load the AWS EC2 module.
+d) Use AWS credentials.
+e) Communicate with AWS.
+f) Request creation of the EC2 instance.
+g) Wait for the instance operation.
+h) Display the result.
+
+18. Verify the EC2 Instance
+
+After the playbook completes, check the AWS EC2 console.
+
+You can also use AWS CLI:
+
+aws ec2 describe-instances --region ap-south-1
+
+To get only running instance IDs:
+
+aws ec2 describe-instances \
+  --region ap-south-1 \
+  --filters Name=instance-state-name,Values=running \
+  --query "Reservations[].Instances[].InstanceId"
+
+19. Important Security Point
+
+Never put AWS credentials directly inside the GitHub repository.
+
+Do not create a playbook like:
+
+aws_access_key: AKIAxxxxxxxx
+aws_secret_key: xxxxxxxxx
+
+and push it to GitHub.
+
+This can expose your AWS account.
+
+Instead, use AWS CLI credential configuration, IAM roles, environment variables, or another secure credential-management method.
+
+Also make sure files such as these are not committed:
+
+.aws/
+*.pem
+.env
+
+You can add sensitive files to .gitignore.
+
+20. Final Lab Directory
+
+After completing the lab, the structure can look like:
+
+aws-ansible-lab/
+│
+├── .venv/
+│
+├── inventory
+│
+├── create-ec2.yml
+│
+└── .gitignore
+
+21. Complete Lab Flow
+
+The complete process is:
+
+1. Create lab directory
+        ↓
+2. Create Python virtual environment
+        ↓
+3. Install Boto3
+        ↓
+4. Install AWS CLI
+        ↓
+5. Configure IAM credentials
+        ↓
+6. Verify AWS CLI
+        ↓
+7. Install amazon.aws collection
+        ↓
+8. Create localhost inventory
+        ↓
+9. Create EC2 Ansible playbook
+        ↓
+10. Run ansible-playbook
+        ↓
+11. Ansible uses amazon.aws.ec2_instance 
+        ↓ 
+12. AWS API creates EC2 instance 
+        ↓ 
+13. Verify EC2 instance
+
+=> Key Points to Remember
+
+a) Boto3 → Python SDK used to communicate with AWS.
+b) AWS CLI → Allows us to manage AWS from the terminal.
+c) IAM → Controls permissions for accessing AWS resources.
+d) amazon.aws collection → Provides AWS modules for Ansible.
+e) ec2_instance module → Used to create/manage EC2 instances.
+f) localhost inventory → Runs the AWS automation from our local machine.
+g) key_name → AWS EC2 key pair name, not the .pem filename.
+h) AMI ID → Defines the operating system image.
+i) region → Defines where the EC2 instance will be created.
+Never upload AWS credentials to GitHub. 
+
+=> Conclusion
+
+In this lab, we used Ansible to automate the creation of an AWS EC2 instance.
+
+Instead of manually creating the EC2 instance from the AWS Console, we created an Ansible playbook that communicates with AWS through the amazon.aws collection and AWS APIs.

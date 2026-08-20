@@ -1,0 +1,95 @@
+1. What is Error Handling in Ansible?
+
+Normally, if an Ansible task fails, Ansible stops executing the remaining tasks for that host.
+
+Example:
+
+tasks:
+  - name: Install Docker
+    ansible.builtin.apt:
+      name: docker.io
+      state: present
+
+  - name: Create test file
+    ansible.builtin.file:
+      path: /tmp/test.txt
+      state: touch
+
+If the Docker task fails, Ansible normally won't continue to the Create test file task.
+
+Error handling allows us to tell Ansible:
+
+"Even if this task fails, continue with the next task."
+
+The main keyword we will practice is:
+
+ignore_errors: yes
+
+2. Lab Setup
+
+For this lab, you can use your existing AWS EC2 Ubuntu machines.
+
+You need:
+
+Ansible installed on your WSL/control machine
+At least one Ubuntu EC2 instance
+SSH access from WSL to EC2
+Ansible inventory file
+
+You don't need multiple servers for this lab. One EC2 instance is enough.
+
+3. Create the Lab Directory
+
+In WSL:
+
+mkdir -p ~/ansible-error-handling
+cd ~/ansible-error-handling
+
+Check:
+
+pwd
+
+You should see something like:
+
+/home/bilal/ansible-error-handling
+
+4. Create Inventory File
+
+Create:
+
+nano inventory
+
+Put:
+
+[servers]
+server1 ansible_host=<EC2-PUBLIC-IP>
+
+
+[servers:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/path/to/my-key.pem
+
+Replace:
+
+<EC2-PUBLIC-IP>
+
+with your EC2 public IP.
+
+And replace:
+
+/path/to/my-key.pem
+
+with the actual location of your .pem file in WSL.
+
+For example:
+
+[servers]
+server1 ansible_host=13.234.xx.xx
+
+[servers:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/bilal/aws/my-key.pem
+
+Important
+
+my-key.pem is your SSH private key file

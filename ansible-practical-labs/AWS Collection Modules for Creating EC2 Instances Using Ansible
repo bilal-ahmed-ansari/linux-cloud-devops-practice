@@ -1,0 +1,105 @@
+1. What is this Lab?
+
+In this lab, we will use Ansible to create an AWS EC2 instance.
+
+Instead of creating the EC2 instance manually from the AWS Console, we will use an Ansible playbook.
+
+For this lab, we will use:
+
+a) Ansible
+b) AWS CLI
+c) Boto3
+d) Ansible AWS Collection
+e) AWS IAM credentials
+f) AWS EC2
+g) Ansible Playbook
+h) Localhost inventory
+
+2. Lab Architecture
+
+The basic flow is:
+
+Ansible Playbook
+       |
+       v
+Ansible AWS Collection
+       |
+       v
+Boto3
+       |
+       v
+AWS API
+       |
+       v
+AWS EC2 Instance
+
+Ansible sends the request to AWS through the AWS Python libraries and AWS API.
+
+3. Create a Lab Directory
+
+First, create a separate directory for this AWS Ansible lab.
+
+mkdir aws-ansible-lab
+cd aws-ansible-lab
+
+Check the current directory:
+
+pwd
+
+Example:
+
+/home/bilal/aws-ansible-lab
+
+4. Create a Python Virtual Environment
+
+It is better to use a Python virtual environment for the lab.
+
+Create the virtual environment:
+
+python3 -m venv .venv
+
+Activate it:
+
+source .venv/bin/activate
+
+After activation, you should see something similar to:
+
+(.venv) user@ubuntu:~/aws-ansible-lab$
+
+This means the virtual environment is active.
+
+5. Install Boto3
+
+Boto3 is the Python SDK for AWS.
+
+Ansible uses Boto3 and related AWS libraries to communicate with AWS.
+
+Install Boto3:
+
+pip install boto3
+
+Verify the installation:
+
+pip show boto3
+
+6. Install AWS CLI
+
+AWS CLI allows us to interact with AWS from the Linux terminal.
+
+Check whether AWS CLI is already installed:
+
+aws --version
+
+Example:
+
+aws-cli/2.x.x Python/3.x.x Linux/x86_64
+
+If it is not installed, install AWS CLI according to the official AWS installation method.
+
+Run:
+
+sudo apt install aws-cli
+
+After installation, verify:
+
+aws --version

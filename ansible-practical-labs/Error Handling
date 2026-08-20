@@ -69,6 +69,10 @@ server1 ansible_host=<EC2-PUBLIC-IP>
 ansible_user=ubuntu
 ansible_ssh_private_key_file=/path/to/my-key.pem
 
+Here:
+
+server1 is an alias name of your EC2 insatnce
+
 Replace:
 
 <EC2-PUBLIC-IP>
@@ -93,3 +97,333 @@ ansible_ssh_private_key_file=/home/bilal/aws/my-key.pem
 Important
 
 my-key.pem is your SSH private key file
+
+5. Test the Inventory
+
+Run:
+
+ansible all -i inventory -m ping
+
+Expected:
+
+server1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+If you get pong, your Ansible connection is working.
+
+6. First Practical — ignore_errors
+
+Let's first understand the simplest error handling.
+
+Create:
+
+nano error-handling.yml
+
+Put:
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Run a command that will fail
+      ansible.builtin.command: ls /this-directory-does-not-exist
+      ignore_errors: yes
+
+    - name: This task will still run
+      ansible.builtin.debug:
+        msg: "Ansible continued after the error"
+
+Run:
+
+ansible-playbook -i inventory error-handling.yml
+7. What Happened?
+
+The first task:
+
+- name: Run a command that will fail
+  ansible.builtin.command: ls /this-directory-does-not-exist
+
+will fail because the directory doesn't exist.
+
+Normally Ansible would stop.
+
+But we added:
+
+ignore_errors: yes
+
+So Ansible says:
+
+"The task failed, but I'll ignore this error and continue."
+
+Therefore this task executes:
+
+- name: This task will still run
+  ansible.builtin.debug:
+    msg: "Ansible continued after the error"
+
+You will see something similar to:
+
+failed: [server1]
+...ignoring
+
+
+TASK [This task will still run]
+ok: [server1] => {
+    "msg": "Ansible continued after the error"
+}
+
+This is your first error-handling practical.
+
+8. Why ignore_errors is Useful?
+
+Suppose you have 10 tasks:
+
+Task 1
+Task 2
+Task 3
+Task 4
+Task 5
+...
+Task 10
+
+If Task 3 fails, normally:
+
+Task 1 → success
+Task 2 → success
+Task 3 → FAILED
+Task 4 → STOPPED
+Task 5 → STOPPED
+...
+
+With:
+
+ignore_errors: yes
+
+you get:
+
+Task 1 → success
+Task 2 → success
+Task 3 → FAILED but ignored
+Task 4 → continues
+Task 5 → continues
+...
+
+9. Second Practical — register
+
+Now let's understand register.
+
+register is used when we want to save the result of a task into a variable.
+
+Example:
+
+- name: Check Docker version
+  ansible.builtin.command: docker --version
+  register: output
+  ignore_errors: yes
+
+Here:
+
+register: output
+
+means:
+
+Store the result of this task inside a variable called output.
+
+10. Let's Practice register
+
+Create:
+
+nano register.yml
+
+Put:
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Check Docker version
+      ansible.builtin.command: docker --version
+      register: output
+      ignore_errors: yes
+
+    - name: Display Docker check result
+      ansible.builtin.debug:
+        var: output
+
+Run:
+
+ansible-playbook -i inventory register.yml
+
+If Docker is not installed, you may see:
+
+"failed": true
+
+and something like:
+
+"rc": 127
+
+The important part is:
+
+failed: true
+
+If Docker is already installed, you might see:
+
+"failed": false
+
+and:
+
+"stdout": "Docker version ..."
+
+11. Understanding output
+
+This:
+
+register: output
+
+creates a variable:
+
+output
+
+Then:
+
+debug:
+  var: output
+
+prints the entire variable.
+
+*********
+
+Let's understand your output step by step.
+
+1. First, the Python warning
+
+You got:
+
+[WARNING]: Host 'server1' is using the discovered Python interpreter at '/usr/bin/python3.14'
+
+This is only a warning, not an error.
+
+Ansible successfully connected to the EC2 server:
+
+ok: [server1]
+
+So for this lab, you can ignore this warning.
+
+2. Docker check failed — and that's expected
+
+Your task is:
+
+- name: Check Docker version
+  ansible.builtin.command: docker --version
+  register: output
+  ignore_errors: yes
+
+Ansible tried to execute:
+
+docker --version
+
+on your EC2 server.
+
+But Docker is not installed, so you got:
+
+No such file or directory: b'docker'
+
+This basically means:
+
+Ansible could not find the docker command on the server.
+
+That's exactly the situation we wanted to create for this lab.
+
+3. Why did Ansible show FAILED?
+
+You got:
+
+fatal: [server1]: FAILED!
+
+At first this looks scary, but immediately after that you have:
+
+...ignoring
+
+So the actual flow was:
+
+docker --version
+       ↓
+Docker doesn't exist
+       ↓
+TASK FAILED
+       ↓
+ignore_errors: yes
+       ↓
+Ansible continues
+
+This is the main thing you're learning in this practical.
+
+4. Now look at register
+
+You have:
+
+register: output
+
+This tells Ansible:
+
+Save the result of the Docker check inside a variable called output.
+
+Then you used:
+
+- name: Display docker check result
+  ansible.builtin.debug:
+    var: output
+
+So Ansible printed the contents of output.
+
+You got:
+
+"output": {
+    "changed": false,
+    "cmd": "docker --version",
+    "failed": true,
+    "msg": "Error executing command.",
+    "rc": 2,
+    ...
+}
+
+The most important line is:
+
+"failed": true
+
+**********
+
+11. Understanding output
+
+This:
+
+register: output
+
+creates a variable:
+
+output
+
+Then:
+
+debug:
+  var: output
+
+prints the entire variable.
+
+You can also check only whether it failed:
+
+You can also check only whether it failed:
+
+- ansible.builtin.debug:
+    var: output.failed
+
+Or:
+
+- ansible.builtin.debug:
+    msg: "Docker check failed: {{ output.failed }}"

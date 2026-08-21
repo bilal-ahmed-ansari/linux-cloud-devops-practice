@@ -13,11 +13,25 @@ After completing the setup, I can connect to the EC2 instance without entering t
 - User: ubuntu
 - Authentication: SSH key
 
-## Step 1: Check SSH Keys
 
-Check whether an SSH key already exists:
+Step 1: When you create an EC2 instance, AWS gives you a .pem private key.
 
-```bash
+For example:
+
+my-key.pem
+
+Initially, you use this .pem file to connect:
+
+ssh -i my-key.pem ubuntu@<EC2-PUBLIC-IP>
+
+The problem is that Ansible needs to connect to the EC2 server repeatedly. Instead of depending on the .pem key every time, we can copy your SSH public key to the EC2 server.
+
+After that, SSH authentication can happen using your SSH key pair.
+
+Step 2: Check SSH Keys
+
+Check whether an SSH key already exists in WSL machine:
+
 ls -l ~/.ssh/
 
 If a key does not exist, create one:
@@ -33,36 +47,111 @@ id_ed25519 is the private key.
 
 Do not share the private key.
 
-Step 2: Copy Public Key to EC2
+**********
 
-The AWS .pem key is used for the initial connection.
+1. What are the two keys?
 
-Command:
+Your SSH setup has two keys:
+
+Private Key  → ~/.ssh/id_ed25519
+Public Key   → ~/.ssh/id_ed25519.pub
+
+Think of it like:
+
+Private key = Your secret key 
+Public key  = Key that you give to the server
+
+Never share your private key.
+
+The .pem file you downloaded from AWS is also a private key.
+
+2. Why are we using the AWS .pem key?
+
+Suppose your EC2 server is:
+
+EC2 Public IP = 13.234.56.78
+
+And your AWS key is:
+
+my-key.pem
+
+Initially, EC2 trusts this AWS key.
+
+So you can connect:
+
+ssh -i ~/.ssh/my-key.pem ubuntu@13.234.56.78
+
+**********
+
+Step 3: The command
 
 ssh-copy-id -f "-o IdentityFile=~/.ssh/YOUR-KEY.pem" ubuntu@EC2-PUBLIC-IP
 
-Replace:
+Let's break it down.
 
-YOUR-KEY.pem with your EC2 key
-EC2-PUBLIC-IP with your EC2 public IP
+a) ssh-copy-id
 
-The public key is copied to the EC2 instance.
+This command copies your public SSH key to the remote server.
 
-Step 3: Test SSH
+Normally, it copies:
 
-Now connect to the EC2 instance:
+~/.ssh/id_ed25519.pub
 
-ssh ubuntu@EC2-PUBLIC-IP
+to the EC2 user's:
 
-If the setup is correct, SSH connects without asking for the password.
+~/.ssh/authorized_keys
 
-=> Result
+b) -f means force.
 
-Passwordless SSH authentication is working between WSL and the EC2 instance.
+What does -f do?
 
-=> Important
+Normally, ssh-copy-id first checks whether the public key is already installed on the remote server.
 
-Never upload these files to GitHub:
+With:
+
+-f
+
+you are telling ssh-copy-id:
+
+"Don't worry about checking whether the key already exists. Force the installation of the public key."
+
+c) -o IdentityFile=...
+
+This tells SSH:
+
+"Use this AWS .pem private key to authenticate to the EC2 server."
+
+Step 4: Test passwordless SSH
+
+After copying the key, try:
+
+ssh ubuntu@13.234.56.78
+
+Notice that we didn't use -i my-key.pem.
+
+If everything is configured correctly, SSH should use your local SSH key automatically.
+
+You can verify:
+
+ssh -v ubuntu@13.234.56.78
+
+Note:-
+
+1. Without -f:
+
+ssh-copy-id ubuntu@13.234.56.78
+
+It may try to authenticate using your normal SSH keys.
+
+2. With -f:
+
+ssh-copy-id -f "-o IdentityFile=~/.ssh/my-key.pem" ubuntu@13.234.56.78
+
+You're saying:
+
+"Use this .pem key to get into EC2, and force-copy my public key."
+
+3. Never upload these files to GitHub:
 
 .pem
 private SSH keys

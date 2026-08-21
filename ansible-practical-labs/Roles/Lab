@@ -1,0 +1,416 @@
+=> We will build an Apache Web Server Role.
+
+What we are going to build
+
+Our project will look like this:
+
+ansible-roles-lab/
+├── inventory
+├── site.yml
+└── roles/
+    └── apache/
+        ├── tasks/
+        │   └── main.yml
+        ├── handlers/
+        │   └── main.yml
+        ├── templates/
+        │   └── index.html.j2
+        ├── files/
+        ├── defaults/
+        │   └── main.yml
+        ├── vars/
+        │   └── main.yml
+        ├── meta/
+        │   └── main.yml
+        └── README.md
+
+=> In the lab, we'll mainly use:
+
+tasks/
+handlers/
+templates/
+defaults/
+
+These are the most useful ones for understanding how roles work.
+
+1. Create the project
+
+In your WSL:
+
+mkdir ansible-roles-lab
+cd ansible-roles-lab
+
+Create the inventory:
+
+nano inventory
+
+Example:
+
+[web]
+server1 ansible_host=YOUR_SERVER_IP
+
+[web:vars]
+ansible_user=ubuntu
+
+Replace:
+
+YOUR_SERVER_IP
+
+with your EC2/Ubuntu server IP.
+
+Because you already understand passwordless authentication, Ansible should be able to connect using your SSH key.
+
+Test it:
+
+ansible all -i inventory -m ping
+
+Expected:
+
+server1 | SUCCESS => {
+    "ping": "pong"
+}
+
+2. Create the Role
+
+Now comes the important part.
+
+Run:
+
+ansible-galaxy init roles/apache
+
+This command automatically creates the standard role structure.
+
+Check it:
+
+tree roles/apache
+
+You should see something like this
+
+roles/apache
+├── README.md
+├── defaults
+│   └── main.yml
+├── files
+├── handlers
+│   └── main.yml
+├── meta
+│   └── main.yml
+├── tasks
+│   └── main.yml
+├── templates
+├── tests
+│   ├── inventory
+│   └── test.yml
+└── vars
+    └── main.yml
+
+Instead of manually creating all these directories, Ansible gives you the standard structure.
+
+3. Understand the role before writing anything
+
+Think of our Apache role like this:
+
+apache role
+     |
+     +-- tasks       → Install/configure Apache
+     |
+     +-- handlers    → Restart Apache when required
+     |
+     +-- templates   → Dynamic configuration/page
+     |
+     +-- defaults    → Default values
+     |
+     +-- vars        → Role variables
+
+4. Create the Default Variables
+
+Open:
+
+nano roles/apache/defaults/main.yml
+
+Put:
+
+apache_package: apache2
+apache_service: apache2
+website_title: "My Ansible Web Server"
+
+These are our default values.
+
+For example:
+
+apache_package: apache2
+apache_service: apache2
+website_title: "My Ansible Web Server"
+
+These are our default values.
+
+For example:
+
+apache_package: apache2
+
+means:
+
+By default, install the apache2 package.
+
+And:
+
+website_title: "My Ansible Web Server"
+
+means:
+
+If nobody provides another title, use "My Ansible Web Server".
+
+5. Create the Template
+
+Now create:
+
+nano roles/apache/templates/index.html.j2
+
+Put:
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ website_title }}</title>
+</head>
+<body>
+    <h1>{{ website_title }}</h1>
+    <p>This server was configured using Ansible Roles.</p>
+</body>
+</html>
+
+Notice:
+
+{{ website_title }}
+
+This is the important part.
+
+It is a variable.
+
+The value comes from:
+
+defaults/main.yml
+
+So:
+
+defaults/main.yml
+        |
+        | website_title
+        ↓
+index.html.j2
+        |
+        | {{ website_title }}
+        ↓
+Final index.html
+
+The final server page will contain:
+
+<h1>My Ansible Web Server</h1>
+
+6. Create the Tasks
+
+Now open:
+
+nano roles/apache/tasks/main.yml
+
+Put:
+
+- name: Install Apache
+  ansible.builtin.apt:
+    name: "{{ apache_package }}"
+    state: present
+    update_cache: true
+
+- name: Start Apache
+  ansible.builtin.service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: true
+
+- name: Deploy website
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: '0644'
+  notify: Restart Apache
+
+=> Let's understand this carefully.
+
+a) Task 1
+- name: Install Apache
+
+Ansible installs Apache.
+
+But notice:
+
+name: "{{ apache_package }}"
+
+We are not writing:
+
+name: apache2
+
+Instead, we're using our variable:
+
+apache_package
+
+whose default value is:
+
+apache2
+
+b) Task 2
+- name: Start Apache
+
+It starts Apache and enables it at boot.
+
+Again:
+
+name: "{{ apache_service }}"
+
+The value comes from:
+
+apache_service: apache2
+
+c) Task 3
+
+This is the interesting one:
+
+- name: Deploy website
+  ansible.builtin.template:
+
+The template module takes:
+
+templates/index.html.j2
+
+and creates:
+
+/var/www/html/index.html
+
+on the remote server.
+
+7. Create the Handler
+
+Now open:
+
+nano roles/apache/handlers/main.yml
+
+Put:
+
+- name: Restart Apache
+  ansible.builtin.service:
+    name: apache2
+    state: restarted
+
+Now look back at our task:
+
+notify: Restart Apache
+
+This means:
+
+If the website template changes, notify the Restart Apache handler.
+
+So the flow is:
+
+Template changed
+       ↓
+Task reports "changed"
+       ↓
+notify: Restart Apache
+       ↓
+Handler runs
+       ↓
+Apache restarts
+
+8. Create the Main Playbook
+
+Now create:
+
+nano site.yml
+
+Put:
+
+- name: Configure Apache Web Server
+  hosts: web
+  become: true
+
+  roles:
+    - apache
+
+This is now a very clean playbook.
+
+The playbook doesn't contain all the Apache installation tasks.
+
+It simply says:
+
+roles:
+  - apache
+
+
+9. Your Complete Project
+
+At this point:
+
+ansible-roles-lab/
+│
+├── inventory
+│
+├── site.yml
+│
+└── roles/
+    └── apache/
+        │
+        ├── tasks/
+        │   └── main.yml
+        │
+        ├── handlers/
+        │   └── main.yml
+        │
+        ├── templates/
+        │   └── index.html.j2
+        │
+        ├── defaults/
+        │   └── main.yml
+        │
+        ├── vars/
+        │   └── main.yml
+        │
+        ├── files/
+        │
+        ├── meta/
+        │   └── main.yml
+        │
+        └── README.md
+
+=> For this lab, our important files are:
+
+inventory
+site.yml
+roles/apache/tasks/main.yml
+roles/apache/handlers/main.yml
+roles/apache/templates/index.html.j2
+roles/apache/defaults/main.yml
+
+10. Run the Role
+
+Run:
+
+ansible-playbook -i inventory site.yml
+
+You should see tasks similar to:
+
+TASK [apache : Install Apache]
+TASK [apache : Start Apache]
+TASK [apache : Deploy website]
+RUNNING HANDLER [apache : Restart Apache]
+
+Notice this:
+
+apache : Install Apache
+
+The apache part tells you that the task is coming from the apache role.
+
+
+
+
+
+
+

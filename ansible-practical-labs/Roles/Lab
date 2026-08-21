@@ -408,7 +408,186 @@ apache : Install Apache
 
 The apache part tells you that the task is coming from the apache role.
 
+11. curl http://localhost
 
+to check whether the web server (Apache) is actually working and serving the webpage.
+
+=> Break it down
+
+a);curl is a command-line tool used to make requests to a URL.
+
+curl http://localhost
+
+means:
+
+"Send an HTTP request to the web server running on this same machine and show me its response."
+
+Here:
+
+curl → makes the HTTP request
+http:// → use HTTP protocol
+localhost → this same server (127.0.0.1)
+
+You should see:
+
+<h1>My Ansible Web Server</h1>
+
+You can also open:
+
+http://YOUR_SERVER_IP
+
+in your browser if port 80 is allowed in the AWS Security Group.
+
+12. Now Understand the Real Power of defaults
+
+This is where the lab becomes more useful.
+
+Currently:
+
+website_title: "My Ansible Web Server"
+
+is in:
+
+roles/apache/defaults/main.yml
+
+Suppose you want another title.
+
+You don't have to modify the role.
+
+You can override the value from the playbook:
+
+- name: Configure Apache Web Server
+  hosts: web
+  become: true
+
+  vars:
+    website_title: "Production Web Server"
+
+  roles:
+    - apache
+
+Now the template:
+
+{{ website_title }}
+
+will use:
+
+Production Web Server
+
+instead of:
+
+My Ansible Web Server
+
+This is a very important concept in real projects.
+
+
+13. What happens when you run the playbook?
+
+The complete flow is:
+
+ansible-playbook site.yml
+          ↓
+      Playbook
+          ↓
+    roles: apache
+          ↓
+     Apache Role
+          ↓
+     tasks/main.yml
+          ↓
+ ┌────────┼───────────┐
+ ↓        ↓           ↓
+Install  Start     Template
+Apache   Apache     Website
+                     ↓
+              defaults/main.yml
+                     ↓
+              website_title
+                     ↓
+             Final index.html
+
+If the template changes:
+
+Template changed
+      ↓
+notify
+      ↓
+Handler
+      ↓
+Restart Apache
+
+14. How this looks in an industry project
+
+In a real project, you might have:
+
+roles/
+├── apache/
+├── nginx/
+├── docker/
+├── users/
+├── monitoring/
+├── security/
+├── java/
+└── application/
+
+Then the main playbook might be:
+
+- name: Configure Production Servers
+  hosts: web
+  become: true
+
+  roles:
+    - users
+    - security
+    - docker
+    - monitoring
+    - application
+
+Each role has its own responsibility.
+
+For example:
+
+users role
+   ↓
+Create required users
+
+security role
+   ↓
+Configure security settings
+
+docker role
+   ↓
+Install Docker
+
+monitoring role
+   ↓
+Install monitoring agent
+
+application role
+   ↓
+Deploy application
+
+
+This is much easier to maintain than putting everything into one 500–1000 line playbook.
+
+
+Note:-
+
+For example:
+
+              Ansible Project
+                     |
+       ┌─────────────┼─────────────┐
+       ↓             ↓             ↓
+   Web Role      Docker Role   Monitoring Role
+       |             |             |
+    Apache        Docker        Agent
+       |             |             |
+   templates      tasks        handlers
+   handlers       vars         templates
+   defaults       defaults
+
+That's the main reason companies use Ansible Roles: each responsibility is separated, reusable, and easier for the team to maintain.
 
 
 

@@ -1,0 +1,174 @@
+If you don't specify an inventory file, Ansible normally does NOT automatically search /etc/hosts.
+It uses the inventory configured in ansible.cfg. If that configuration is missing, Ansible has a default inventory location.
+
+Let's understand it step by step.
+
+1. What is an inventory?
+
+Inventory tells Ansible:
+
+Which machines should I manage?
+
+For example:
+
+[web]
+server1 ansible_host=192.168.1.10
+server2 ansible_host=192.168.1.11
+
+Normally you run:
+
+ansible all -i inventory -m ping
+
+
+Here:
+
+-i inventory
+   ↑
+   Inventory file
+
+2. What if you don't use -i?
+
+Suppose you run:
+
+ansible all -m ping
+
+You didn't tell Ansible:
+
+-i inventory
+
+So Ansible asks:
+
+"Where is my default inventory?"
+
+It checks its configuration.
+
+Usually this comes from ansible.cfg.
+
+You can see which configuration Ansible is using:
+
+ansible --version
+
+You'll see something like:
+
+config file = /home/ubuntu/ansible-project/ansible.cfg
+
+or:
+
+config file = /etc/ansible/ansible.cfg
+
+or possibly:
+
+config file = None
+
+3. ansible.cfg can specify the inventory
+
+For example, your ansible.cfg could contain:
+
+[defaults]
+inventory = ./inventory
+
+Now when you run:
+
+ansible all -m ping
+
+Ansible knows:
+
+ansible.cfg
+     ↓
+inventory = ./inventory
+     ↓
+inventory file
+     ↓
+servers
+
+So you don't need:
+
+-i inventory
+
+every time.
+
+4. What if ansible.cfg doesn't exist?
+
+Ansible has a default inventory configuration.
+
+A common default is:
+
+/etc/ansible/hosts
+
+So conceptually:
+
+ansible command
+      ↓
+Did I specify -i?
+      ↓
+   No
+      ↓
+Check ansible.cfg
+      ↓
+inventory configured?
+      ↓
+   Yes → use it
+      ↓
+   No
+      ↓
+Use default inventory location
+
+5. How can you check what Ansible is actually using?
+
+Run:
+
+ansible --version
+
+Look for:
+
+config file = ...
+
+Then check the inventory setting:
+
+ansible-config dump | grep -i inventory
+
+You can also check your configuration:
+
+cat ansible.cfg
+
+If you see:
+
+[defaults]
+inventory = inventory
+
+that's the reason you don't need -i.
+
+6. One more example from your labs
+
+Suppose your directory is:
+
+ansible-ec2-lab/
+├── ansible.cfg
+├── inventory
+└── ec2.yml
+
+ansible.cfg:
+
+[defaults]
+inventory = inventory
+
+inventory:
+
+[web]
+web1 ansible_host=10.0.1.20
+
+Then this:
+
+ansible web -m ping
+
+works.
+
+But if you remove ansible.cfg, then:
+
+ansible web -m ping
+
+may fail because Ansible no longer knows about your project inventory.
+
+You could explicitly tell it:
+
+ansible web -i inventory -m ping

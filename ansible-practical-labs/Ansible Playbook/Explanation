@@ -1,0 +1,266 @@
+1. hosts decides where the tasks should run.
+
+For example:
+
+- hosts: all
+
+or:
+
+- hosts: app_key
+
+or:
+
+- hosts: webservers
+
+2. become: true
+
+You have:
+
+become: true
+
+This tells Ansible:
+
+"Use elevated privileges when executing the tasks."
+
+In simple Linux terms, think of it as:
+
+sudo
+
+For example, installing Apache requires administrator/root privileges.
+
+3. name
+
+name: Install Apache
+
+This is just a description of the task.
+
+It makes the playbook easier for humans to understand.
+
+4. Ansible Module
+
+This part:
+
+ansible.builtin.apt:
+
+is the module Ansible uses for the task.
+
+Ansible provides many modules for different jobs.
+
+For example:
+
+apt       → package management
+copy      → copy files
+file      → manage files/directories
+service   → manage services
+user      → manage users
+template  → deploy templates
+
+5. Your task is:
+
+- name: Install Apache
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+    update_cache: yes
+
+=> Let's break it down.
+
+a) name: apache2
+
+This tells the apt module which package you want.
+
+In this case:
+
+Package = apache2
+
+b) state: present
+
+It means:
+
+"Make sure Apache is installed."
+
+It does not simply mean "run the install command every time."
+
+If Apache is already installed, Ansible understands that the desired state has already been achieved.
+
+If Apache isn't installed, Ansible installs it.
+
+Flow:
+
+First run:
+Apache not installed
+       ↓
+Install Apache
+       ↓
+changed
+
+Second run:
+Apache already installed
+       ↓
+Nothing to change
+       ↓
+ok
+
+c) update_cache: yes
+update_cache: yes
+
+This tells the apt module to update the package information before installing Apache.
+
+It's similar to:
+
+sudo apt update
+
+So your task is effectively handling the equivalent of:
+
+sudo apt update
+sudo apt install apache2
+
+through the Ansible module.
+
+6. Your second task is:
+
+- name: Copy index.html
+  ansible.builtin.copy:
+    src: index.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
+
+This task uses the copy module.
+
+Its job is:
+
+Copy a file from the Ansible control node to the managed server.
+
+=> In your lab:
+
+WSL
+ │
+ │ index.html
+ │
+ │ Ansible copy module
+ ↓
+EC2
+ │
+ └── /var/www/html/index.html
+
+a) src
+src: index.html
+
+src means:
+
+Where is the source file?
+
+In your case:
+
+index.html
+
+is the HTML file in your Ansible project directory.
+
+b) dest
+dest: /var/www/html/index.html
+
+dest means:
+
+Where should the file be placed on the managed server?
+
+Apache's default web directory on Ubuntu is:
+
+/var/www/html/
+
+So Ansible copies:
+
+WSL:
+index.html
+     ↓
+EC2:
+/var/www/html/index.html
+
+c) owner
+owner: root
+
+This sets the owner of the file to:
+
+root
+
+d) group
+group: root
+
+This sets the group ownership to:
+
+root
+
+So:
+
+Owner → root
+Group → root
+
+d) mode: '0644'
+mode: '0644'
+
+This sets the Linux permissions of the HTML file.
+
+0644 means:
+
+Owner  → read + write
+Group  → read
+Others → read
+
+In symbolic form:
+
+rw-r--r--
+
+7. How the Whole Playbook Works
+
+When you run:
+
+ansible-playbook -i inventory.ini first-playbook.yaml --limit app_key
+
+Here, --limit means "run the playbook only on the specific hosts/groups I mention."
+
+Ansible roughly follows this process:
+
+Read inventory
+      ↓
+Read playbook
+      ↓
+Find hosts
+      ↓
+Connect to EC2 using SSH
+      ↓
+Use elevated privileges
+      ↓
+Run Task 1
+      ↓
+Install Apache
+      ↓
+Run Task 2
+      ↓
+Copy index.html
+      ↓
+Set ownership and permissions
+      ↓
+Finish
+
+8. Playbook vs Ansible Command
+
+a) You may have used:
+
+ansible app_key -i inventory.ini -m ping
+
+That's an ad-hoc command.
+
+It is useful for performing a quick individual operation.
+
+b) A playbook is better when you have multiple tasks.
+
+=> Eg:
+
+a) Ad-hoc:
+Check connectivity → ping
+
+b) Playbook:
+Install Apache
+Copy HTML
+Set permissions

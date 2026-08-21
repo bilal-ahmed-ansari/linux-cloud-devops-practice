@@ -1,0 +1,31 @@
+=> Why Playbooks Are Important in Real DevOps
+
+Imagine a company has:
+
+10 web servers
+
+You need to install Apache and deploy the same webpage on all 10 servers.
+
+a) Without Ansible:
+
+SSH server 1 → install
+SSH server 2 → install
+SSH server 3 → install
+...
+SSH server 10 → install
+
+b) With Ansible:
+
+Inventory
+   ↓
+10 servers
+
+
+Playbook
+   ↓
+Install Apache
+Copy webpage
+   ↓
+10 servers
+
+One playbook can automate the work.

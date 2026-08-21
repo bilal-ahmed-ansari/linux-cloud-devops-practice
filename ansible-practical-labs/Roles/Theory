@@ -354,3 +354,38 @@ apache/
 ├── templates/
 ├── files/
 └── defaults/
+
+14. Easy Way to Remember
+
+Remember this simple flow:
+
+Inventory
+   ↓
+Playbook
+   ↓
+Role
+   ↓
+Tasks
+   ↓
+Modules
+   ↓
+Managed Server
+
+=> For example:
+
+inventory
+   ↓
+webservers
+   ↓
+site.yml
+   ↓
+apache role
+   ↓
+tasks/main.yml
+   ↓
+apt + service modules
+   ↓
+Ubuntu Server
+In one sentence:
+
+Ansible Role is a standard way of organizing related tasks, variables, files, templates and handlers into a reusable structure.

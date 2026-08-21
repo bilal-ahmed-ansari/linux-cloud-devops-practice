@@ -1,0 +1,356 @@
+1. What is an Ansible Role?
+
+An Ansible Role is a way to organize Ansible automation into a proper folder structure.
+
+When we start learning Ansible, we usually put everything inside one playbook:
+
+Install packages
+Copy configuration files
+Create users
+Start services
+Create directories
+Configure applications
+
+This is okay for small labs.
+
+But when the project becomes bigger, the playbook can become very long and difficult to manage.
+
+Roles solve this problem by dividing the automation into separate folders and files.
+
+For example:
+
+Install Apache
+        ↓
+    apache role
+
+
+Install MySQL
+        ↓
+    mysql role
+
+
+Configure Nginx
+        ↓
+    nginx role
+
+Each role handles one particular job.
+
+2. Why do we use Roles?
+
+Roles make Ansible code:
+
+Organized
+Reusable
+Easy to understand
+Easy to maintain
+Easy to troubleshoot
+
+For example, instead of having one huge playbook:
+
+site.yml
+ ├── Install Apache
+ ├── Configure Apache
+ ├── Copy HTML
+ ├── Start Apache
+ ├── Install MySQL
+ ├── Configure MySQL
+ └── Create MySQL users
+
+We can separate it:
+
+site.yml
+
+
+roles/
+├── apache/
+└── mysql/
+
+Now Apache-related tasks are inside the apache role and MySQL-related tasks are inside the mysql role.
+
+3. Basic Structure of an Ansible Role
+
+When we create a role, Ansible provides a standard directory structure.
+
+
+Example:
+
+roles/
+└── apache/
+    ├── tasks/
+    ├── handlers/
+    ├── templates/
+    ├── files/
+    ├── vars/
+    ├── defaults/
+    ├── meta/
+    └── README.md
+
+Each directory has a specific purpose.
+
+4. tasks/
+
+This is one of the most important directories in a role.
+
+It contains the actual tasks that Ansible should execute.
+
+Example:
+
+roles/
+└── apache/
+    └── tasks/
+        └── main.yml
+
+main.yml could contain:
+
+- name: Install Apache
+  apt:
+    name: apache2
+    state: present
+
+
+- name: Start Apache
+  service:
+    name: apache2
+    state: started
+
+So:
+
+tasks/main.yml = What should Ansible do?
+
+5. handlers/
+
+Handlers are used for tasks that should run only when they are notified by another task.
+
+A common example is restarting a service after changing its configuration.
+
+For example:
+
+tasks/main.yml
+
+changes an Apache configuration.
+
+Then it can notify:
+
+handlers/main.yml
+
+which contains:
+
+- name: Restart Apache
+  service:
+    name: apache2
+    state: restarted
+
+Simple understanding:
+
+Configuration changed
+        ↓
+Notify handler
+        ↓
+Restart Apache
+
+So:
+
+handlers/ = Special actions triggered by tasks.
+
+6. templates/
+
+Normally, a configuration file may contain a fixed value:
+
+server_name = web1.example.com
+
+But what if you have 3 servers?
+
+web1.example.com
+web2.example.com
+web3.example.com
+
+Instead of creating 3 separate configuration files, we create one template:
+
+server_name = {{ server_name }}
+
+Ansible will replace it with the actual value.
+
+Here {{server_name}} is a variable which is defined in vars folder.
+
+Example
+
+Template file:
+
+templates/app.conf.j2
+
+Content:
+
+server_name = {{ server_name }}
+port = {{ app_port }}
+
+=> Why do we use templates?
+
+Because the same configuration file can be used on different servers with different values.
+
+7. files/
+
+The files directory contains files that need to be copied to the managed servers.
+
+For example:
+
+files/
+└── index.html
+
+Ansible can copy this file to the remote server.
+
+Example:
+
+- name: Copy website
+  copy:
+    src: index.html
+    dest: /var/www/html/index.html
+
+So:
+
+files/ = Static files that need to be copied
+
+8. vars/
+
+The vars directory contains variables used by the role.
+
+Example:
+
+vars/
+└── main.yml
+
+It may contain:
+
+apache_port: 80
+apache_package: apache2
+server_name: web1.example.com
+
+These variables can then be used in the role.
+
+9. defaults/
+
+defaults/ contains default values for variables used by the role.
+
+For example, your Apache role may have:
+
+roles/
+└── apache/
+    └── defaults/
+        └── main.yml
+
+Inside main.yml:
+
+apache_port: 80
+
+This means:
+
+"If nobody gives me another value, use port 80."
+
+So 80 is the default value.
+
+10. meta/
+
+The meta directory contains information about the role.
+
+It can be used to define things such as:
+
+Role dependencies
+Information about the role
+Supported platforms
+
+For example, one role may depend on another role.
+
+Application role
+       ↓
+Database role
+
+11. Role Structure:
+
+roles/
+└── apache/
+    ├── tasks/
+    │   └── main.yml
+    │
+    ├── handlers/
+    │   └── main.yml
+    │
+    ├── templates/
+    │
+    ├── files/
+    │
+    ├── vars/
+    │   └── main.yml
+    │
+    ├── defaults/
+    │   └── main.yml
+    │
+    ├── meta/
+    │   └── main.yml
+    │
+    └── README.md
+
+12. How Roles Work with a Playbook
+
+A role does not replace the playbook.
+
+Instead, the playbook calls the role.
+
+For example:
+
+Playbook
+   ↓
+Apache Role
+   ↓
+tasks/main.yml
+   ↓
+Install Apache
+Start Apache
+Configure Apache
+
+The playbook can look like:
+
+- name: Configure Web Server
+  hosts: web
+  become: true
+
+
+  roles:
+    - apache
+
+Here:
+
+roles:
+  - apache
+
+means:
+
+"Run the Apache role for these hosts."
+
+13. Role vs Playbook
+
+This is important for interviews.
+
+a) Playbook
+
+A playbook defines:
+
+Which hosts should be managed
+Which roles/tasks should be used
+
+Example:
+
+- hosts: web
+  roles:
+    - apache
+
+b) Role
+
+A role contains the actual reusable automation.
+
+Example:
+
+apache/
+├── tasks/
+├── handlers/
+├── templates/
+├── files/
+└── defaults/

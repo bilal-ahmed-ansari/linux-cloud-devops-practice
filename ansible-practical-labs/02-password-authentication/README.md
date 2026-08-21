@@ -2,89 +2,118 @@
 
 Set up password-based SSH authentication on an AWS EC2 Ubuntu instance.
 
-## Step 1: Connect to EC2
+=> What is happening here?
 
-Initially connect using the AWS `.pem` key:
+Normally, when you connect to an Ubuntu EC2 instance, you use the .pem private key:
 
 ssh -i ~/.ssh/YOUR-KEY.pem ubuntu@EC2-PUBLIC-IP
 
-Step 2: Set Password
+This is SSH key-based authentication.
 
-Inside the EC2 instance, set a password for the Ubuntu user:
+With password authentication, instead of proving your identity using the .pem key, you prove it using:
+
+Username + Password
+
+So the flow becomes:
+
+Your Laptop
+    |
+    | SSH connection
+    | Username: ubuntu
+    | Password: ********
+    ↓
+AWS EC2 Ubuntu
+    |
+    | Checks password
+    ↓
+Login successful
+
+=> Your lab, explained step-by-step
+
+1. First login using .pem
+
+You need an initial way to access the EC2 server.
+
+ssh -i ~/.ssh/YOUR-KEY.pem ubuntu@EC2-PUBLIC-IP
+
+The .pem key gets you into the server.
+
+2. Create a password for ubuntu
+
+Inside EC2:
 
 sudo passwd ubuntu
 
-Enter the new password when asked.
+This creates/changes the password of the ubuntu user.
 
-You should see:
+For example:
+
+New password: ********
+Retype new password: ********
+
 
 passwd: password updated successfully
 
-Step 3: Enable Password Authentication
+Important: This does not mean SSH will immediately accept the password.
 
-Open the SSH configuration file:
+SSH server configuration also needs to allow password authentication.
+
+3. Tell SSH to allow passwords
+
+You edited:
 
 sudo nano /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
 
-Set:
+and added:
 
 PasswordAuthentication yes
 
-Save and exit.
+This basically tells the SSH server:
 
-Step 4: Restart SSH
+"Password-based login is allowed."
 
-Restart the SSH service:
-
-sudo systemctl restart ssh
-
-Check the service:
-
-sudo systemctl status ssh
-
-It should show:
-
-Active: active (running)
-
-Step 4: Restart SSH
-
-Restart the SSH service:
+4. Restart SSH
 
 sudo systemctl restart ssh
 
-Check the service:
+This makes the SSH service reload the configuration.
+
+You can check:
 
 sudo systemctl status ssh
 
-It should show:
+You want:
 
 Active: active (running)
+
+5. Test password authentication
+
+From your local machine, use:
 
 ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no ubuntu@EC2-PUBLIC-IP
 
-Enter the password that was created earlier.
+You should get:
 
-=> Result
+ubuntu@EC2-PUBLIC-IP's password:
 
-Password-based SSH authentication is working on the EC2 instance.
+Enter the password you created with:
 
-=> Difference
+sudo passwd ubuntu
 
-a)SSH key authentication:
+If the password is correct, you get logged in.
 
-SSH private/public key
-        ↓
-Authentication
-        ↓
-Login
+=> Why are these two options used?
 
-b)Password authentication:
+a) -o PreferredAuthentications=password
 
-Username + Password
-        ↓
-Authentication
-        ↓
-Login
+means:
 
-This was performed as a practical lab on an EC2 instance.
+Prefer password authentication.
 
+And:
+
+b) -o PubkeyAuthentication=no
+
+means:
+
+Don't use SSH public/private key authentication for this connection.

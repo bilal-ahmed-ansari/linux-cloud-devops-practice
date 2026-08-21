@@ -1,0 +1,137 @@
+1. What is an Ansible Playbook?
+
+An Ansible Playbook is a YAML file where we write the instructions that Ansible should perform on managed servers.
+
+Think of it like a step-by-step instruction file.
+
+For example, manually you might do this on an EC2 server:
+
+sudo apt update
+sudo apt install apache2 -y
+sudo cp index.html /var/www/html/index.html
+
+Instead of doing these commands manually, we can tell Ansible:
+
+"Connect to the server, install Apache, and copy my HTML file."
+
+We write these instructions inside a playbook.
+
+So:
+
+Playbook
+   ↓
+Instructions
+   ↓
+Ansible
+   ↓
+Managed Server
+   ↓
+Changes are performed
+
+2. Why do we need a Playbook?
+
+You can run individual Ansible commands like:
+
+ansible app_key -i inventory.ini -m ping
+
+But imagine you need to perform 10 or 20 tasks.
+
+For example:
+
+Install Apache
+Start Apache
+Create a directory
+Copy HTML file
+Change file permissions
+Create a user
+Install Git
+Restart a service
+
+Running every task separately would be inconvenient.
+
+A playbook allows you to put all these instructions in one YAML file.
+
+Then you simply run:
+
+ansible-playbook -i inventory.ini first-playbook.yaml
+
+Ansible executes the tasks one by one.
+
+3. Basic Structure of a Playbook
+
+Your playbook is:
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Install Apache
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Copy index.html
+      ansible.builtin.copy:
+        src: index.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+
+=> Structure:
+
+Playbook
+   │
+   └── Play
+        │
+        ├── hosts
+        ├── become
+        │
+        └── tasks
+             │
+             ├── Task 1 → Install Apache
+             │
+             └── Task 2 → Copy HTML file
+
+=> Explanation:-
+
+a) Playbook = Complete instructions
+Here is everything I want Ansible to do.
+
+b) Play = Who/Where
+- hosts: all
+
+Means:
+
+Which servers should Ansible work on?
+
+c) Task = What to do
+- name: Install Apache
+
+Means:
+
+What work should Ansible perform?
+
+d) Module = How to do it
+ansible.builtin.apt:
+
+Ansible uses the apt module to install Apache.
+
+=> Let me summarise with you from this example
+
+- hosts: all                    # Play → Who/Where?
+  become: true
+
+  tasks:
+    - name: Install Apache      # Task → What to do?
+      ansible.builtin.apt:      # Module → How to do it?
+        name: apache2
+        state: present
+
+    - name: Copy HTML
+      ansible.builtin.copy:     # Module → How to do it?
+        src: index.html
+        dest: /var/www/html/index.html

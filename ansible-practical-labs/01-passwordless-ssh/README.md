@@ -135,6 +135,56 @@ You can verify:
 
 ssh -v ubuntu@13.234.56.78
 
+Step 5: How this helps Ansible
+
+This is particularly useful for your Ansible lab.
+
+Without SSH key setup, Ansible may need:
+
+Ansible
+   |
+   | AWS .pem
+   ↓
+EC2
+
+With your SSH public key installed:
+
+Ansible
+   |
+   | SSH key authentication
+   ↓
+EC2
+
+Step 6: Then your inventory can use something like:
+
+[web]
+web1 ansible_host=13.234.56.78
+
+
+[all:vars]
+ansible_user=ubuntu
+
+And Ansible can connect:
+
+ansible all -m ping
+One important point
+
+The AWS .pem file is not copied to EC2.
+
+It is your private key used to authenticate during the initial connection.
+
+Your public key is what gets added to EC2's:
+
+~/.ssh/authorized_keys
+
+So remember it like this:
+
+.pem → initial authentication
+
+.pub → copied to EC2
+
+authorized_keys → tells EC2 which public keys are allowed to log in.
+
 Note:-
 
 1. Without -f:

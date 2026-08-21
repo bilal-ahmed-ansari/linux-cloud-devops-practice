@@ -1,0 +1,42 @@
+1. Why Roles are Important in Real Projects
+
+Imagine a company has 50 servers.
+
+They may need:
+
+Apache
+Nginx
+Docker
+Monitoring Agent
+Users
+Security Configuration
+
+Instead of creating one huge playbook, we can create separate roles:
+
+roles/
+├── apache/
+├── nginx/
+├── docker/
+├── monitoring/
+├── users/
+└── security/
+
+This makes automation much easier to manage.
+
+2. Role Reusability
+
+One of the biggest advantages of roles is reusability.
+
+Suppose you create an apache role.
+
+You can use the same role in:
+
+Development
+Testing
+Production
+
+You don't need to rewrite all Apache tasks again.
+
+             ┌── Development
+Apache Role ─┼── Testing
+             └── Production

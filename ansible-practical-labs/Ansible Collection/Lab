@@ -67,7 +67,7 @@ ansible_collections/
 
 You don't normally need to manually modify these files.
 
-Check Collection Documentation
+6. Check Collection Documentation
 
 You can get information about a collection with:
 
@@ -83,3 +83,117 @@ VPC
 Security Groups
 IAM
 and other AWS services
+
+7. Use a Collection in a Playbook
+
+You can explicitly mention the collection in your playbook:
+
+---
+- name: AWS Collection Example
+  hosts: localhost
+  connection: local
+
+  collections:
+    - amazon.aws
+
+  tasks:
+    - name: Example AWS task
+      ...
+
+The important part here is:
+
+collections:
+  - amazon.aws
+
+It tells Ansible:
+
+"I want to use modules from the amazon.aws collection."
+
+8. Better approach: Use FQCN
+
+Modern Ansible playbooks commonly use the Fully Qualified Collection Name (FQCN) directly.
+
+For example:
+
+amazon.aws.ec2_instance
+
+Instead of just:
+
+ec2_instance
+
+This makes it clear which collection the module belongs to.
+
+9. Example with AWS EC2
+
+A simplified example looks like this:
+
+---
+- name: Create EC2 Instance
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        name: my-test-server
+        instance_type: t2.micro
+        image_id: ami-xxxxxxxx
+        key_name: my-key
+        region: ap-south-1
+
+Important: ami-xxxxxxxx is only an example. For an actual lab, you need a valid AMI ID for your AWS region.
+
+10. What happens when you run the playbook?
+
+When you run:
+
+ansible-playbook ec2.yml
+
+Ansible roughly does this:
+
+Playbook
+   ↓
+amazon.aws collection
+   ↓
+ec2_instance module
+   ↓
+AWS API
+   ↓
+EC2 Instance
+
+So Ansible communicates with AWS using the functionality provided by the collection.
+
+11. Collection Dependencies
+
+Some collections require other collections or Python packages to work properly.
+
+For example, AWS automation may require the appropriate AWS Python SDK on the machine running Ansible.
+
+This is why collections often have dependencies.
+
+You can think of it like:
+
+Your Playbook
+     ↓
+Collection
+     ↓
+Required dependencies
+     ↓
+AWS
+
+12. Useful Commands for the Lab
+
+a) Search for a collection
+ansible-galaxy collection search amazon.aws
+
+b) Install a collection
+ansible-galaxy collection install amazon.aws
+
+c) List installed collections
+ansible-galaxy collection list
+
+d) Check Ansible version
+ansible --version
+
+e) Run your playbook
+ansible-playbook ec2.yml

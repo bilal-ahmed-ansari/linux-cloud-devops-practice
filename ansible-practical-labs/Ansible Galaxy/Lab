@@ -1,0 +1,438 @@
+=> Lab objective
+
+In this lab, we will:
+
+Check Ansible Galaxy
+Search for a role
+Understand namespace.role
+Install a role
+Check where the role was installed
+Create a playbook
+Use the Galaxy role in the playbook
+Run the playbook
+Verify the result
+
+Step 1: Check Ansible installation
+
+First check Ansible:
+
+ansible --version
+
+You should get something similar to:
+
+ansible [core ...]
+
+Now check the Galaxy command:
+
+ansible-galaxy --version
+
+And see available options:
+
+ansible-galaxy --help
+What is ansible-galaxy?
+
+ansible-galaxy is the command-line tool used to work with Ansible Galaxy content.
+
+For example:
+
+ansible-galaxy role install ...
+
+means:
+
+Download and install an Ansible role.
+
+Step 2: Search for a role
+
+Suppose we want a role for installing Nginx.
+
+We can search Galaxy using:
+
+ansible-galaxy search nginx
+
+This will show roles related to Nginx.
+
+This will show roles related to Nginx.
+
+You may see names similar to:
+
+geerlingguy.nginx
+...
+
+The important thing is the format:
+
+namespace.role
+
+For example:
+
+geerlingguy.nginx
+
+means:
+
+geerlingguy → namespace
+nginx        → role name
+
+Remember:
+
+Namespace identifies the publisher/owner, while the role name identifies the actual role.
+
+Step 3: Understand the namespace
+
+Suppose you find:
+
+geerlingguy.nginx
+
+Don't read this as one single name.
+
+Read it as:
+
+geerlingguy . nginx
+       ↓        ↓
+  namespace   role
+
+Step 4: Install the role
+
+Once you decide to use a role, install it.
+
+For example:
+
+ansible-galaxy role install geerlingguy.nginx
+
+Ansible will download the role.
+
+You may see output indicating that the role was installed successfully.
+
+What actually happened?
+
+Before installation:
+
+Your WSL
+   |
+   └── No nginx role
+
+After installation:
+
+Your WSL
+   |
+   └── nginx role
+
+Now you can use that role from your playbook.
+
+Step 5: Check installed roles
+
+Run:
+
+ansible-galaxy role list
+
+This shows the roles installed on your system.
+
+You may see something like:
+
+# /home/bilal/.ansible/roles
+- geerlingguy.nginx
+
+The exact path can be different on your system.
+
+Step 6: Understand the role directory
+
+Go to the roles directory shown by the previous command.
+
+The role will have a structure similar to:
+
+geerlingguy.nginx/
+├── defaults/
+├── handlers/
+├── meta/
+├── tasks/
+├── templates/
+├── tests/
+└── vars/
+
+The important directories are:
+
+tasks/
+    ↓
+Actual tasks performed by the role
+
+handlers/
+    ↓
+Handlers such as restarting services
+
+defaults/
+    ↓
+Default variables
+
+vars/
+    ↓
+Role variables
+
+templates/
+    ↓
+Jinja2 configuration templates
+
+files/
+    ↓
+Static files
+
+meta/
+    ↓
+Role information and dependencies
+
+This is the same Role structure you were learning earlier.
+
+The difference is:
+
+Previously, you created the role yourself.
+
+With Galaxy:
+
+Someone has already created the role and you downloaded it.
+
+Step 7: Create a project directory
+
+Let's create a separate lab:
+
+mkdir ~/ansible-galaxy-lab
+
+Go inside:
+
+cd ~/ansible-galaxy-lab
+
+Check:
+
+pwd
+
+You should be inside:
+
+/home/your-user/ansible-galaxy-lab
+
+Step 8: Create an inventory
+
+Create:
+
+nano inventory
+
+For a simple local lab, you can use:
+
+[web]
+localhost ansible_connection=local
+
+Save the file.
+
+Test the inventory:
+
+ansible all -i inventory -m ping
+
+You should get:
+
+localhost | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+This confirms Ansible can communicate with localhost.
+
+Step 9: Create a playbook
+
+Now create:
+
+nano nginx.yml
+
+The basic idea is:
+
+- name: Configure Nginx
+  hosts: web
+
+  roles:
+    - geerlingguy.nginx
+
+Notice something important.
+
+We aren't writing:
+
+tasks:
+  - name: Install nginx
+    ...
+
+We are simply saying:
+
+roles:
+  - geerlingguy.nginx
+
+We are telling Ansible:
+
+"Use the Nginx role that I installed from Galaxy."
+
+Step 10: Run the playbook
+
+Run:
+
+ansible-playbook -i inventory nginx.yml
+
+Ansible will:
+
+Playbook
+    ↓
+geerlingguy.nginx role
+    ↓
+Role tasks
+    ↓
+Install/configure Nginx
+
+The role contains the actual tasks.
+
+Your playbook only calls the role.
+
+Step 11: Verify Nginx
+
+After the playbook finishes, check:
+
+nginx -v
+
+You can also check the service:
+
+systemctl status nginx
+
+If Nginx is running, you should see something like:
+
+Active: active (running)
+
+You can also test it from the machine:
+
+curl http://localhost
+
+If Nginx is working, you should receive an HTML response.
+
+=> Conceptually:
+
+Your Playbook
+      |
+      ↓
+geerlingguy.nginx
+      |
+      ├── Install Nginx
+      |
+      ├── Copy configuration
+      |
+      ├── Configure Nginx
+      |
+      ├── Start service
+      |
+      └── Enable service
+
+You didn't have to write all those tasks yourself.
+
+That's the main purpose of reusable roles.
+
+Step 11: See what the role contains
+
+You can inspect the installed role.
+
+First find where roles are installed:
+
+ansible-galaxy role list
+
+Then go to the role directory.
+
+For example:
+
+cd ~/.ansible/roles/geerlingguy.nginx
+
+Check the files:
+
+ls
+
+Then:
+
+ls tasks
+
+You can inspect the main task file:
+
+cat tasks/main.yml
+
+This is a very useful learning exercise.
+
+Step 12: Check role information
+
+You can also use:
+
+ansible-galaxy role info geerlingguy.nginx
+
+This can provide information about the role, such as:
+
+Role name
+Author
+Description
+Version
+Dependencies
+Platforms
+
+This is useful before using a role.
+
+Step 13: Don't blindly install roles
+
+In an actual company environment, don't simply do:
+
+ansible-galaxy role install something.something
+
+and immediately use it on production.
+
+First investigate the role.
+
+Check:
+
+Who created it?
+       ↓
+Is the author trusted?
+       ↓
+Is there a GitHub repository?
+       ↓
+Is it maintained?
+       ↓
+Does it support our OS?
+       ↓
+What version does it support?
+       ↓
+Does it have dependencies?
+       ↓
+What do the actual tasks do?
+
+Especially check:
+
+cat tasks/main.yml
+
+because the role contains tasks that will execute on your servers.
+
+Step 14: Remember this flow
+
+1. Search Galaxy
+       ↓
+2. Find a Role
+       ↓
+3. Identify namespace
+       ↓
+4. Check role information
+       ↓
+5. Install Role
+       ↓
+6. Check installed role
+       ↓
+7. Create inventory
+       ↓
+8. Create playbook
+       ↓
+9. Add role
+       ↓
+10. Run playbook
+       ↓
+11. Verify application
+
+=> The most important commands
+ansible-galaxy --version
+ansible-galaxy search nginx
+ansible-galaxy role install namespace.role
+ansible-galaxy role list
+ansible-galaxy role info namespace.role
+
+And finally:
+
+ansible-playbook -i inventory nginx.yml

@@ -1,0 +1,182 @@
+1. What is Error Handling in Ansible?
+
+Error handling means deciding what Ansible should do when a task does not work as expected.
+
+For example, suppose your playbook has:
+
+Install Docker
+     ↓
+Start Docker
+     ↓
+Copy configuration
+     ↓
+Start application
+
+What happens if Docker installation fails?
+
+Should Ansible:
+
+Stop the entire playbook?
+Continue with the next task?
+Ignore the error?
+Try something else?
+Show a custom message?
+Mark the task as failed even though the command returned success?
+
+Error handling in Ansible allows us to control this behavior.
+
+2. Why is Error Handling Important?
+
+Without proper error handling, a small problem can cause unexpected results.
+
+For eg:
+
+Task 1 → Install Docker       ✅
+Task 2 → Start Docker         ❌
+Task 3 → Copy configuration   ?
+Task 4 → Start application    ?
+
+If Task 2 fails, Ansible normally stops executing the remaining tasks for that host.
+
+This can be good because continuing may make the situation worse.
+
+But sometimes a failure is expected or not serious, and we may want Ansible to continue.
+
+Therefore, error handling helps us tell Ansible:
+
+"If something goes wrong, handle it in this particular way."
+
+3. What happens by default when a task fails?
+
+By default, Ansible follows a simple rule:
+
+If a task fails, Ansible stops running the remaining tasks for that host.
+
+For example:
+
+Task 1 → Install package       ✅
+Task 2 → Start service         ❌
+Task 3 → Copy configuration   ⛔
+Task 4 → Restart application  ⛔
+
+Here, Task 3 and Task 4 are not executed for that host.
+
+However, if your play contains multiple hosts, Ansible can continue working on the other hosts depending on the situation.
+
+For example:
+
+web1 → Task failed
+web2 → Task continues
+web3 → Task continues
+
+So remember:
+
+A task failure normally stops further tasks for that host, not necessarily the entire playbook for every host.
+
+4. ignore_errors
+
+One of the simplest error-handling methods is:
+
+ignore_errors: yes
+
+It tells Ansible:
+
+"If this task fails, don't stop. Continue with the next task."
+
+For example:
+
+- name: Check Docker version
+  ansible.builtin.command: docker --version
+  ignore_errors: yes
+
+If Docker isn't installed, the task can fail.
+
+=> Normally:
+
+Task fails
+   ↓
+Ansible stops for that host
+
+=> With:
+
+ignore_errors: yes
+
+=> the behavior becomes:
+
+Task fails
+   ↓
+Ansible ignores the failure
+   ↓
+Next task runs
+
+Note:- ignore_errors does not fix the error.
+
+It simply says:
+
+"I know this task failed, but continue anyway."
+
+5. register
+
+register is another important part of error handling.
+
+It allows us to save the result of a task in a variable.
+
+Example:
+
+- name: Check Docker version
+  ansible.builtin.command: docker --version
+  register: docker_result
+
+Ansible saves the result inside:
+
+docker_result
+
+That result can contain information such as:
+
+failed
+rc
+stdout
+stderr
+
+For example:
+
+docker_result
+    |
+    ├── failed
+    ├── rc
+    ├── stdout
+    └── stderr
+
+We can then use this information in later tasks.
+
+So:
+
+register allows us to capture the result of a task and use that result later.
+
+6. debug
+
+debug is commonly used with register to see what was saved.
+
+For example:
+
+- name: Show result
+  ansible.builtin.debug:
+    var: docker_result
+
+It means:
+
+"Show me the information stored inside docker_result."
+
+Note:- Remember:
+
+register
+   ↓
+Save result
+
+debug
+   ↓
+Display result
+
+
+
+The error is still reported in the output.

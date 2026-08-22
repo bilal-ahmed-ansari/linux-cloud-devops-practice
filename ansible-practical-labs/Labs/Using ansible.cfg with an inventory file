@@ -123,16 +123,53 @@ Do the same for EC2-2.
 
 => host_key_checking is related to SSH host verification.
 
-When you connect to an EC2 server for the first time manually:
+Simple meaning
 
-ssh -i ~/testing.pem ubuntu@15.252.123.99
+When Ansible connects to a remote server using SSH, SSH checks:
 
-SSH may ask:
+"Do I already know this server's identity?"
 
-Are you sure you want to continue connecting (yes/no/[fingerprint])?
+This identity is stored in the SSH known_hosts file.
 
-This happens because your WSL machine has never connected to that server before.
+For example, the first time you connect:
 
-SSH stores the server's identity/fingerprint in:
+ssh ubuntu@192.168.1.101
+
+You may see:
+
+The authenticity of host '192.168.1.101' can't be established.
+Are you sure you want to continue connecting (yes/no)?
+
+When you type yes, the server's SSH host key is saved in:
 
 ~/.ssh/known_hosts
+
+So what does host_key_checking do?
+
+It tells Ansible whether it should verify the SSH host key of the remote machine.
+
+host_key_checking = True
+
+Ansible checks the host key.
+
+This is more secure because Ansible can detect if the server's identity has unexpectedly changed.
+
+host_key_checking = False
+
+Ansible doesn't perform this SSH host-key verification.
+
+Easy example
+
+Think of it like this:
+
+Host key checking = checking someone's ID before allowing them inside.
+
+True → "Show me your ID. I want to verify you."
+False → "I won't check your ID; just come in."
+Why do we commonly use False in Ansible labs?
+
+Suppose you create and destroy EC2 instances frequently. Their IP addresses may be reused, and SSH host keys can chang
+
+
+In one line:
+host_key_checking controls whether Ansible verifies the SSH identity (host key) of the remote server before connecting.e.

@@ -1,0 +1,85 @@
+1. Check Ansible version
+
+First, check whether Ansible is installed:
+
+ansible --version
+
+This confirms that Ansible is available in your WSL/Linux environment.
+
+2. Check available collections
+
+You can search for collections using Ansible Galaxy.
+
+For example, if you want to work with AWS:
+
+ansible-galaxy collection search amazon.aws
+
+You will see information about the amazon.aws collection.
+
+3. Install a Collection
+
+Install the AWS collection:
+
+ansible-galaxy collection install amazon.aws
+
+Ansible will download and install the collection.
+
+You may see output similar to:
+
+Starting galaxy collection install process
+Process install dependency map
+Starting collection install process
+Downloading collection 'amazon.aws'
+Installing 'amazon.aws'
+
+This means the collection has been successfully installed.
+
+4. Verify the Collection
+
+To check installed collections:
+
+ansible-galaxy collection list
+
+You should see something similar to:
+
+# /home/username/.ansible/collections/ansible_collections
+Collection    Version
+------------  -------
+amazon.aws    x.x.x
+
+The exact version may be different.
+
+5. Understand where the Collection is installed
+
+By default, user-installed collections are commonly stored under:
+
+~/.ansible/collections/ansible_collections/
+
+Inside it, you may find:
+
+ansible_collections/
+└── amazon/
+    └── aws/
+        ├── plugins/
+        ├── roles/
+        ├── docs/
+        └── ...
+
+You don't normally need to manually modify these files.
+
+Check Collection Documentation
+
+You can get information about a collection with:
+
+ansible-galaxy collection list
+
+You can also use the Ansible documentation to understand the modules available in the collection.
+
+For example, AWS collection modules can include functionality for:
+
+EC2
+S3
+VPC
+Security Groups
+IAM
+and other AWS services

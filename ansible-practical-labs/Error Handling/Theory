@@ -115,6 +115,8 @@ It simply says:
 
 "I know this task failed, but continue anyway."
 
+The error is still reported in the output.
+
 5. register
 
 register is another important part of error handling.
@@ -177,6 +179,421 @@ debug
    ↓
 Display result
 
+7. Important fields in a registered result
+
+When you use register, Ansible can store several pieces of information.
+
+For example:
+
+docker_result:
+    failed: false
+    rc: 0
+    stdout: "Docker version 29.7.2"
+    stderr: ""
+
+=> Explanation:-
+
+a) failed
+
+Tells us whether the task failed.
+
+failed: false
+
+means:
+
+Task did not fail.
+
+failed: true
+
+means:
+
+Task failed.
+
+b) rc
+
+Means return code.
+
+For commands, the most important value is:
+
+rc: 0
+
+which normally means:
+
+Command succeeded.
+
+A non-zero return code normally means something went wrong.
+
+For example:
+
+rc: 127
+
+often indicates that a command could not be found.
+
+c) stdout
+
+Means:
+
+Normal output produced by the command.
+
+For example:
+
+stdout: "Docker version 29.7.2"
+
+d) stderr
+
+Means:
+
+Error output produced by the command.
+
+For example:
+
+stderr: "docker: command not found"
+
+8. failed_when
+
+This is a very important Ansible error-handling feature.
+
+Sometimes Ansible's default idea of success or failure is not what we want.
+
+failed_when allows us to define our own condition for failure.
+
+For example:
+
+failed_when: docker_result.rc != 0
+
+This means:
+
+"Consider this task failed if the return code is not 0."
+
+9. Why do we need failed_when?
+
+Imagine a command returns:
+
+rc: 0
+
+Ansible thinks:
+
+Success.
+
+But maybe the command output contains something that you consider an error.
+
+For example, suppose a command returns:
+
+stdout: "Application status: FAILED"
 
 
-The error is still reported in the output.
+but the command itself returns:
+
+rc: 0
+
+Ansible may consider the task successful because the command returned 0.
+
+But from your application's point of view:
+
+The application actually failed.
+
+You can use failed_when to create your own rule based on the output.
+
+For example, conceptually:
+
+failed_when: "'FAILED' in result.stdout"
+
+Now Ansible will consider the task failed if FAILED appears in the output.
+
+So:
+
+failed_when lets us tell Ansible exactly when a task should be considered a failure.
+
+10. changed_when
+
+Ansible tasks can have different statuses.
+
+One important status is:
+
+changed
+
+changed_when allows you to tell Ansible when a task should be considered changed.
+
+For example, some commands may execute successfully but don't actually change anything.
+
+Ansible may not automatically understand what the command did.
+
+You can define your own rule with:
+
+changed_when:
+
+For example, conceptually:
+
+changed_when: "'updated' in result.stdout"
+
+This means:
+
+Consider the task changed only when the output contains updated.
+
+So:
+
+failed_when → When should this task be considered FAILED?
+
+changed_when → When should this task be considered.
+
+11. block
+
+When you have multiple related tasks, Ansible provides:
+
+block:
+
+A block allows you to group multiple tasks together.
+
+For example:
+
+BLOCK
+ |
+ ├── Install application
+ ├── Copy configuration
+ └── Start application
+
+Instead of treating them as completely separate tasks, we can group them logically.
+
+12. rescue
+
+rescue is similar to the idea of "what should I do if something in the block fails?"
+
+=> The structure is:
+
+block
+   ↓
+Run normal tasks
+   ↓
+Something fails
+   ↓
+rescue
+   ↓
+Run recovery tasks
+
+=> For example:
+
+BLOCK
+  |
+  ├── Install application
+  ├── Configure application
+  └── Start application
+          ↓
+        FAIL
+          ↓
+RESCUE
+  |
+  └── Perform recovery action
+
+So:
+
+rescue contains tasks that Ansible should run when a task inside the block fails.
+
+13. always
+
+always means:
+
+Run these tasks regardless of whether the block succeeded or failed.
+
+The structure is:
+
+block
+   ↓
+Normal tasks
+   ↓
+Success or Failure
+   ↓
+always
+   ↓
+Run these tasks anyway
+
+For example, you might want to:
+
+Display a final message
+Clean up temporary files
+Remove temporary resources
+Perform some final operation
+
+15. any_errors_fatal
+
+Conceptually:
+
+web1 → Task fails ❌
+web2 → Stop
+web3 → Stop
+
+Instead of:
+
+web1 → Task fails ❌
+web2 → Continue ✅
+web3 → Continue ✅
+
+So:
+
+any_errors_fatal can be used when a failure on one host should stop the play for all hosts.
+
+16. max_fail_percentage
+
+In a large environment, you may have many servers.
+
+For example:
+
+100 servers
+
+Suppose some servers fail.
+
+You may not want to stop immediately after the first failure.
+
+You may say:
+
+"Continue unless too many servers are failing."
+
+That's where:
+
+max_fail_percentage:
+
+is useful.
+
+It allows you to define a failure percentage threshold.
+
+Conceptually:
+
+100 servers
+     ↓
+10 servers fail
+     ↓
+Still continue
+
+But if the failure percentage goes above your defined limit:
+
+Too many servers failed
+        ↓
+Stop the play
+
+So:
+
+max_fail_percentage controls how many hosts can fail before Ansible stops the play.
+
+17. assert
+
+Another useful feature is:
+
+ansible.builtin.assert
+
+assert allows you to check whether a condition is true.
+
+Think of it as:
+
+"Before continuing, make sure this condition is true."
+
+For example:
+
+Check:
+Is Docker installed?
+
+YES → Continue
+NO  → Fail with a message
+
+Or:
+
+Check:
+Is free disk space enough?
+
+YES → Continue
+NO  → Stop with an explanation
+
+So assert is useful for validation.
+
+18. fail
+
+Ansible also provides:
+
+ansible.builtin.fail
+
+This allows you to intentionally stop a task/play for a host with your own message when a condition is not acceptable.
+
+For example:
+
+Check disk space
+       ↓
+Only 1 GB free
+       ↓
+Not safe to continue
+       ↓
+Fail with custom message
+
+The difference is:
+
+assert → Check whether a condition is true
+
+fail   → Explicitly tell Ansible to fail with a message
+
+Both are useful for validation and controlled failure.
+
+19. The complete picture 
+
+                 Ansible runs task
+                        |
+                        ↓
+                 What happened?
+                        |
+             ┌──────────┴──────────┐
+             |                     |
+          SUCCESS                FAILURE
+             |                     |
+             |              Can we continue?
+             |                     |
+             |          ┌──────────┴──────────┐
+             |          |                     |
+             |        YES                    NO
+             |          |                     |
+             |   ignore/recover/etc.       Stop
+             |          |
+             └──────────┴──────────┐
+                                   ↓
+                              Next task
+
+And if you have multiple tasks that must be handled together:
+
+                 BLOCK
+                   |
+             Try the tasks
+                   |
+          ┌────────┴────────┐
+          |                 |
+       SUCCESS           FAILURE
+          |                 |
+          |               RESCUE
+          |                 |
+          └────────┬────────┘
+                   |
+                 ALWAYS
+                   |
+                   ↓
+             Continue/finish
+
+Note:- Sommary
+
+register      → Capture result
+
+ignore_errors → Continue after failure
+
+failed_when   → Define what counts as failure
+
+changed_when  → Define what counts as changed
+
+block         → Group tasks
+
+rescue        → Handle/recover from failure
+
+always        → Run regardless of result
+
+assert        → Validate a condition
+
+fail          → Intentionally fail with a message
+
+any_errors_fatal
+              → Stop play across hosts when an error occurs
+
+max_fail_percentage
+              → Stop when too many hosts fail
+

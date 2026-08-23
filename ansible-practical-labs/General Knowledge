@@ -75,5 +75,202 @@ It doesn't have to be the actual hostname of the EC2 server.
 c) ansible_host → Actual server address
 ansible_host=13.203.154.149
 
+6. What is an IAM Access Key?
+
+When you use AWS from the AWS Console, you normally log in with:
+
+Username
+Password
+
+But when you want to access AWS from the CLI, Ansible, Terraform, Python, etc., you can use:
+
+Access Key ID
+Secret Access Key
+
+Think of them like a username + password for programs.
+
+=> Example
+Access Key ID:
+AKIAxxxxxxxxxxxxxxxx
+
+Secret Access Key:
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+The Secret Access Key is private. You should never share it or upload it to GitHub.
+
+b) Why do we need IAM keys?
+
+Suppose you are using Ansible to create an EC2 instance.
+
+Ansible needs permission to communicate with AWS.
+
+For example:
+
+Ansible
+   |
+   | Access Key + Secret Access Key
+   ↓
+AWS
+   |
+   ↓
+EC2
+
+AWS uses these keys to identify which IAM user/program is making the request and what that identity is allowed to do.
+
+c) How to create an Access Key
+
+Go to the AWS Console.
+
+Step 1 — Open IAM
+
+Search for:
+
+IAM
+
+Open IAM — Identity and Access Management.
+
+Then go to:
+
+Users
+
+Select the IAM user for which you want to create the key.
+
+For example:
+
+ansible-user
+
+Step 2 — Open Security credentials
+
+Inside the user, go to:
+
+Security credentials
+
+Find:
+
+Access keys
+
+Then click:
+
+Create access key
+
+Step 3 — Select the use case
+
+AWS may ask why you are creating the access key.
+
+For your learning/lab environment, if you are using:
+
+AWS CLI
+Ansible
+Terraform
+Python
+
+select the option appropriate to CLI/local code that AWS currently presents.
+
+Then continue.
+
+Step 4 — Add description/tag
+
+AWS may ask for a description.
+
+For example:
+
+Ansible Lab
+
+or:
+
+Ansible Ubuntu VM
+
+This is just to help you remember why this key was created.
+
+Note:- 
+
+a) Access Key ID
+
+Not considered a password
+
+It identifies the access key.
+
+b) Secret Access Key
+
+SECRET
+
+This works like a password and must be protected.
+
+=> How Ansible uses these keys
+
+Suppose you want Ansible to communicate with AWS.
+
+You can configure AWS credentials on your Linux machine.
+
+For example:
+
+aws configure
+
+It asks:
+
+AWS Access Key ID:
+AWS Secret Access Key:
+Default region:
+Output format:
+
+You provide:
+
+AWS Access Key ID     → your Access Key ID
+AWS Secret Access Key → your Secret Access Key
+Default region       → ap-south-1
+
+AWS CLI then stores the credentials in your user's AWS configuration.
+
+d) Simple real-world example
+
+Think about a bank account.
+
+Access Key ID
+     ↓
+"Who are you?"
+
+Secret Access Key
+     ↓
+"Prove that you are really that user."
+
+IAM permissions
+     ↓
+"What are you allowed to do?"
+
+=> For example:
+
+IAM User: ansible-user
+
+Access Key ID:       AKIA........
+Secret Access Key:   ************
+Permissions:         EC2 access
+
+6. What is AWS CLI?
+
+AWS CLI = Amazon Web Services Command Line Interface.
+
+In simple words, AWS CLI allows you to manage AWS services from the Linux/Windows terminal instead of using the AWS web console.
+
+For example, normally you might create an EC2 instance like this:
+
+AWS Console
+   ↓
+EC2
+   ↓
+Launch Instance
+   ↓
+Select AMI
+   ↓
+Select instance type
+   ↓
+Launch
+
+=> With AWS CLI, you can do AWS operations using commands:
+
+aws ec2 describe-instances
+
+or:
+
+aws s3 ls
 
 

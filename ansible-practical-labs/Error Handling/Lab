@@ -613,7 +613,331 @@ Think:
 
 "I have decided that this situation is unacceptable. Stop and show this message."
 
+=> LAB 12 — any_errors_fatal
 
+This is important when working with multiple production servers.
+
+Suppose you have:
+
+web1
+web2
+web3
+web4
+
+You run a critical deployment.
+
+If web1 fails, you may not want the deployment to continue on the other servers.
+
+Create:
+
+nano any-errors-fatal.yml
+---
+- hosts: all
+  any_errors_fatal: true
+
+  tasks:
+
+    - name: Simulate critical failure
+      ansible.builtin.command: command_that_does_not_exist
+
+Run:
+
+ansible-playbook -i inventory.ini any-errors-fatal.yml
+
+The important setting is:
+
+any_errors_fatal: true
+
+Meaning:
+
+If an error occurs, treat it as a fatal error for the play rather than allowing the play to continue independently across hosts.
+
+Note:-
+
+Industry example
+
+Imagine you're updating a database schema across several servers.
+
+If one critical server fails halfway through, you may want to stop the operation rather than continue changing other servers.
+
+=> LAB 13 — max_fail_percentage
+
+Now imagine you have:
+
+100 servers
+
+You don't necessarily want to stop because one server failed.
+
+Maybe your requirement is:
+
+If more than 20% of servers fail, stop the deployment.
+
+You can use:
+
+max_fail_percentage: 20
+
+Example:
+
+nano max-failure.yml
+
+Put:
+
+---
+- hosts: all
+  max_fail_percentage: 20
+
+  tasks:
+
+    - name: Run application health check
+      ansible.builtin.command: /opt/myapp/healthcheck.sh
+
+The idea is:
+
+100 servers
+   |
+   ├── 5 fail  → Continue
+   ├── 10 fail → Continue
+   └── 21 fail → Stop
+
+=> LAB 14 — Realistic Industry Scenario
+
+Now let's combine the concepts.
+
+Imagine you're deploying an application.
+
+The process is:
+
+1. Check application
+2. Stop application
+3. Deploy new files
+4. Start application
+5. Check application health
+6. If something fails → recover
+7. Always perform cleanup/final action
+
+Create:
+
+nano application-deployment.yml
+
+Put:
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Application deployment
+      block:
+
+        - name: Check application service
+          ansible.builtin.command: systemctl is-active myapp
+          register: service_status
+          changed_when: false
+          failed_when: false
+
+        - name: Stop application
+          ansible.builtin.systemd:
+            name: myapp
+            state: stopped
+
+        - name: Deploy application files
+          ansible.builtin.copy:
+            src: app/
+            dest: /opt/myapp/
+
+        - name: Start application
+          ansible.builtin.systemd:
+            name: myapp
+            state: started
+
+        - name: Check application health
+          ansible.builtin.command: /opt/myapp/healthcheck.sh
+          register: health_result
+          changed_when: false
+          failed_when: health_result.rc != 0
+
+      rescue:
+
+        - name: Application deployment failed
+          ansible.builtin.debug:
+            msg: "Deployment failed. Starting recovery procedure."
+
+        - name: Restart application
+          ansible.builtin.systemd:
+            name: myapp
+            state: started
+
+      always:
+
+        - name: Deployment completed
+          ansible.builtin.debug:
+            msg: "Deployment process finished."
+
+=> Understand the industry scenario step by step
+Step 1 — block
+block:
+
+We're saying:
+
+These tasks together represent one application deployment operation.
+
+Step 2 — register
+register: service_status
+
+We're saving the service status so we can use the result later.
+
+Step 3 — changed_when: false
+changed_when: false
+
+We're only checking the service.
+
+We're not changing anything.
+
+So we tell Ansible:
+
+Don't report this check as changed.
+
+___________
+Note:- If we write 
+changed_when: true
+
+then Ansible will always mark that task as changed, even if the task only checks something and doesn't actually modify the server.
+____________
+
+Step 4 — failed_when: false
+failed_when: false
+
+We're saying:
+
+Don't consider this particular check itself a failure.
+
+Why?
+
+Because we're just checking the current status. We may want to handle the status ourselves instead of immediately stopping the play.
+
+_______________
+Note:- you change it to:
+
+failed_when: true
+
+then Ansible will always consider that task as FAILED, regardless of whether the command itself actually succeeds.
+_______________
+
+Step 5 — Deployment
+
+Then we:
+
+Stop application
+      ↓
+Copy new files
+      ↓
+Start application
+
+These are actual changes.
+
+Step 6 — Health check
+
+We run:
+
+/opt/myapp/healthcheck.sh
+
+and save the result:
+
+register: health_result
+
+Then:
+
+failed_when: health_result.rc != 0
+
+means:
+
+If the health-check command returns anything other than 0, consider the deployment failed.
+
+This is a very realistic use of failed_when.
+
+Step 7 — Failure
+
+Suppose:
+
+Health check
+     ↓
+rc = 1
+     ↓
+failed_when condition becomes TRUE
+     ↓
+Task fails
+
+Now Ansible goes to:
+
+rescue
+
+Step 8 — Rescue
+
+The rescue section can attempt recovery:
+
+Deployment failed
+       ↓
+Restart application
+       ↓
+Try to recover
+
+This is much better than simply saying:
+
+ignore_errors: yes
+
+because we're actually doing something about the failure.
+
+Step 9 — Always
+
+Finally:
+
+always:
+
+runs regardless of whether deployment succeeded or failed.
+
+So:
+
+SUCCESS → always
+FAILURE → rescue → always
+
+=> Final Error Handling Flow
+
+This is the flow I recommend you remember:
+
+                    TASK
+                     |
+                     ↓
+               Run the task
+                     |
+                     ↓
+             Save result?
+                     |
+                  register
+                     |
+                     ↓
+              Did it fail?
+               /          \
+             NO            YES
+             |              |
+             |        Should we ignore?
+             |          /        \
+             |        YES         NO
+             |         |           |
+             |  ignore_errors      |
+             |                     |
+             |                  rescue
+             |                     |
+             |                     ↓
+             |                 Recovery
+             |                     |
+             └──────────┬──────────┘
+                        |
+                        ↓
+                     always
+                        |
+                        ↓
+                   Next/Finish
 
 
 

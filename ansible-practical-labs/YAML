@@ -74,7 +74,7 @@ name: John
 
 means that the key name has the value John.
 
-4. 4. Strings
+4. Strings
 
 A string is text.
 
@@ -129,8 +129,6 @@ Boolean means true or false.
 
 Example:
 
-Example:
-
 enabled: true
 disabled: false
 
@@ -146,10 +144,6 @@ become: true
 This means:
 
 Run the task with elevated privileges, typically using sudo.
-
-You may also see:
-
-become: yes
 
 7. Lists
 
@@ -185,8 +179,6 @@ fruits = [Apple, Orange, Banana]
 
 Another example:
 
-Another example:
-
 servers:
   - web01
   - web02
@@ -210,8 +202,6 @@ person:
   name: John Doe
   age: 30
   city: New York
-
-Think of it like:
 
 Think of it like:
 
@@ -249,8 +239,6 @@ person:
   age: 30
 
 Here name and age belong to person.
-
-But this:
 
 But this:
 
@@ -495,4 +483,246 @@ apt
  |
  +-- name  → apache2
  +-- state → present
+
+14. Comments in YAML
+
+Comments are used to write notes inside a YAML file.
+
+A comment starts with #.
+
+Example:
+
+# This is the web server configuration
+name: Apache
+port: 80
+
+Ansible will ignore the comment.
+
+You can also write a comment after a value:
+
+name: Apache  # Web server package
+
+15. Nested Data
+
+YAML allows us to put data inside other data.
+
+Example:
+
+server:
+  name: web01
+  network:
+    ip: 192.168.1.10
+    port: 80
+
+Structure:
+
+server
+ |
+ +-- name → web01
+ |
+ +-- network
+       |
+       +-- ip   → 192.168.1.10
+       +-- port → 80
+
+The important thing is indentation.
+
+ip and port belong to network.
+
+16. Multiline Strings
+
+YAML can store long text using |.
+
+Example:
+
+message: |
+  Hello John
+  Welcome to the server.
+  Your installation is complete.
+
+The | means:
+
+Treat the following indented lines as a multiline string.
+
+This can be useful when writing configuration files or long text in Ansible.
+
+17. YAML Special Characters
+
+Some characters have special meanings in YAML.
+
 For example:
+
+name: John
+
+: separates the key and value.
+
+fruits:
+  - Apple
+  - Orange
+
+- represents a list item.
+
+18. YAML Is Case-Sensitive
+
+YAML values and keys can be case-sensitive depending on how the application interprets them.
+
+For example:
+
+name: John
+
+is different from:
+
+Name: John
+
+In Ansible, module names, variable names, and many values must be written correctly.
+
+For example:
+
+hosts: webservers
+
+Don't randomly write:
+
+Hosts: webservers
+
+Use the correct Ansible syntax.
+
+19. Empty Values
+
+A key can exist without a value.
+
+Example:
+
+tasks:
+
+Here tasks doesn't have a value on the same line.
+
+The actual content comes underneath it:
+
+tasks:
+  - name: Install Apache
+    apt:
+      name: apache2
+
+So tasks: acts as a parent for the list underneath it.
+
+20. YAML File Extension
+
+YAML files normally use:
+
+.yml
+
+or:
+
+.yaml
+
+Both are commonly used.
+
+21. YAML Variables
+
+Ansible uses YAML to define variables.
+
+Example:
+
+apache_package: apache2
+apache_port: 80
+
+Here:
+
+apache_package → apache2
+apache_port    → 80
+
+We can then use these variables in an Ansible playbook.
+
+=> For example:
+
+vars:
+  package_name: apache2
+
+Then:
+
+tasks:
+  - name: Install Apache
+    apt:
+      name: "{{ package_name }}"
+      state: present
+
+The {{ }} syntax is used by Ansible to refer to variables.
+
+Note:-
+
+1. YAML and Ansible Are Not the Same Thing
+
+This is an important point.
+
+YAML is a data format.
+
+Ansible is an automation tool.
+
+Ansible uses YAML to write playbooks.
+
+Think of it like:
+
+YAML
+ |
+ +-- Provides the structure/syntax
+ |
+Ansible
+ |
+ +-- Reads that YAML
+ |
+ +-- Understands Ansible keywords
+ |
+ +-- Executes the automation
+
+=> For example:
+
+YAML provides things like:
+
+key: value
+indentation
+lists
+dictionaries
+
+Ansible gives special meaning to:
+
+hosts
+become
+tasks
+apt
+name
+state
+
+2. The Most Important YAML Structure for Ansible
+
+You should become very comfortable with this pattern:
+
+key:
+  key: value
+  key:
+    - item1
+    - item2
+
+And especially:
+
+tasks:
+  - name: Task 1
+    module:
+      key: value
+      key: value
+
+  - name: Task 2
+    module:
+      key: value
+
+=> For example:
+
+tasks:
+  - name: Install Apache
+    apt:
+      name: apache2
+      state: present
+
+  - name: Start Apache
+    service:
+      name: apache2
+      state: started

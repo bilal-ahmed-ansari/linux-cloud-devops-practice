@@ -239,3 +239,25 @@ Encrypted file
 GitHub
 
 The actual credentials are therefore not visible in the GitHub repository.
+
+9. 
+What should NOT be uploaded to GitHub?
+
+This is extremely important.
+
+Do NOT commit:
+vault.pass
+
+because it contains the Vault password.
+
+Also, although the encrypted file:
+
+group_vars/all/pass.yml
+
+can generally be stored in Git, you should understand that it contains sensitive information in encrypted form.
+
+The Vault password must remain secret.
+
+A common .gitignore entry is:
+
+vault.pass

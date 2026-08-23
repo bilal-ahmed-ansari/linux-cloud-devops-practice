@@ -26,15 +26,7 @@ app1 ansible_host=<EC2-1-PUBLIC-IP>
 [db]
 db1 ansible_host=<EC2-2-PUBLIC-IP>
 
-[all:vars]
-ansible_user=ubuntu
-
-is effectively saying:
-
-app1 → connect using ubuntu
-db1  → connect using ubuntu
-
-But instead of writhing this separately, write
+Sometimes instead of writhing this separately, write
 
 app1 ansible_host=<EC2-1-PUBLIC-IP> ansible_user=ubuntu
 db1 ansible_host=<EC2-2-PUBLIC-IP> ansible_user=ubuntu

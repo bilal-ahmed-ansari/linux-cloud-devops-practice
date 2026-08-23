@@ -1,0 +1,26 @@
+1. Why do we need Ansible Vault?
+
+When we work with AWS using Ansible, we may need sensitive information such as:
+
+AWS Access Key
+AWS Secret Access Key
+Database passwords
+API tokens
+SSH passwords
+Other application secrets
+
+We should not store these credentials directly in normal Ansible files such as:
+
+inventory.ini
+vars.yml
+playbook.yml
+
+For example, this is not a good practice:
+
+aws_access_key: AKIAxxxxxxxxxxxx
+aws_secret_key: xxxxxxxxxxxxxxxxxxxx
+
+If this file is pushed to GitHub, the credentials could be exposed.
+
+Ansible Vault is used to encrypt sensitive information so that the credentials are not stored as plain text.
+

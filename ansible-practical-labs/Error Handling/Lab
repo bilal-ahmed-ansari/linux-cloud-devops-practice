@@ -200,7 +200,397 @@ means:
 
 Give me the normal output of the command.
 
+=> LAB 4 — failed_when
 
+This is one of the most important concepts for real-world Ansible.
+
+Objective
+
+We want to tell Ansible:
+
+"Don't use only your normal understanding of success/failure. I will define what should count as failure."
+
+Create:
+
+nano failed-when.yml
+
+Use:
+
+---
+- hosts: all
+
+  tasks:
+
+    - name: Check current uptime
+      ansible.builtin.command: uptime
+      register: uptime_result
+      failed_when: "'days' in uptime_result.stdout"
+
+Run:
+
+ansible-playbook -i inventory.ini failed-when.yml
+
+Here we are saying:
+
+failed_when: "'days' in uptime_result.stdout"
+
+Meaning:
+
+If the word days appears in the command output, consider the task failed.
+
+This is just for learning the concept.
+
+
+=> Why would we do this in real life?
+
+Suppose an application health-check command returns:
+
+Application status: FAILED
+
+but the command itself returns:
+
+rc: 0
+
+Ansible might normally think:
+
+rc = 0
+     ↓
+Success
+
+But you know the application is actually unhealthy.
+
+So you can say:
+
+failed_when: "'FAILED' in result.stdout"
+
+Now:
+
+Command runs
+    ↓
+Check output
+    ↓
+"FAILED" found
+    ↓
+Ansible marks task as failed
+
+That's a very practical use of failed_when.
+
+=> LAB 5 — changed_when
+
+Now let's understand another important concept.
+
+Create:
+
+nano changed-when.yml
+
+Use:
+
+---
+- hosts: all
+
+  tasks:
+
+    - name: Check hostname
+      ansible.builtin.command: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Display hostname
+      ansible.builtin.debug:
+        var: hostname_result.stdout
+
+Run:
+
+ansible-playbook -i inventory.ini changed-when.yml
+
+You should see the hostname task reported as:
+
+ok
+
+instead of:
+
+changed
+Why?
+
+We only ran:
+
+hostname
+
+We didn't actually change anything on the server.
+
+=> LAB 6 — block
+
+Now we'll group multiple related tasks.
+
+Create:
+
+nano block.yml
+
+Put:
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Application setup
+      block:
+
+        - name: Create application directory
+          ansible.builtin.file:
+            path: /opt/myapp
+            state: directory
+
+        - name: Create configuration file
+          ansible.builtin.file:
+            path: /opt/myapp/app.conf
+            state: touch
+
+        - name: Display success message
+          ansible.builtin.debug:
+            msg: "Application setup completed"
+
+Run:
+
+ansible-playbook -i inventory.ini block.yml
+What does block do?
+
+It groups related tasks:
+
+Application setup
+       |
+       ├── Create directory
+       ├── Create config
+       └── Display message
+
+This becomes especially powerful when combined with:
+
+block
+rescue
+always
+
+=> LAB 7 — block + rescue
+
+This is one of the most important practical error-handling patterns.
+
+Create:
+
+nano block-rescue.yml
+
+Put:
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Application deployment
+      block:
+
+        - name: Create application directory
+          ansible.builtin.file:
+            path: /opt/myapp
+            state: directory
+
+        - name: Run a command that will fail
+          ansible.builtin.command: command_that_does_not_exist
+
+        - name: This task will not run
+          ansible.builtin.debug:
+            msg: "This will not execute"
+
+      rescue:
+
+        - name: Handle deployment failure
+          ansible.builtin.debug:
+            msg: "Application deployment failed. Running recovery actions."
+
+Run:
+
+ansible-playbook -i inventory.ini block-rescue.yml
+What happens?
+
+First:
+
+Create directory
+       ↓
+SUCCESS
+
+Then:
+
+Run invalid command
+       ↓
+FAIL
+
+Because the task is inside a block, Ansible goes to:
+
+rescue
+
+So:
+
+BLOCK
+  |
+  ├── Task 1 ✅
+  ├── Task 2 ❌
+  └── Task 3 ⛔
+          ↓
+       RESCUE
+          ↓
+    Recovery task
+Important
+
+rescue is not the same as ignore_errors.
+
+=> ignore_errors says:
+
+"Ignore the failure and continue."
+
+=> rescue says:
+
+"The task failed, so now perform these recovery actions."
+
+That's a major difference.
+
+=> LAB 8 — block + rescue + always
+
+Now let's complete the pattern.
+
+Create:
+
+nano block-rescue-always.yml
+
+Put:
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Application deployment
+      block:
+
+        - name: Create application directory
+          ansible.builtin.file:
+            path: /opt/myapp
+            state: directory
+
+        - name: Simulate deployment failure
+          ansible.builtin.command: command_that_does_not_exist
+
+      rescue:
+
+        - name: Handle failure
+          ansible.builtin.debug:
+            msg: "Deployment failed. Recovery action started."
+
+      always:
+
+        - name: Final message
+          ansible.builtin.debug:
+            msg: "Deployment process completed."
+
+Run:
+
+ansible-playbook -i inventory.ini block-rescue-always.yml
+
+The flow is:
+
+BLOCK
+  |
+  ├── Create directory ✅
+  |
+  └── Invalid command ❌
+            |
+            ↓
+         RESCUE
+            |
+            └── Recovery message
+            |
+            ↓
+         ALWAYS
+            |
+            └── Final message
+
+Even though the task failed, always runs.
+
+=> LAB 9 — assert
+
+Now let's validate something before continuing.
+
+Suppose your application requires a particular Linux distribution.
+
+Create:
+
+nano assert.yml
+
+Put:
+
+---
+- hosts: all
+
+  tasks:
+
+    - name: Check operating system
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['os_family'] == "Debian"
+        success_msg: "This is a Debian-based system"
+        fail_msg: "This playbook requires a Debian-based system"
+
+Run:
+
+ansible-playbook -i inventory.ini assert.yml
+What is happening?
+
+Ansible checks:
+
+Is OS family Debian?
+       |
+    ┌──┴──┐
+   YES    NO
+    |      |
+ Continue  Fail
+
+This is useful in production because you don't want to run a Debian-specific task against a RHEL server accidentally.
+
+=> LAB 10 — fail
+
+Now let's intentionally stop when a condition isn't acceptable.
+
+Create:
+
+nano fail.yml
+
+Put:
+
+---
+- hosts: all
+
+  tasks:
+
+    - name: Check disk space
+      ansible.builtin.shell: df -h / | tail -1
+      register: disk_result
+
+    - name: Stop if disk check fails
+      ansible.builtin.fail:
+        msg: "Stopping deployment because disk space requirement was not met."
+      when: false
+
+The when: false is only being used here so you can safely see the structure without actually stopping your lab.
+
+The important concept is:
+
+Check something
+     ↓
+Condition not acceptable
+     ↓
+fail
+     ↓
+Stop with your own message
 
 
 

@@ -1,0 +1,21 @@
+What is WSL?
+
+WSL = Windows Subsystem for Linux
+
+Think of it like:
+
+Windows
+   |
+   └── WSL
+        |
+        └── Ubuntu
+             |
+             ├── Bash
+             ├── Linux commands
+             ├── Git
+             ├── Python
+             ├── Ansible
+             └── other Linux tools
+
+You don't need to dual-boot Windows/Linux, and you don't need a traditional VM just to get a Linux terminal.
+

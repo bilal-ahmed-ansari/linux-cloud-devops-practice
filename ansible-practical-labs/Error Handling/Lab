@@ -1,0 +1,206 @@
+Before starting
+
+We will assume your inventory looks something like:
+
+[webservers]
+web1
+web2
+
+And you can already connect to these servers using Ansible.
+
+Check connectivity first:
+
+ansible all -i inventory.ini -m ping
+
+You should get:
+
+web1 | SUCCESS => {
+    "ping": "pong"
+}
+
+web2 | SUCCESS => {
+    "ping": "pong"
+}
+
+If this works, start the error-handling labs.
+
+=> LAB 1 — register
+
+Objective
+
+We want Ansible to run a command and save its result.
+
+Create:
+
+nano register.yml
+
+Put:
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Check Docker version
+      ansible.builtin.command: docker --version
+      register: docker_result
+      ignore_errors: yes
+
+    - name: Display Docker result
+      ansible.builtin.debug:
+        var: docker_result
+
+Run:
+
+ansible-playbook -i inventory.ini register.yml
+What is happening?
+
+First task:
+
+register: docker_result
+
+means:
+
+Run the Docker command and save its complete result inside docker_result.
+
+means:
+
+Show me what Ansible saved.
+
+You may see:
+
+docker_result:
+    failed: false
+    rc: 0
+    stdout: "Docker version 29.7.2..."
+    stderr: ""
+
+So remember:
+
+register = SAVE the result
+debug    = SHOW the result
+
+=> LAB 2 — ignore_errors
+Objective
+
+We want to continue the playbook even if a task fails.
+
+Create:
+
+nano ignore-errors.yml
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Try to run a command that does not exist
+      ansible.builtin.command: command_that_does_not_exist
+      ignore_errors: yes
+
+    - name: This task should still run
+      ansible.builtin.debug:
+        msg: "Playbook continued after the error"
+
+Run:
+
+ansible-playbook -i inventory.ini ignore-errors.yml
+
+You will see the first task fail.
+
+But then you should see:
+
+TASK [This task should still run]
+ok: [web1]
+
+=> What happened?
+
+Normally:
+
+Task fails
+   ↓
+Play stops for that host
+
+=> With ignore_errors: yes
+
+it becomes:
+
+Task fails
+   ↓
+Ignore failure
+   ↓
+Continue
+   ↓
+Next task runs
+
+For example:
+
+Check whether an optional package exists. If it doesn't exist, continue with the deployment.
+
+But don't blindly use ignore_errors everywhere.
+
+Industry use
+
+You might use this when a failure is expected and non-critical.
+
+If a critical task fails, ignoring it can create problems.
+
+=> LAB 3 — register + failed + rc + stdout + stderr
+
+Now let's combine what you learned earlier.
+
+Create:
+
+nano result-details.yml
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Check Docker version
+      ansible.builtin.command: docker --version
+      register: docker_result
+      ignore_errors: yes
+
+    - name: Show whether task failed
+      ansible.builtin.debug:
+        msg: "Failed status: {{ docker_result.failed }}"
+
+    - name: Show return code
+      ansible.builtin.debug:
+        msg: "Return code: {{ docker_result.rc }}"
+
+    - name: Show command output
+      ansible.builtin.debug:
+        msg: "Docker output: {{ docker_result.stdout }}"
+
+Run:
+
+ansible-playbook -i inventory.ini result-details.yml
+
+Now you are accessing individual pieces of the registered result.
+
+For example:
+
+docker_result.failed
+
+means:
+
+Give me the failed value.
+
+And:
+
+docker_result.stdout
+
+means:
+
+Give me the normal output of the command.
+
+
+
+
+

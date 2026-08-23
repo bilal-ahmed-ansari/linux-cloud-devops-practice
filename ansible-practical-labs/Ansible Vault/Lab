@@ -1,0 +1,421 @@
+Step 1: Open WSL
+
+Open your Ubuntu WSL terminal.
+
+Check that Ansible is installed:
+
+ansible --version
+
+You should see something similar to:
+
+ansible [core ...]
+
+If Ansible is not installed, install it first.
+
+Step 2: Create a lab directory
+
+Create a separate directory for this lab:
+
+mkdir ansible-vault-lab
+cd ansible-vault-lab
+
+Check your current location:
+
+pwd
+
+You should be inside something similar to:
+
+/home/your-user/ansible-vault-lab
+
+Step 3: Create the group_vars directory
+
+Run:
+
+mkdir -p group_vars/all
+
+Check the structure:
+
+tree
+
+If tree is not installed:
+
+sudo apt install tree -y
+
+Then:
+
+tree
+
+At this point you should have:
+
+ansible-vault-lab/
+└── group_vars/
+    └── all/
+
+Step 4: Create the Vault password
+
+Now create a random password:
+
+openssl rand -base64 2048 > vault.pass
+
+Check that the file exists:
+
+ls -l
+
+You should see:
+
+vault.pass
+group_vars
+
+You can check that it contains data:
+wc -c vault.pass
+
+You don't need to display the password on the screen.
+
+Important
+
+vault.pass is the password Ansible will use to encrypt and decrypt your Vault.
+
+Do not upload this file to GitHub.
+
+Step 5: Create the encrypted Vault file
+
+Run:
+
+ansible-vault create group_vars/all/pass.yml --vault-password-file vault.pass
+
+An editor will open.
+
+If it opens in nano, enter:
+
+aws_access_key: YOUR_AWS_ACCESS_KEY
+aws_secret_key: YOUR_AWS_SECRET_KEY
+
+For example:
+
+aws_access_key: AKIAxxxxxxxxxxxxxxxx
+aws_secret_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Do not use these example values.
+
+Use your own AWS credentials if this is your lab account.
+
+Step 6: Save the file
+
+If you are using nano:
+
+Press:
+
+Ctrl + O
+
+Then press:
+
+Enter
+
+Then:
+
+Ctrl + X
+
+Ansible will save the file in encrypted format.
+
+Instead, you should see something like:
+
+$ANSIBLE_VAULT;1.1;AES256
+323762643963...
+...
+
+This confirms that the file is encrypted.
+
+Step 8: View the decrypted content
+
+If you want to see the actual credentials again, use:
+
+You should see:
+
+aws_access_key: YOUR_AWS_ACCESS_KEY
+aws_secret_key: YOUR_AWS_SECRET_KEY
+
+Here Ansible is:
+
+Encrypted pass.yml
+       ↓
+vault.pass
+       ↓
+Ansible decrypts it
+       ↓
+You can see the variables
+
+Step 9: Edit the Vault later
+
+If you want to change the AWS credentials later, don't use:
+
+nano group_vars/all/pass.yml
+
+Instead use:
+
+ansible-vault edit group_vars/all/pass.yml --vault-password-file vault.pass
+
+Ansible will decrypt the file temporarily, allow you to edit it, and encrypt it again when you save.
+
+Step 10 — Add vault.pass to .gitignore
+
+At this point, your directory should look like:
+
+ansible-vault-lab/
+├── vault.pass
+└── group_vars/
+    └── all/
+        └── pass.yml
+
+We want Git to ignore vault.pass.
+
+a) Check that you are in the correct directory
+
+Run:
+
+pwd
+
+You should get something like:
+
+/home/bilal/ansible-vault-lab
+
+Then:
+
+ls
+
+You should see:
+
+group_vars
+vault.pass
+
+If you see these, you are in the correct directory.
+
+b) Create .gitignore
+
+Run:
+
+touch .gitignore
+
+This creates an empty file named:
+
+.gitignore
+
+Check:
+
+ls -la
+
+You should now see:
+
+.gitignore
+group_vars
+vault.pass
+
+c) Open .gitignore
+
+Run:
+
+nano .gitignore
+
+An empty editor will open.
+
+Type exactly:
+
+vault.pass
+
+That's it.
+
+You are telling Git:
+
+"Whenever you see a file named vault.pass, ignore it."
+
+d) Save the file
+
+If you are using nano:
+
+Press:
+
+Ctrl + O
+
+Nano will show something like:
+
+File Name to Write: .gitignore
+
+Press:
+
+Enter
+
+Then exit:
+
+Ctrl + X
+
+e) Verify .gitignore
+
+Run:
+
+cat .gitignore
+
+You should get:
+
+vault.pass
+
+So now your structure is:
+
+ansible-vault-lab/
+├── .gitignore
+├── vault.pass
+└── group_vars/
+    └── all/
+        └── pass.yml
+
+f) Initialize Git
+
+If this is a new Git project, run:
+
+git init
+
+You should see something similar to:
+
+Initialized empty Git repository...
+
+Now check:
+
+git status
+
+g) What should happen?
+
+You may see:
+
+Untracked files:
+    .gitignore
+    group_vars/
+
+But you should NOT see:
+
+vault.pass
+
+This is the important part.
+
+Git sees vault.pass, but .gitignore tells Git:
+
+Don't track this file.
+
+=> Check it directly
+
+You can ask Git whether it is ignoring the file:
+
+git check-ignore -v vault.pass
+
+You should get something similar to:
+
+.gitignore:1:vault.pass    vault.pass
+
+This confirms that:
+
+.gitignore
+
+is responsible for ignoring:
+
+vault.pass
+
+h) Now you can stage the files that are safe to commit.
+
+Run:
+
+git add .gitignore
+
+Then:
+
+git add group_vars/all/pass.yml
+
+Or you can simply run:
+
+git add .
+
+Because vault.pass is in .gitignore, Git should skip it.
+
+=> Check:
+
+git status
+
+You should see something like:
+
+Changes to be committed:
+
+    new file: .gitignore
+    new file: group_vars/all/pass.yml
+
+You should not see:
+
+new file: vault.pass
+
+i) Commit
+
+Now commit your lab:
+
+git commit -m "Add Ansible Vault setup"
+
+Your encrypted:
+
+group_vars/all/pass.yml
+
+can be committed, while:
+
+vault.pass
+
+is ignored.
+
+Step 12: Test the Vault password
+
+You can verify that your password file works:
+
+ansible-vault view group_vars/all/pass.yml --vault-password-file vault.pass
+
+If the correct credentials appear, your Vault setup is working.
+
+Step 13: Create a temporary wrong password
+
+Run:
+
+openssl rand -base64 32 > wrong.pass
+
+This creates another password file:
+
+wrong.pass
+
+So now you have:
+
+ansible-vault-lab/
+├── .gitignore
+├── vault.pass
+├── wrong.pass
+└── group_vars/
+    └── all/
+        └── pass.yml
+
+The important difference is:
+
+vault.pass  → correct password
+wrong.pass  → wrong password
+
+=> Try to open the Vault using the wrong password
+
+Run:
+
+ansible-vault view group_vars/all/pass.yml --vault-password-file wrong.pass
+
+Ansible will try to decrypt:
+
+pass.yml
+
+using:
+
+wrong.pass
+
+But pass.yml was encrypted using:
+
+vault.pass
+
+=> Therefore, the decryption should fail.
+
+You may see an error similar to:
+
+ERROR! Decryption failed (no vault secrets were found that could decryt)

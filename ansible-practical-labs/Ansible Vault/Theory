@@ -24,3 +24,218 @@ If this file is pushed to GitHub, the credentials could be exposed.
 
 Ansible Vault is used to encrypt sensitive information so that the credentials are not stored as plain text.
 
+2. What is Ansible Vault?
+
+Ansible Vault is an Ansible feature used to encrypt sensitive data.
+
+It allows us to store passwords, keys, tokens, and other confidential information in encrypted YAML files.
+
+For example, instead of storing:
+
+aws_access_key: AKIAxxxxxxxx
+aws_secret_key: abcdefghxxxxxxxx
+
+as readable text, Vault encrypts the file so that its contents look like encrypted data.
+
+The important point is:
+
+Vault protects the contents of the file.
+
+It does not mean that Ansible automatically knows the password. Ansible needs a Vault password to decrypt the file when it needs to use the secrets.
+
+3. Create a password for Vault
+
+We first need a password that will be used to encrypt and decrypt the Vault file.
+
+=> 
+
+The command used in this lab is:
+
+openssl rand -base64 2048 > vault.pass
+What does this command do?
+
+Let's break it down:
+
+a) openssl
+
+openssl is a command-line tool that provides cryptographic functions.
+
+b) rand
+
+rand tells OpenSSL to generate random data.
+
+c) -base64
+
+This converts the generated random data into Base64 format.
+
+d) 2048
+
+This tells OpenSSL to generate 2048 bytes of random data before encoding it.
+
+So this creates a very long random value that can be used as the Vault password.
+
+e) > vault.pass
+
+The > redirects the generated output into a file named:
+
+vault.pass
+
+So instead of displaying the random value on the terminal, it is saved inside the file.
+
+This file contains the password that Ansible Vault will use.
+
+4. Why use a separate vault.pass file?
+
+Instead of typing the Vault password every time, we can tell Ansible where the password is stored:
+
+--vault-password-file vault.pass
+
+This means:
+
+"Ansible, use the password stored inside vault.pass to unlock the Vault."
+
+This is useful for automation because Ansible can use the password file without asking interactively every time.
+
+=> Important security point
+
+vault.pass itself is sensitive.
+
+Do not commit it to GitHub.
+
+For example, add it to .gitignore:
+
+vault.pass
+
+Otherwise, someone who gets your vault.pass may be able to decrypt your Vault-encrypted secrets.
+
+5. Create the Vault file
+
+Now we create a file where we will store our AWS credentials.
+
+The command is:
+
+ansible-vault create group_vars/all/pass.yml --vault-password-file vault.pass
+
+=> Let's understand every part.
+
+a) ansible-vault
+
+This is the Ansible Vault command.
+
+It provides operations such as:
+
+create
+view
+edit
+encrypt
+decrypt
+create
+ansible-vault create
+
+b) means:
+
+Create a new encrypted Ansible Vault file.
+
+Ansible will open an editor where we can enter our sensitive information.
+
+c) group_vars/all/pass.yml
+
+This is the file that will contain our sensitive variables.
+
+The structure is:
+
+group_vars/
+└── all/
+    └── pass.yml
+
+group_vars is an Ansible convention for storing variables related to hosts/groups.
+
+all means the variables can be available to all hosts, depending on how the inventory/playbook is structured.
+
+pass.yml is simply the filename we chose for the password/secret variables.
+
+The filename itself is not mandatory. We could use another name, but pass.yml clearly indicates that it contains sensitive information.
+
+6. What happens when we run the command?
+
+When you execute:
+
+ansible-vault create group_vars/all/pass.yml --vault-password-file vault.pass
+
+Ansible will:
+
+Read the Vault password from vault.pass.
+Create group_vars/all/pass.yml.
+Open the file in an editor.
+You enter your sensitive variables.
+Ansible encrypts the contents when the file is saved.
+
+For example, inside the editor you might enter:
+
+aws_access_key: YOUR_ACCESS_KEY
+aws_secret_key: YOUR_SECRET_KEY
+
+But when you later look at the file normally, you will not see these credentials in plain text.
+
+Instead, the file will contain encrypted content beginning with something similar to:
+
+$ANSIBLE_VAULT;1.1;AES256
+
+followed by encrypted data.
+
+That is the main purpose of Vault.
+
+7. Why is group_vars/all/pass.yml useful?
+
+Ansible automatically looks for variables in specific locations.
+
+A common structure is:
+
+ansible-project/
+├── inventory.ini
+├── playbook.yml
+├── group_vars/
+│   └── all/
+│       └── pass.yml
+└── vault.pass
+
+The idea is:
+
+inventory.ini → defines hosts
+playbook.yml → defines what Ansible should do
+
+group_vars/all/pass.yml → stores encrypted sensitive variables
+vault.pass → stores the password required to decrypt the Vault
+
+However, vault.pass should remain outside GitHub.
+
+8. What does "Add your AWS credentials using the below vault command" actually mean?
+
+It means we don't put the AWS credentials directly into a normal YAML file.
+
+Instead, we create an encrypted Vault file:
+
+ansible-vault create group_vars/all/pass.yml --vault-password-file vault.pass
+
+Then inside that file we enter the required AWS variables.
+
+For example:
+
+aws_access_key: YOUR_ACCESS_KEY
+aws_secret_key: YOUR_SECRET_KEY
+
+After saving the file, Ansible encrypts it.
+
+So the overall flow is:
+
+AWS Credentials
+      ↓
+group_vars/all/pass.yml
+      ↓
+Ansible Vault encrypts the file
+      ↓
+Encrypted file
+      ↓
+GitHub
+
+The actual credentials are therefore not visible in the GitHub repository.

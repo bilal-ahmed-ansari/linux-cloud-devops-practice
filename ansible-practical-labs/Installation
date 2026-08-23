@@ -1,0 +1,56 @@
+=> Install Ansible
+
+Ansible's documentation provides an Ubuntu installation through the Ansible PPA.
+
+Run these commands one by one:
+
+a) sudo apt install software-properties-common -y
+
+Then:
+
+b) sudo add-apt-repository --yes --update ppa:ansible/ansible
+
+Then:
+
+c) sudo apt install ansible -y
+
+That's it. Ansible should now be installed.
+
+=> Check Ansible
+
+Run:
+
+ansible --version
+
+You should see something similar to:
+
+ansible [core ...]
+  config file = ...
+  python version = ...
+
+The exact version may be different.
+
+=> Test Ansible locally
+
+Since you currently have only WSL/Ubuntu, let's first test Ansible against the same Ubuntu machine.
+
+Run:
+
+ansible localhost -m ping
+
+You should get something similar to:
+
+localhost | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+This means:
+
+Ansible
+   ↓
+localhost (your WSL Ubuntu)
+   ↓
+SUCCESS
+
+So Ansible is working 

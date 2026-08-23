@@ -592,5 +592,28 @@ fail
      ↓
 Stop with your own message
 
+=> LAB 11 — assert vs fail
+
+These are easy to confuse.
+
+assert
+
+Think:
+
+"Check this condition."
+
+Is condition true?
+      ↓
+ YES → Continue
+ NO  → Fail
+
+fail
+
+Think:
+
+"I have decided that this situation is unacceptable. Stop and show this message."
+
+
+
 
 

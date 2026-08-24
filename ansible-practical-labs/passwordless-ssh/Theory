@@ -1,0 +1,182 @@
+1. What is Passwordless Authentication?
+
+Passwordless authentication means connecting to a Linux server without entering a password every time.
+
+In Ansible, this is normally done using SSH keys.
+
+For example:
+
+Ansible Control Node
+        |
+        | SSH Key
+        ↓
+Managed Node
+
+Ansible uses the SSH key to connect to the managed server automatically.
+
+2. Why Does Ansible Need SSH?
+
+Ansible normally works through SSH to communicate with Linux servers.
+
+For example, suppose:
+
+Control Node = WSL Ubuntu
+Managed Node = AWS EC2 Ubuntu
+
+When we run:
+
+ansible all -m ping
+
+Ansible connects from WSL to the EC2 server using SSH.
+
+So:
+
+WSL
+(Control Node)
+      |
+      | SSH
+      ↓
+AWS EC2
+(Managed Node)
+
+3. Why Use Passwordless Authentication?
+
+Imagine you have 50 Linux servers.
+
+If Ansible had to ask for a password for every server, automation would become difficult.
+
+SSH keys allow Ansible to connect automatically.
+
+For example:
+
+Ansible
+   |
+   ├── Server 1 → SSH key
+   ├── Server 2 → SSH key
+   ├── Server 3 → SSH key
+   ├── Server 4 → SSH key
+   └── Server 5 → SSH key
+
+No need to manually enter a password for every connection.
+
+This is especially useful in automation and production environments.
+
+4. SSH Key Pair
+
+Passwordless authentication uses an SSH key pair.
+
+The key pair contains two keys:
+
+a) Private Key
+
+Example:
+
+~/.ssh/id_rsa
+
+The private key stays on the Control Node.
+
+Never share the private key.
+
+b) Public Key
+
+Example:
+
+~/.ssh/id_rsa.pub
+
+The public key is placed on the Managed Node.
+
+So:
+
+Control Node
+     |
+     └── Private Key
+          id_rsa
+
+Managed Node
+     |
+     └── Public Key
+          authorized_keys
+
+5. How Does Authentication Work?
+
+Suppose WSL wants to connect to an EC2 server.
+
+First, WSL has:
+
+Private Key
+
+The EC2 server has:
+
+Public Key
+
+When WSL connects through SSH, the SSH server checks whether the client has the correct private key corresponding to the public key stored on the server.
+
+If authentication succeeds:
+
+SSH Connection Successful
+
+No password is required.
+
+6. authorized_keys
+
+On the managed Linux server, public keys are normally stored in:
+
+~/.ssh/authorized_keys
+
+For example:
+
+/home/ubuntu/.ssh/authorized_keys
+
+This file contains public keys that are allowed to log in.
+
+You can think of it as an approved-key list.
+
+authorized_keys
+
+Public Key 1
+Public Key 2
+Public Key 3
+
+If your public key is present there and SSH is configured correctly, you can authenticate using the matching private key.
+
+7. ssh-keygen
+
+We use:
+
+ssh-keygen
+
+to generate an SSH key pair.
+
+It creates:
+
+id_rsa
+id_rsa.pub
+
+Where:
+
+id_rsa      → Private Key
+id_rsa.pub  → Public Key
+
+The private key stays on the Control Node.
+
+The public key goes to the Managed Node.
+
+8. ssh-copy-id
+
+We can use:
+
+ssh-copy-id
+
+to copy the public key to the managed server.
+
+For example:
+
+ssh-copy-id ubuntu@SERVER_IP
+
+It adds the public key to:
+
+~/.ssh/authorized_keys
+
+After that, SSH key authentication can be used.
+
+For AWS EC2, however, the initial login is commonly done using the .pem key provided when the instance was created. You can then add your new public key to authorized_keys.

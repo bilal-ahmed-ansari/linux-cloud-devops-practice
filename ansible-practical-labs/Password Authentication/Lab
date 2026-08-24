@@ -1,0 +1,146 @@
+1. What you need
+
+You need:
+
+WSL Ubuntu
+Ansible installed in WSL
+One Ubuntu EC2 instance
+EC2 public IP
+EC2 username, usually ubuntu
+Password authentication enabled on EC2
+Security Group allowing SSH port 22
+
+Important: AWS Ubuntu EC2 normally uses SSH keys and password login is disabled by default. We will first enable password authentication.
+
+Step 1 — Create an Ubuntu EC2
+
+Create an Ubuntu EC2 instance in AWS.
+
+For example:
+
+OS: Ubuntu
+Instance type: t2.micro / t3.micro
+
+Keep your .pem key because you need it once to initially connect and enable password authentication.
+
+In the EC2 Security Group, allow:
+
+Type: SSH
+Port: 22
+Source: My IP
+
+Note:-
+
+for this particular lab, you should still create/select a key pair when creating the EC2 instance.
+
+The reason is that a new Ubuntu EC2 instance normally does not have password SSH login enabled. You need the key once to get into the server and configure password authentication.
+
+Step 2 — Connect to EC2 from WSL using the .pem key
+
+From WSL:
+
+chmod 400 mykey.pem
+
+Then:
+
+ssh -i mykey.pem ubuntu@YOUR_EC2_PUBLIC_IP
+
+Example:
+
+ssh -i mykey.pem ubuntu@13.233.100.50
+
+You should now be inside the EC2 server.
+
+Check:
+
+whoami
+
+Output:
+
+ubuntu
+
+Step 3 — Create a password for ubuntu user
+
+Inside EC2:
+
+sudo passwd ubuntu
+
+It will ask:
+
+New password:
+Retype new password:
+
+Set a password that you will remember for this lab.
+
+For example, don't literally use this in a real environment:
+
+Ubuntu@123
+
+Step 4 — Enable SSH password authentication
+
+Edit SSH configuration:
+
+sudo nano /etc/ssh/sshd_config
+
+Find:
+
+PasswordAuthentication no
+
+Change it to:
+
+PasswordAuthentication yes
+
+Also check whether this exists:
+
+KbdInteractiveAuthentication no
+
+For this lab, that's okay.
+
+Save:
+
+Ctrl + O
+Enter
+Ctrl + X
+
+Step 5 — Restart SSH
+
+Run:
+
+sudo systemctl restart ssh
+
+Check:
+
+sudo systemctl status ssh
+
+You should see:
+
+active (running)
+
+Step 6 — Test password SSH from WSL
+
+Exit EC2:
+
+exit
+
+Now you're back in WSL.
+
+Test:
+
+ssh ubuntu@YOUR_EC2_PUBLIC_IP
+
+Example:
+
+ssh ubuntu@13.233.100.50
+
+This time you should get:
+
+ubuntu@13.233.100.50's password:
+
+Enter the password you created.
+
+If you successfully enter the EC2 server, your password authentication is working.
+
+Exit again:
+
+exit
+Don't use 0.0.0.0/0 for SSH unless you specifically need it for a temporary lab.

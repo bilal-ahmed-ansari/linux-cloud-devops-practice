@@ -273,4 +273,64 @@ or:
 
 aws s3 ls
 
+7. host_key_checking = False means:
+
+Ansible will not ask you to verify the SSH server's identity before connecting.
+
+Normally, SSH may ask:
+
+Are you sure you want to continue connecting? (yes/no)
+
+With:
+
+host_key_checking = False
+
+Ansible automatically skips this check.
+
+8. amazon.aws.ec2_instance is an Ansible module used to create, start, stop, or manage EC2 instances on AWS.
+
+In simple language:
+
+amazon.aws → Ansible's AWS collection
+ec2_instance → the module that manages EC2 virtual machines
+Together → amazon.aws.ec2_instance means "Use Ansible to manage an AWS EC2 instance."
+
+9. aws sts get-caller-identity
+
+It may return:
+
+{
+    "UserId": "AIDAEXAMPLE",
+    "Account": "123456789012",
+    "Arn": "arn:aws:iam::123456789012:user/bilal"
+}
+What each means
+Account → Your AWS Account ID
+Arn → The AWS user or role you're currently logged in as
+UserId → Unique ID of that identity
+Why do we use it?
+
+Before running Ansible/AWS commands, you can check:
+
+“Is my AWS CLI actually logged in, and which AWS account am I connected to?”
+
+10. Describe EC2 instances” means:
+
+Ask AWS to give you information/details about EC2 servers.
+
+For example, when you describe EC2 instances, AWS can tell you:
+
+Instance ID
+Instance name
+Running or stopped
+Public IP
+Private IP
+Instance type (t2.micro, etc.)
+AMI ID
+Availability Zone
+Security groups
+
+Example AWS CLI:
+
+aws ec2 describe-instances
 

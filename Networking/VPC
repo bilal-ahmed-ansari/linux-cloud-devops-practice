@@ -1,0 +1,38 @@
+1. What is VPC?
+
+VPC = Virtual Private Cloud
+
+It is basically a private network in AWS where you keep your EC2 servers.
+
+Think of it like your company's private network.
+
+AWS
+ └── VPC (Private Network)
+      ├── EC2 Server 1
+      ├── EC2 Server 2
+      └── EC2 Server 3
+
+2. Why do we need a VPC?
+
+A VPC gives you control over:
+
+IP addresses of your EC2 servers
+Subnets — divide the network into smaller networks
+Internet access
+Security using Security Groups and Network ACLs
+Communication between your EC2 instances
+
+3. Simple example
+
+Suppose you create 3 EC2 servers:
+
+My VPC: 10.0.0.0/16
+
+   ├── Web Server
+   ├── App Server
+   └── Database Server
+
+All three servers can be inside the same VPC and can communicate according to your network and security rules.
+
+
+So VPC is like a building, and EC2 instances are the computers inside that building.

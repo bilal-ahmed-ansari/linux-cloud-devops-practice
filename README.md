@@ -1,51 +1,43 @@
-# About Me
+Hi, I am Bilal Ahmed Ansari
 
-### Linux Administrator | Technical Support Engineer | Aspiring Cloud & DevOps Engineer
-# Bilal Ahmed Ansari
-I'm a Linux Administrator with 5+ years of experience managing Linux, Windows, and macOS environments.My background includes system administration, virtualization, cloud technologies, automation, and enterprise technical support.
+Linux Support Engineer with 3+ years of experience working with Linux servers.
 
-I am passionate about Linux, Cloud DevOps technologies and continuously improving my technical skills by building practical projects. I am looking for opportunities as a Linux System Administrator, DevOps Engineer, or Cloud Engineer, where I can contribute, learn, and grow in modern infrastructure and automation technologies.
+Currently focusing on Linux System Administration, Automation, Cloud and DevOps.
 
-## 🚀 Technologies & Tools
+=> Skills:-
 
-* **Operating Systems:** Linux, Windows 10/11, macOS
-* **Cloud & Virtualization:** VMware, Proxmox
-* **Version Control:** Git, Bitbucket, 
-* **Automation:** Bash Shell Scripting, Cron Jobs
-* **Networking:** TCP/IP, DNS, DHCP, NFS, FTP, HTTP, VPN, Subnetting (Basic)
-* **Tools:** Jira, Active Directory, Google Admin
-* **Security:** SSH, Firewall Management, VPN Administration
+a) Ansible 
 
-## 🌱 Currently Learning
+Ansible is the first DevOps tool I started learning.
 
-* Ansible, AWS
-* DevOps Practices with it's Tools
+I have completed the fundamentals by learning below topics:-
 
-### "Automate what is repetitive. Optimize what is slow. Learn what is new."
+1) Playbooks
+2) Variables
+3) Loops
+4) Conditions
+5) Handlers
+6) Roles
+7) Ansible Vault
+8) Ansible Collection (AWS EC2)
 
+Now I am creating projects for this Ansible section.
 
-# 🚀 This is my Linux, DevOps & Cloud Notes & I am making avaible for others..
+=> Learning Roadmap
 
-A complete hands-on Linux, Cloud and DevOps learning repository will be covering as per my knowledge
+Next I will learn these topics one by one:-
 
+1) Linux System Administration
+2) Shell Scripting
+3) Git & GitHub 
+4) Nagois
+5) Grafana
+6) Prometheus 
+7) AWS
+8) Docker
+9) Kubernetes
+10) Terraform
+11) CI/CD
+l) Virtualization
 
-
-## 📚 Topics Covered As of Now..
-
-| Tool | Status |
-|--------|---------|
-| Linux | ✅ |
-| Shell Scripting | ✅ |
-| Git | ✅ |
-| Ansible | 🔄 In Progress |
-
-
----
-
-## 🛠 Technologies
-
-<p align="center">
-  <img src="https://skillicons.dev/icons?i=linux,git" />
-  <img src="https://cdn.simpleicons.org/ansible/EE0000" width="48" height="48" alt="Ansible" />
-  <img src="https://skillicons.dev/icons?i=github,docker,kubernetes,jenkins,terraform,aws" />
-</p>
+Also I will keep adding my notes, labs and projects here as I learn.

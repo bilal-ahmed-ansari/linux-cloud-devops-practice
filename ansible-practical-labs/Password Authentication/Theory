@@ -1,0 +1,129 @@
+Ansible needs to connect to the remote server before it can perform any task.
+
+For Linux servers, Ansible normally uses SSH for this connection.
+
+There are two common ways to authenticate:
+
+SSH Key Authentication
+SSH Password Authentication
+
+In this lab, we are using SSH Password Authentication.
+
+1. How this lab works
+
+We have:
+
+WSL
+(Ansible Controller)
+       |
+       | SSH + Username + Password
+       ↓
+AWS EC2
+(Remote Server)
+
+WSL is the Ansible controller because Ansible is installed there.
+
+EC2 is the managed node because Ansible will perform tasks on it.
+
+2. Why did we need the .pem key initially?
+
+A new Ubuntu EC2 server normally allows SSH access using the AWS key pair.
+
+So initially:
+
+WSL
+ |
+ | .pem key
+ ↓
+EC2
+
+We use the .pem file to get into the EC2 server for the initial configuration.
+
+After logging in, we:
+
+create a password for the ubuntu user
+enable SSH password authentication
+restart the SSH service
+
+After that, we can connect using:
+
+Username: ubuntu
+Password: ********
+
+So the .pem key is mainly used for the initial setup in this lab.
+
+3. Creating a password
+
+Ubuntu EC2 doesn't normally have a password configured for SSH login.
+
+We create one using:
+
+sudo passwd ubuntu
+
+This sets a password for the ubuntu user.
+
+4. Enabling password authentication
+
+SSH controls how users can authenticate through its configuration.
+
+The configuration is:
+
+/etc/ssh/sshd_config
+
+But in our EC2 instance, we found another configuration file:
+
+/etc/ssh/sshd_config.d/60-cloudimg-settings.conf
+
+It contained:
+
+PasswordAuthentication no
+
+This means:
+
+SSH will not allow users to log in using a password.
+
+We changed it to:
+
+PasswordAuthentication yes
+
+This means:
+
+SSH is now allowed to authenticate users using a password.
+
+5. Restarting SSH
+
+After changing the SSH configuration, we restart the SSH service:
+
+sudo systemctl restart ssh
+
+This makes SSH load the new configuration.
+
+We can verify the configuration with:
+
+sudo sshd -T | grep -i passwordauthentication
+
+Expected:
+
+passwordauthentication yes
+
+6. Testing SSH manually
+
+Before using Ansible, we should first make sure normal SSH password authentication works.
+
+From WSL:
+
+ssh ubuntu@EC2_IP
+
+For example:
+
+ssh ubuntu@15.207.55.228
+
+SSH asks:
+
+ubuntu@15.207.55.228's password:
+
+If the password is correct, we enter the EC2 server.
+
+This is important because Ansible also uses SSH.
+
+If normal SSH doesn't work, Ansible won't work either.

@@ -373,6 +373,33 @@ ansible-vault view group_vars/all/pass.yml --vault-password-file vault.pass
 
 If the correct credentials appear, your Vault setup is working.
 
+___________
+
+Your Ansible Vault is working correctly
+
+You ran:
+
+ansible-vault view group_vars/all/pass.yml --vault-password-file vault.pass
+
+and Ansible displayed:
+
+aws_access_key: ...
+aws_secret_key: ...
+
+That means:
+
+The file is encrypted, and your vault.pass password successfully decrypted it. ✅
+
+If you run:
+
+cat group_vars/all/pass.yml
+
+you should see encrypted content beginning with:
+
+$ANSIBLE_VAULT;1.1;AES256
+
+________________
+
 Step 13: Create a temporary wrong password
 
 Run:

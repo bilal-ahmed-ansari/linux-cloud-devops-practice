@@ -30,7 +30,7 @@ Next I will learn these topics one by one:-
 1) Linux System Administration
 2) Shell Scripting
 3) Git & GitHub 
-4) Nagois
+4) Nagios
 5) Grafana
 6) Prometheus 
 7) AWS

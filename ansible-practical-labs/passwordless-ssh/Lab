@@ -1,0 +1,329 @@
+1. Understand what we are creating
+
+Your setup will look like this:
+
+Windows
+   |
+   | WSL Ubuntu
+   |
+   |---- Ansible Control Node
+   |
+   | SSH using private key
+   |
+   ↓
+AWS EC2 Ubuntu
+   |
+   |---- Managed Node
+
+=> Control Node
+
+Your WSL Ubuntu will be the control node.
+
+It will run commands such as:
+
+=> Managed Node
+
+Your AWS EC2 Ubuntu server will be the managed node.
+
+Ansible will connect to it through SSH.
+
+A) PART 1 — Check WSL
+Step 1: Open WSL
+
+Open Windows PowerShell or Command Prompt and run:
+
+wsl
+
+You should get something similar to:
+
+bilal@DESKTOP:~$
+
+Now check your Linux version:
+
+cat /etc/os-release
+
+You should see Ubuntu information.
+
+Also check your IP:
+
+ip addr
+
+For this lab, you don't need to worry much about the WSL IP.
+
+B) PART 2 — Install SSH and Ansible
+Step 2: Update packages
+
+Inside WSL:
+
+sudo apt update
+
+Then:
+
+sudo apt upgrade -y
+
+=> Step 3: Check SSH
+
+Run:
+
+ssh -V
+
+You should see something like:
+
+OpenSSH_9.x
+
+If SSH is not installed:
+
+sudo apt install openssh-client -y
+
+=> Step 4: Install Ansible
+
+Run:
+
+sudo apt install ansible -y
+
+Check:
+
+ansible --version
+
+You should get something similar to:
+
+ansible [core ...]
+  python version = ...
+
+Now your WSL machine can act as an Ansible Control Node.
+
+=> PART 3 — AWS EC2
+
+You need one Linux EC2 instance.
+
+For this lab, Ubuntu is easiest.
+
+For example:
+
+OS: Ubuntu
+Instance: Any suitable small instance
+Username: ubuntu
+SSH Port: 22
+
+Your EC2 Security Group must allow:
+
+Type: SSH
+Port: 22
+Source: Your IP address
+
+You will need the EC2:
+
+Public IPv4 address
+
+For example:
+
+13.234.xxx.xxx
+
+=> PART 4 — First SSH Connection
+
+Before setting up Ansible, make sure normal SSH works.
+
+Suppose your EC2 private key is:
+
+my-ec2-key.pem
+
+You need to make this key available inside WSL.
+
+If your .pem file is in Windows Downloads, you can access it from WSL approximately like:
+
+/mnt/c/Users/<WindowsUsername>/Downloads/my-ec2-key.pem
+
+Copy it into your WSL home directory:
+
+cp /mnt/c/Users/<WindowsUsername>/Downloads/my-ec2-key.pem ~/
+
+Then:
+
+chmod 400 ~/my-ec2-key.pem
+
+Why chmod 400?
+
+It makes the private key readable only by you.
+
+=> PART 5 — Test SSH Manually
+
+Suppose your EC2 IP is:
+
+13.234.56.78
+
+Run:
+
+ssh -i ~/my-ec2-key.pem ubuntu@13.234.56.78
+
+If everything is correct, you should enter the EC2 server.
+
+You might see:
+
+ubuntu@ip-172-31-xx-xx:~$
+
+That means:
+
+WSL
+ ↓ SSH
+EC2
+
+is working.
+
+Exit:
+
+exit
+
+=> PART 6 — Generate Your Own SSH Key
+
+Now we will create the key shown in your diagram.
+
+On WSL:
+
+ssh-keygen
+
+You will see:
+
+Generating public/private rsa key pair.
+Enter file in which to save the key:
+
+Just press Enter.
+
+Then:
+
+Enter passphrase:
+
+For this lab, press Enter twice to leave it empty.
+
+You should get:
+
+Your identification has been saved in /home/bilal/.ssh/id_rsa
+Your public key has been saved in /home/bilal/.ssh/id_rsa.pub
+
+Check:
+
+ls -l ~/.ssh/
+
+You should see:
+
+id_rsa
+id_rsa.pub
+Important
+
+These are two different files:
+
+id_rsa
+
+= Private key
+
+id_rsa.pub
+
+= Public key
+
+Never share:
+
+id_rsa
+
+The public key is the one we put on the EC2 server.
+
+=> PART 7 — Understand Public and Private Keys
+
+Think of it like this:
+
+WSL Control Node
+
+Private Key
+id_rsa
+   🔑
+   |
+   | SSH authentication
+   ↓
+EC2
+
+Public Key
+id_rsa.pub
+   🔓
+   |
+   ↓
+~/.ssh/authorized_keys
+
+The EC2 server stores your public key.
+
+Your WSL machine keeps the private key.
+
+SSH uses them together to authenticate you.
+
+=> PART 8 — Put Public Key on EC2
+
+There are two ways.
+
+For your AWS EC2 lab, I recommend the first method because EC2 normally gives you the initial .pem key.
+
+Method 1 — Using the existing .pem key
+
+From WSL:
+
+cat ~/.ssh/id_rsa.pub
+
+You will see something like:
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ... bilal@computer
+
+Copy the entire line.
+
+Now SSH into EC2 using your original .pem:
+
+ssh -i ~/my-ec2-key.pem ubuntu@13.234.56.78
+
+On EC2:
+
+mkdir -p ~/.ssh
+
+Then:
+
+nano ~/.ssh/authorized_keys
+
+Paste your WSL public key into this file.
+
+Save and exit.
+
+Then:
+
+Then:
+
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+
+Exit EC2:
+
+exit
+
+=> PART 9 — Test Passwordless SSH
+
+Now comes the important part.
+
+From WSL, try:
+
+ssh ubuntu@13.234.56.78
+
+Notice something:
+
+We are not using:
+
+-i my-ec2-key.pem
+
+If everything is configured correctly, SSH should connect without asking for the EC2 password.
+
+Why?
+
+Because SSH automatically looks for your key in:
+
+~/.ssh/id_rsa
+
+and uses it.
+
+You should enter the EC2 server.
+
+ubuntu@ip-172-31-xx-xx:~$
+
+Congratulations — you have configured passwordless SSH authentication.
+

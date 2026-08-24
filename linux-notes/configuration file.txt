@@ -1,4 +1,0 @@
-/etc/ssh/sshd_config
-/etc/selinux/config
-/etc/apache2/apach2.conf
-/etc/resolv.conf = dns server ip

@@ -219,7 +219,12 @@ An empty editor will open.
 
 Type exactly:
 
+Add:
+
 vault.pass
+group_vars/all/pass.yml
+
+Save and exit.
 
 That's it.
 
@@ -276,76 +281,73 @@ You should see something similar to:
 
 Initialized empty Git repository...
 
-Now check:
+For your Ansible Vault lab, you probably want:
 
+vault.pass
+group_vars/all/pass.yml
+
+to be ignored because they contain sensitive information.
+
+Step 1 — Put these in .gitignore
+
+Open it:
+
+nano .gitignore
+
+Add:
+
+vault.pass
+group_vars/all/pass.yml
+
+Save and exit.
+
+Step 2 — Check status
 git status
 
-g) What should happen?
-
-You may see:
+You should now see something similar to:
 
 Untracked files:
     .gitignore
-    group_vars/
 
-But you should NOT see:
-
-vault.pass
-
-This is the important part.
-
-Git sees vault.pass, but .gitignore tells Git:
-
-Don't track this file.
-
-=> Check it directly
-
-You can ask Git whether it is ignoring the file:
-
-git check-ignore -v vault.pass
-
-You should get something similar to:
-
-.gitignore:1:vault.pass    vault.pass
-
-This confirms that:
-
-.gitignore
-
-is responsible for ignoring:
+Notice that:
 
 vault.pass
+group_vars/all/pass.yml
 
-h) Now you can stage the files that are safe to commit.
+are no longer shown.
 
-Run:
+That's exactly what you want.
 
+Step 3 — Add .gitignore
 git add .gitignore
 
 Then:
 
-git add group_vars/all/pass.yml
-
-Or you can simply run:
-
-git add .
-
-Because vault.pass is in .gitignore, Git should skip it.
-
-=> Check:
-
 git status
 
-You should see something like:
+You should see:
 
 Changes to be committed:
 
     new file: .gitignore
-    new file: group_vars/all/pass.yml
 
-You should not see:
+_______________
 
-new file: vault.pass
+Important concept
+
+Think of it this way:
+
+.gitignore
+   |
+   |-- tells Git what NOT to track
+   |
+   +---- vault.pass       ← ignored
+   |
+   +---- pass.yml         ← ignored
+
+But .gitignore itself should normally be committed because other people cloning your repository also need to know which files should be ignored.
+
+____________
 
 i) Commit
 

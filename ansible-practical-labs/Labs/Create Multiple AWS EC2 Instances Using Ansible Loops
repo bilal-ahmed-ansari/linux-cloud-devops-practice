@@ -1,0 +1,269 @@
+=> Lab Objective
+
+Create multiple EC2 instances using a single Ansible task and a loop.
+
+In this lab:
+
+Create 2 Ubuntu EC2 instances.
+Create 1 Amazon Linux EC2 instance.
+Use the same Ubuntu AMI for both Ubuntu instances.
+Use connection: local.
+Run Ansible from WSL.
+Use the amazon.aws.ec2_instance module.
+
+1. Lab Environment
+
+Windows
+   |
+   └── WSL
+        |
+        └── Ansible Control Node
+                  |
+                  | AWS API
+                  ↓
+                AWS EC2
+               /   |   \
+          Ubuntu Ubuntu Amazon Linux
+
+2. Create Lab Directory
+mkdir ~/ansible-ec2-loop-lab
+cd ~/ansible-ec2-loop-lab
+
+Create the files:
+
+touch ansible.cfg
+touch inventory
+touch create-ec2.yml
+
+Directory structure:
+
+ansible-ec2-loop-lab/
+├── ansible.cfg
+├── inventory
+└── create-ec2.yml
+
+3. Configure AWS CLI
+
+Install AWS CLI if required:
+
+sudo apt update
+sudo apt install awscli -y
+
+Configure it:
+
+aws configure
+
+Enter your AWS credentials and region.
+
+Example:
+
+AWS Access Key ID: ********
+AWS Secret Access Key: ********
+Default region name: ap-south-1
+Default output format: json
+
+If AWS account information is returned, the AWS CLI is working.
+
+Important: Never put AWS access keys or secret keys inside the GitHub repository.
+
+4. Install Ansible AWS Collection
+
+Install:
+
+ansible-galaxy collection install amazon.aws
+
+Install the required Python libraries:
+
+sudo apt install python3-boto3 python3-botocore -y
+
+Verify:
+
+ansible-galaxy collection list | grep amazon.aws
+
+5. Configure Ansible
+
+ansible.cfg:
+
+[defaults]
+inventory = inventory
+host_key_checking = False
+
+6. Create Local Inventory
+
+inventory:
+
+localhost ansible_connection=local
+Meaning
+localhost
+
+means the WSL machine.
+
+ansible_connection=local
+
+means Ansible should execute the task locally instead of using SSH.
+
+This is useful because we are using Ansible to communicate with the AWS API, rather than connecting to an existing EC2 server.
+
+7. Get the AMI IDs
+
+From the AWS EC2 console, get:
+
+Ubuntu AMI ID
+Amazon Linux AMI ID
+
+An AMI ID looks like:
+
+ami-xxxxxxxxxxxxxxxxx
+
+The same Ubuntu AMI can be used for both Ubuntu instances.
+
+Example:
+
+ubuntu_ami: "ami-xxxxxxxx"
+amazon_linux_ami: "ami-yyyyyyyy"
+
+8. Create the Ansible Playbook
+
+create-ec2.yml:
+
+---
+- name: Create EC2 instances using Ansible loop
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: ap-south-1
+
+    ubuntu_ami: "YOUR_UBUNTU_AMI_ID"
+    amazon_linux_ami: "YOUR_AMAZON_LINUX_AMI_ID"
+
+    instance_type: t2.micro
+    key_name: testing
+
+  tasks:
+    - name: Create EC2 instances
+      amazon.aws.ec2_instance:
+        name: "{{ item.name }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ item.ami }}"
+        region: "{{ region }}"
+        availability_zone: ap-south-1b
+        wait: true
+        count: 1
+
+      loop:
+        - name: ubuntu-server-1
+          ami: "{{ ubuntu_ami }}"
+
+        - name: ubuntu-server-2
+          ami: "{{ ubuntu_ami }}"
+
+        - name: amazon-linux-server-1
+          ami: "{{ amazon_linux_ami }}"
+
+9. Understand the Loop
+
+The main purpose of this lab is to understand:
+
+loop:
+
+Instead of creating three separate tasks:
+
+Create Ubuntu 1
+Create Ubuntu 2
+Create Amazon Linux
+
+we use one task:
+
+- name: Create EC2 instances
+
+and provide three items:
+
+loop:
+  - name: ubuntu-server-1
+    ami: "{{ ubuntu_ami }}"
+
+  - name: ubuntu-server-2
+    ami: "{{ ubuntu_ami }}"
+
+  - name: amazon-linux-server-1
+    ami: "{{ amazon_linux_ami }}"
+
+Ansible processes them one by one.
+
+Loop item 1 → Ubuntu
+Loop item 2 → Ubuntu
+Loop item 3 → Amazon Linux
+
+10. Check Syntax
+
+Before creating anything:
+
+ansible-playbook --syntax-check create-ec2.yml
+
+Expected:
+
+playbook: create-ec2.yml
+
+11. Run the Playbook
+
+ansible-playbook create-ec2.yml
+
+If successful, you should see something similar to:
+
+localhost : ok=1 changed=1 failed=0
+
+Then check:
+
+AWS Console → EC2 → Instances
+
+You should see:
+
+ubuntu-server-1
+ubuntu-server-2
+amazon-linux-server-1
+
+_____________
+
+Troubleshooting:-
+
+a) Problem 1: YAML Syntax Error
+
+Initially, I had:
+
+vars:-
+
+This is incorrect.
+
+Correct:
+
+vars:
+
+=> Lesson:-
+
+YAML indentation and syntax are very important in Ansible.
+
+b) Problem 2: Incorrect key_name indentation
+
+I also had:
+
+-key_name: "{{ key_name }}"
+
+This is incorrect.
+
+Correct:
+
+key_name: "{{ key_name }}"
+
+=> Also, module parameters need proper indentation:
+
+amazon.aws.ec2_instance:
+  name:
+  key_name:
+  instance_type:
+
+key_name: "{{ key_name }}"
+
+___________

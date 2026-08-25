@@ -164,3 +164,67 @@ Python
 Ansible
  ↓
 "Manage and configure many servers automatically."
+
+6. What is a Play?
+
+A Play tells Ansible:
+
+Which servers should I manage, and what should I do on those servers?
+
+Example:
+
+- name: Install nginx
+  hosts: webservers
+  tasks:
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+
+Here:
+
+name: Install nginx → Play name
+hosts: webservers → Which servers this Play will run on
+tasks: → What Ansible should do
+apt: → Install/manage the package
+
+So, one Play = one set of instructions for a group of hosts.
+
+7. What are Plays?
+
+Plays simply means multiple Plays in the same playbook.
+
+For example:
+
+- name: Configure web servers
+  hosts: webservers
+  tasks:
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+
+- name: Configure database servers
+  hosts: dbservers
+  tasks:
+    - name: Install mysql
+      apt:
+        name: mysql-server
+        state: present
+
+This playbook has 2 Plays:
+
+Playbook
+   |
+   ├── Play 1 → webservers
+   |      └── Install nginx
+   |
+   └── Play 2 → dbservers
+          └── Install MySQL
+Easy way to remember
+
+=> Think of a school timetable:
+
+a) Playbook = Entire timetable
+b) Play = One class/period
+c) Task = One activity in that class

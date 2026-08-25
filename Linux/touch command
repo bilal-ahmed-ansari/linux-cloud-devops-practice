@@ -1,0 +1,141 @@
+1. What is touch?
+
+The touch command is used to:
+
+Create an empty file
+Update the timestamp of an existing file
+
+In simple words:
+
+touch = Create a file if it doesn't exist, or update its time if it already exists.
+
+2. Basic Syntax
+touch filename
+
+Example:
+
+touch test.txt
+
+This creates an empty file called test.txt.
+
+Check it:
+
+ls -l test.txt
+
+You will see:
+
+-rw-r--r-- 1 ubuntu ubuntu 0 Aug 26 01:20 test.txt
+
+The 0 means the file is empty.
+
+3. Lab Practice
+
+Let's do a small practical lab.
+
+Step 1: Create a lab directory
+
+mkdir touch-lab
+
+Go inside:
+
+cd touch-lab
+
+Step 2: Create one file
+touch file1.txt
+
+Check:
+
+ls -l
+
+You should see:
+
+file1.txt
+
+Step 3: Create multiple files
+
+You can create multiple files with one command:
+
+touch file2.txt file3.txt file4.txt
+
+Check:
+
+ls
+
+Output:
+
+file1.txt
+file2.txt
+file3.txt
+file4.txt
+
+Step 4: Check file size
+
+ls -lh
+
+You will see the files have approximately:
+
+0
+
+because touch creates empty files.
+
+4. Important: touch does NOT add content
+
+For example:
+
+touch hello.txt
+
+This creates the file, but it does not put anything inside it.
+
+Check:
+
+cat hello.txt
+
+Nothing will be displayed.
+
+To add content:
+
+echo "Hello Linux" > hello.txt
+
+5. touch on an existing file
+
+Suppose you already have:
+
+touch test.txt
+
+Now run:
+
+ls -l test.txt
+
+You can see its timestamp.
+
+=> If you run:
+
+touch test.txt
+
+again, the file's modification/access timestamps are updated, but its content is not deleted or changed.
+
+6. Create a file with a specific extension
+
+touch doesn't care about the extension.
+
+For example:
+
+touch script.sh
+touch config.conf
+touch notes.txt
+touch index.html
+
+All of these create empty files.
+
+7. Create files inside another directory
+
+Example:
+
+touch /tmp/test.txt
+
+This creates test.txt inside /tmp.
+
+You can verify:
+
+ls -l /tmp/test.txt
+

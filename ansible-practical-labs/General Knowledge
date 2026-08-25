@@ -473,3 +473,24 @@ ansible.cfg
 myinventory
      |
      └── localhost ansible_connection=local
+
+14. gather_facts: false means:
+
+Don't collect information (facts) about the target machine before running the tasks.
+
+Normally, Ansible automatically collects information about the target machine, such as:
+
+Operating system
+IP address
+Hostname
+CPU
+RAM
+Python version
+Network information
+
+For example:
+
+- hosts: localhost
+  gather_facts: true
+
+Ansible first gathers information about localhost, then runs your tasks.

@@ -1,0 +1,259 @@
+1. Lab Objective
+
+The purpose of this lab is to learn how to stop and start EC2 instances on AWS using Ansible.
+
+Instead of going to the AWS Console and manually stopping or starting instances, we use Ansible to automate the process.
+
+In this lab, we worked with three EC2 instances:
+
+Ubuntu Server 1
+Ubuntu Server 2
+Amazon Linux Server
+
+2. Lab Environment
+Windows Machine
+      |
+      ↓
+     WSL
+      |
+      ↓
+Ansible Control Node
+      |
+      ↓
+AWS API
+      |
+      ├── Ubuntu EC2 1
+      ├── Ubuntu EC2 2
+      └── Amazon Linux EC2
+
+Ansible runs from WSL and communicates with AWS using the AWS API.
+
+3. Why Use Ansible?
+
+Normally, we can stop an EC2 instance manually:
+
+AWS Console
+   ↓
+EC2
+   ↓
+Select Instance
+   ↓
+Instance State
+   ↓
+Stop
+
+But if we have many instances, doing this manually takes time.
+
+Ansible allows us to automate this.
+
+For example:
+
+Ansible
+   ↓
+Stop 3 EC2 instances
+
+4. Ansible Playbook
+
+We created a playbook:
+
+shutdown-ec2.yml
+
+Example:
+
+---
+- name: Stop EC2 instances
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: ap-south-1
+
+    instance_ids:
+      - i-xxxxxxxxxxxxxxxxx
+      - i-yyyyyyyyyyyyyyyyy
+      - i-zzzzzzzzzzzzzzzzz
+
+  tasks:
+    - name: Stop EC2 instances
+      amazon.aws.ec2_instance:
+        instance_ids: "{{ instance_ids }}"
+        state: stopped
+        region: "{{ region }}"
+
+5. hosts: localhost
+
+means the Ansible task will run on the local machine.
+
+In our case:
+
+WSL → Ansible
+
+6. connection: local
+
+means Ansible doesn't need to SSH into another server to execute the AWS task.
+
+The communication is:
+
+WSL
+ ↓
+Ansible
+ ↓
+AWS API
+ ↓
+EC2
+
+7. gather_facts: false
+
+means Ansible doesn't collect information about the WSL machine before running the task.
+
+We don't need CPU, RAM, OS, etc. for this AWS task, so we disable fact gathering.
+
+8. Using Variables
+
+We used:
+
+vars:
+  region: ap-south-1
+
+This stores the AWS region.
+
+Instead of writing:
+
+region: ap-south-1
+
+multiple times, we can use:
+
+region: "{{ region }}"
+
+9. Instance IDs
+
+We stored the EC2 instance IDs in a list:
+
+instance_ids:
+  - i-xxxxxxxx
+  - i-yyyyyyyy
+  - i-zzzzzzzz
+
+10: amazon.aws.ec2_instance:
+
+This tells Ansible which EC2 instances we want to manage.
+
+is the Ansible module used to manage AWS EC2 instances.
+
+It can be used for tasks such as:
+
+Creating EC2 instances
+Starting EC2 instances
+Stopping EC2 instances
+Managing EC2 instance states in a list:
+
+11. state: stopped
+
+This line:
+
+state: stopped
+
+tells Ansible:
+
+Stop the specified EC2 instances.
+
+After running the playbook, the instances should show:
+
+Ubuntu 1       → Stopped
+Ubuntu 2       → Stopped
+Amazon Linux   → Stopped
+
+12. Starting the Instances Again
+
+After stopping the instances, we started them again.
+
+For starting, we use:
+
+state: running
+
+Example:
+
+---
+- name: Start EC2 instances
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: ap-south-1
+
+    instance_ids:
+      - i-xxxxxxxxxxxxxxxxx
+      - i-yyyyyyyyyyyyyyyyy
+      - i-zzzzzzzzzzzzzzzzz
+
+  tasks:
+    - name: Start EC2 instances
+      amazon.aws.ec2_instance:
+        instance_ids: "{{ instance_ids }}"
+        state: running
+        region: "{{ region }}"
+
+=> The important difference is:
+
+state: stopped
+       ↓
+Stop EC2
+
+and:
+
+state: running
+       ↓
+Start EC2
+
+13. Syntax Check
+
+Before running the playbook, we used:
+
+ansible-playbook --syntax-check shutdown-ec2.yml
+
+This checks whether the YAML/Ansible syntax is correct.
+
+If successful:
+
+playbook: shutdown-ec2.ymlThe important difference is:
+
+state: stopped
+
+=> Important Difference: Stop vs Terminate
+
+This is very important when working with EC2.
+
+a) Stop
+state: stopped
+
+Means:
+
+Turn off the EC2 instance but keep the instance.
+
+You can start it again later.
+
+b) Terminate
+
+Terminating an instance means:
+
+Delete the EC2 instance.
+
+For a practice lab, be careful not to terminate an instance unless you actually want to delete it.
+
+=> What I Learned
+
+From this lab, I learned:
+
+How to stop EC2 instances using Ansible.
+How to start EC2 instances using Ansible.
+How to use the amazon.aws.ec2_instance module.
+How to use EC2 instance IDs in Ansible.
+How to use variables in a playbook.
+How connection: local works.
+How gather_facts: false works.
+How state: stopped works.
+How state: running works.
+How to troubleshoot YAML indentation errors.
+

@@ -1,0 +1,100 @@
+1. What is Vi?
+
+Vi is a text editor in Linux.
+
+It is used to create, open, edit, and save text files.
+
+For example:
+
+vi test.txt
+
+This opens test.txt in the Vi editor.
+
+2. What is Vim?
+
+Vim stands for Vi Improved.
+
+It is an improved version of Vi with more features, such as:
+
+Syntax highlighting
+Better search
+Auto-indentation
+Plugins
+More editing features
+
+In modern Linux systems, Vim is commonly used.
+
+You can open a file with:
+
+vim test.txt
+
+=> Important Vim Modes
+
+Vim works mainly with different modes.
+
+1. Normal Mode
+
+Used for commands like:
+
+Move around
+Delete text
+Copy text
+Paste text
+Save/quit commands
+
+When you open Vim, you are normally in Normal Mode.
+
+2. Insert Mode
+
+Used to type or edit text.
+
+Press:
+
+i
+
+Then you can start typing.
+
+Example:
+
+vim test.txt
+
+Press:
+
+i
+
+Now type:
+
+Hello Linux
+
+3. Command Mode
+
+Used for commands such as save and exit.
+
+First press:
+
+Esc
+
+Then press:
+
+:w
+
+w means write/save.
+
+To save and exit:
+
+:wq
+
+=> Important Commands
+
+| Command | Meaning                |
+| ------- | ---------------------- |
+| `i`     | Start inserting text   |
+| `Esc`   | Go back to Normal Mode |
+| `:w`    | Save                   |
+| `:q`    | Quit                   |
+| `:wq`   | Save and quit          |
+| `:q!`   | Quit without saving    |
+| `dd`    | Delete a line          |
+| `yy`    | Copy a line            |
+| `p`     | Paste                  |
+| `/word` | Search for a word      |

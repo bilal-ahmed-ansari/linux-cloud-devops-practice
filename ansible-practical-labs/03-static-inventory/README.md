@@ -4,19 +4,11 @@ Create a static Ansible inventory and manage two AWS EC2 instances from Ubuntu W
 
 In this lab:
 
-Ubuntu WSL
-     |
-     ↓
-Ansible Control Node
-     |
-   ┌─┴────┐
-   ↓      ↓
- EC2-1   EC2-2
-  app     db
+Ubuntu WSL => Ansible Control Node =>  EC2-1 (app) &  EC2-2 )db)
 
-  The two EC2 instances are already created. We will tell Ansible which servers exist and how to connect to them.
+The two EC2 instances are already created. We will tell Ansible which servers exist and how to connect to them.
 
-  1. What is an Ansible Inventory?
+1. What is an Ansible Inventory?
 
 An inventory is a file where we define the servers that Ansible needs to manage.
 
@@ -62,9 +54,7 @@ If a new EC2 instance is created, we normally need to add it to the inventory ou
 
 In this lab, our folder is:
 
-03-static-inventory/
-├── README.md
-└── inventory.ini
+03-static-inventory => README.md & inventory.ini
 
 The important file is:
 
@@ -168,16 +158,6 @@ db1
 
 inside that group.
 
-So our inventory now looks like:
-
-Inventory
-│
-├── app
-│   └── app1
-│
-└── db
-    └── db1
-
 9. Why Are Groups Useful?
 
 Groups allow us to easily select specific servers.
@@ -210,20 +190,7 @@ Run it on all servers.
 
 Imagine a company has:
 
-production
-│
-├── web
-│   ├── web1
-│   ├── web2
-│   └── web3
-│
-├── app
-│   ├── app1
-│   └── app2
-│
-└── db
-    ├── db1
-    └── db2
+production => web => web1, web2 & web3 => app=> app1, app2 & app3 => db (db1 & db2)
 
 We can tell Ansible:
 
@@ -347,8 +314,8 @@ Read inventory.ini, find all the servers, and test whether Ansible can connect t
 
 If everything is correct, we should get:
 
-app1 | SUCCESS
-db1  | SUCCESS
+app1 => SUCCESS
+db1 => SUCCESS
 
 16. Target Only One Server
 

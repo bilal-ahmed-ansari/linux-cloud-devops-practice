@@ -1,0 +1,161 @@
+1. What is man?
+
+man stands for Manual.
+
+It is used to read the documentation/help for Linux commands.
+
+In simple language:
+
+man = Linux's built-in instruction book.
+
+For example, if you don't know how touch works:
+
+man touch
+
+Linux will show you the complete manual for the touch command.
+
+2. Basic Syntax
+
+man command
+
+Example:
+
+man ls
+
+This opens the manual page for ls.
+
+Other examples:
+
+man cd
+man mkdir
+man cp
+man mv
+man rm
+man touch
+
+3. Lab Practice
+
+Step 1: Open the manual for touch
+man touch
+
+You will see information similar to:
+
+TOUCH(1)
+
+a) NAME
+       touch - change file timestamps
+
+b) SYNOPSIS
+       touch [OPTION]... FILE...
+
+c) DESCRIPTION
+       Update the access and modification times of each FILE...
+
+Don't worry if it looks complicated at first.
+
+=> The most important sections are:
+
+NAME
+
+Tells you what the command does.
+
+SYNOPSIS
+
+Shows the basic syntax of the command.
+
+DESCRIPTION
+
+Explains how the command works.
+
+OPTIONS
+
+Shows different options you can use.
+
+4. How to exit man
+
+When you run:
+
+man touch
+
+you enter the manual viewer.
+
+To exit:
+
+q
+
+Just press q.
+
+5. Searching inside man
+
+Suppose you run:
+
+man touch
+
+and want to find the word reference.
+
+Press:
+
+/reference
+
+then press Enter.
+
+The manual will search for that word.
+
+press 'n' for Next result
+
+Press 'N' for Previous result
+
+6. Moving inside the manual
+
+When reading a long manual:
+
+| Key     | Meaning                |
+| ------- | ---------------------- |
+| `↑`     | Move up                |
+| `↓`     | Move down              |
+| `Space` | Next page              |
+| `b`     | Previous page          |
+| `q`     | Quit                   |
+| `/word` | Search for word        |
+| `n`     | Next search result     |
+| `N`     | Previous search result |
+
+7. Example: man ls
+
+Run:
+
+man ls
+
+Look for the SYNOPSIS section.
+
+You will see something similar to:
+
+ls [OPTION]... [FILE]...
+
+This means ls can be used with options and files/directories.
+
+For example:
+
+ls -l
+
+To understand what -l does, you can search inside the manual:
+
+/-l
+
+press Enter
+
+8. man vs --help
+
+You will commonly see both:
+
+a) man ls
+
+and:
+
+b) ls --help
+
+=> --help
+
+Usually gives you a quick summary.
+
+=> Usually gives you more detailed documentation.

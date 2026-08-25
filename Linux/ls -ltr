@@ -1,0 +1,70 @@
+=> ls -ltr is a very common command for Linux administrators.
+
+Simple meaning
+
+ls -ltr = Show files in long format, sorted by modification time, with oldest files first.
+
+=> Let's break it down:
+
+Eg: ls -ltr
+
+a) ls
+
+Lists files and directories.
+
+b) -l
+
+Long format — shows details such as:
+
+Permissions
+Owner
+Group
+File size
+Date/time
+File name
+
+c) -t
+
+Sorts files by modification time.
+
+Normally, newest files appear first
+
+d) -r
+
+Reverse the order.
+
+So the newest becomes last and the oldest appears first.
+
+{> Example
+
+Suppose a directory contains:
+
+file1.log
+file2.log
+file3.log
+
+Running:
+
+ls -ltr
+
+might show:
+
+-rw-r--r-- 1 ubuntu ubuntu 120 Aug 20 10:00 file1.log
+-rw-r--r-- 1 ubuntu ubuntu 250 Aug 23 12:00 file2.log
+-rw-r--r-- 1 ubuntu ubuntu 500 Aug 26 01:00 file3.log
+
+Here:
+
+Oldest → Newest
+
+file1.log → file2.log → file3.log
+
+=> Why is ls -ltr useful?
+
+Very useful when checking logs.
+
+For example:
+
+ls -ltr /var/log/
+
+This helps you see the oldest files first, making it easier to understand which logs were created or modified earlier.

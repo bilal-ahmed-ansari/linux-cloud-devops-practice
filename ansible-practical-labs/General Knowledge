@@ -396,3 +396,80 @@ print(response)
 Means:
 
 "Python, use Boto3 to ask AWS for my S3 buckets."
+
+12. Can we change ansible_connection?
+
+ansible_connection is an Ansible variable with a special meaning.
+
+For example:
+
+localhost ansible_connection=local
+
+means:
+
+Ansible, connect to localhost using a local connection, not SSH.
+
+You should not rename ansible_connection to something like:
+
+localhost connection=local
+
+because Ansible won't treat connection as the special connection setting.
+
+Think of it like:
+
+ansible_connection = keyword Ansible understands
+local              = value
+
+So:
+
+ansible_connection=local
+
+means:
+
+Use local connection
+
+13. Can we change the inventory filename?
+
+Yes, absolutely.
+
+The file doesn't have to be named:
+
+inventory
+
+You can call it:
+
+hosts
+
+or:
+
+myinventory
+
+or:
+
+ec2_inventory
+
+For example:
+
+nano myinventory
+
+with:
+
+localhost ansible_connection=local
+
+Then tell Ansible which inventory file to use.
+
+In ansible.cfg:
+
+[defaults]
+inventory = myinventory
+host_key_checking = False
+
+So the relationship is:
+
+ansible.cfg
+     |
+     | inventory = myinventory
+     ↓
+myinventory
+     |
+     └── localhost ansible_connection=local

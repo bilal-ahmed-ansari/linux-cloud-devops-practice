@@ -334,3 +334,65 @@ Example AWS CLI:
 
 aws ec2 describe-instances
 
+11. What is Python Boto3?
+
+Boto3 is the AWS SDK for Python.
+
+SDK means Software Development Kit.
+
+It allows you to use Python code to communicate with AWS.
+
+For example, instead of typing an AWS CLI command, you can write Python:
+
+Eg:
+
+import boto3
+
+ec2 = boto3.client('ec2')
+
+response = ec2.describe_instances()
+
+print(response)
+
+Here Python is communicating with AWS through Boto3.
+
+Simple meaning
+
+Boto3 = Use Python code to control AWS.
+
+Think of it like:
+
+Python Program → Boto3 → AWS
+
+=> AWS CLI vs Boto3
+
+| AWS CLI                       | Boto3                                   |
+| ----------------------------- | --------------------------------------- |
+| Uses commands                 | Uses Python code                        |
+| Command-line tool             | Python SDK                              |
+| `aws ec2 describe-instances`  | `ec2.describe_instances()`              |
+| Good for manual tasks/scripts | Good for Python applications/automation |
+
+=> Very simple example
+
+a) AWS CLI:
+
+aws s3 ls
+
+Means:
+
+"AWS, show me my S3 buckets."
+
+b) Boto3:
+
+import boto3
+
+s3 = boto3.client('s3')
+
+response = s3.list_buckets()
+
+print(response)
+
+Means:
+
+"Python, use Boto3 to ask AWS for my S3 buckets."

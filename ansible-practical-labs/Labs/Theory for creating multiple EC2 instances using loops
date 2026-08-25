@@ -1,0 +1,281 @@
+1. What is the purpose of this lab?
+
+In this lab, we use Ansible to create multiple EC2 instances on AWS.
+
+Instead of creating each EC2 instance manually from the AWS Console, Ansible can create them automatically.
+
+We use an Ansible loop so that one task can create multiple instances.
+
+Example:
+
+Ansible
+   |
+   ├── Ubuntu EC2 #1
+   ├── Ubuntu EC2 #2
+   └── Amazon Linux EC2 #1
+
+2. What is an EC2 instance?
+
+EC2 (Elastic Compute Cloud) is a service provided by AWS that allows us to create virtual servers in the cloud.
+
+For example, we can create:
+
+Ubuntu Server
+Amazon Linux Server
+Windows Server
+
+3. What is an AMI?
+
+AMI stands for Amazon Machine Image.
+
+An AMI is basically a template/image used to create an EC2 instance.
+
+For example:
+
+Ubuntu AMI
+     ↓
+EC2 Instance
+
+If we want to create two Ubuntu servers, we can use the same Ubuntu AMI twice.
+
+Ubuntu AMI
+   ├── Ubuntu Server 1
+   └── Ubuntu Server 2
+
+An AMI ID normally looks like:
+
+ami-xxxxxxxxxxxxxxxxx
+
+4. What is an Ansible loop?
+
+A loop allows us to repeat the same task for multiple items.
+
+Without a loop, we could create separate tasks:
+
+Create Ubuntu server 1
+Create Ubuntu server 2
+Create Amazon Linux server
+
+This would make the playbook longer.
+
+With a loop, we can use one task:
+
+loop:
+  - Ubuntu server 1
+  - Ubuntu server 2
+  - Amazon Linux server
+
+Ansible processes each item one by one.
+
+5. What is amazon.aws.ec2_instance?
+
+This is an Ansible module from the amazon.aws collection.
+
+It is used to manage EC2 instances on AWS.
+
+In our lab:
+
+amazon.aws.ec2_instance:
+
+tells Ansible:
+
+"I want to create/manage an AWS EC2 instance."
+
+We provide information such as:
+
+name:
+instance_type:
+image_id:
+key_name:
+region:
+
+6. What is connection: local?
+
+Normally, Ansible connects to remote servers using SSH.
+
+For example:
+
+Ansible Control Node
+       |
+       | SSH
+       ↓
+Remote Linux Server
+
+But in this lab, Ansible is running from our WSL machine and is communicating with AWS.
+
+Therefore:
+
+connection: local
+
+means:
+
+Run the Ansible task locally on the Control Node.
+
+The flow is:
+
+Windows
+   ↓
+WSL
+   ↓
+Ansible
+   ↓
+AWS API
+   ↓
+EC2
+
+We don't need SSH to an existing server to create the EC2 instance.
+
+7. What is gather_facts: false?
+
+Normally, Ansible collects information about the target machine before running tasks.
+
+For example:
+
+OS
+CPU
+RAM
+IP address
+Hostname
+
+But we don't need this information for our EC2 creation task.
+
+Therefore we use:
+
+gather_facts: false
+
+It means:
+
+Don't collect system information before running the task.
+
+This makes sense for this lab because our main task is simply to communicate with AWS and create EC2 instances.
+
+8. What are Ansible variables?
+
+Variables allow us to store values that we may need multiple times.
+
+For example:
+
+vars:
+  region: ap-south-1
+  instance_type: t2.micro
+
+Instead of writing:
+
+ap-south-1
+
+everywhere, we can use:
+
+{{ region }}
+
+Similarly:
+
+{{ instance_type }}
+
+represents:
+
+t2.micro
+
+9. What is item?
+
+When we use a loop, Ansible uses the variable item to represent the current item in the loop.
+
+For example:
+
+loop:
+  - name: ubuntu-server-1
+    ami: "{{ ubuntu_ami }}"
+
+  - name: ubuntu-server-2
+    ami: "{{ ubuntu_ami }}"
+
+When Ansible processes the first item:
+
+item.name → ubuntu-server-1
+item.ami  → Ubuntu AMI
+
+When it processes the second item:
+
+item.name → ubuntu-server-2
+item.ami  → Ubuntu AMI
+
+So:
+
+name: "{{ item.name }}"
+
+means:
+
+Use the name from the current loop item.
+
+10. What is an Availability Zone?
+
+An AWS region contains multiple Availability Zones (AZs).
+
+For example, Mumbai has:
+
+ap-south-1a
+ap-south-1b
+ap-south-1c
+
+Sometimes AWS may not have enough capacity for a particular instance type in one AZ.
+
+We experienced this error:
+
+InsufficientInstanceCapacity
+
+AWS reported that there wasn't enough t2.micro capacity in:
+
+ap-south-1a
+
+and suggested:
+
+ap-south-1b
+
+This is an AWS infrastructure/capacity issue, not an Ansible syntax problem.
+
+11. What is key_name?
+
+key_name specifies the EC2 key pair that will be associated with the instance.
+
+Example:
+
+key_name: testing
+
+The key pair is used later when connecting to the Linux EC2 instance using SSH.
+
+It is important to understand that:
+
+key_name
+
+is the AWS key-pair name, not the .pem file name itself.
+
+12. What is instance_type?
+
+Instance type defines the resources available to the EC2 instance.
+
+For example:
+
+instance_type: t2.micro
+
+defines the type of EC2 virtual machine we want.
+
+Different instance types provide different amounts of:
+
+CPU
+RAM
+Network performance
+
+13. What does wait: true mean?
+
+We use:
+
+wait: true
+
+It tells Ansible to wait for AWS to finish the EC2 creation operation instead of immediately moving on.
+
+In simple words:
+
+"Wait until AWS has processed the EC2 creation request."
+
+
+
+These servers can be used for application hosting, testing, development, etc.

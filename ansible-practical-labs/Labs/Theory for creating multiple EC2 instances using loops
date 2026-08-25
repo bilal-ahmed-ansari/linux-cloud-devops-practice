@@ -24,6 +24,8 @@ Ubuntu Server
 Amazon Linux Server
 Windows Server
 
+These servers can be used for application hosting, testing, development, etc.
+
 3. What is an AMI?
 
 AMI stands for Amazon Machine Image.
@@ -275,7 +277,3 @@ It tells Ansible to wait for AWS to finish the EC2 creation operation instead of
 In simple words:
 
 "Wait until AWS has processed the EC2 creation request."
-
-
-
-These servers can be used for application hosting, testing, development, etc.

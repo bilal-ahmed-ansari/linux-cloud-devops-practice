@@ -57,7 +57,7 @@ Output:
 
 bsmeding.docker
 
-he complete path on my system is:
+The complete path on my system is:
 
 /home/bilal-ahmed-ansari/.ansible/roles/bsmeding.docker
 
@@ -394,7 +394,3 @@ Check the main tasks:
 cat tasks/main.yml
 
 This is useful for learning because we can see how another Ansible user has written a real reusable role.
-
-
-
-=> 

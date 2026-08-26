@@ -1,0 +1,45 @@
+The main reason is automation.
+
+Imagine you are a Linux administrator managing 100 Linux servers.
+
+You need to check:
+
+Disk space
+CPU
+Memory
+Running services
+Logs
+Backup status
+
+Doing this manually on every server would take a lot of time.
+
+Instead, you can create a script that performs these checks automatically.
+
+For example:
+
+#!/bin/bash
+
+echo "Disk:"
+df -h
+
+echo "Memory:"
+free -h
+
+echo "Uptime:"
+uptime
+
+Now one command:
+
+./server_check.sh
+
+can perform multiple checks.
+
+=> In simple words:
+
+Without scripting:
+
+You → Manually do 10 tasks
+
+With scripting:
+
+You → Run 1 script → 10 tasks happen automatically.

@@ -1,0 +1,21 @@
+a) Nano
+
+Very easy for beginners.
+
+nano file.txt
+
+You can immediately start typing.
+
+b) Vim
+
+More powerful but has a learning curve.
+
+vim file.txt
+
+For example, Vim has different modes such as:
+
+Normal mode
+Insert mode
+Command mode
+
+=> So for learning Linux, Nano is a good editor to start with.

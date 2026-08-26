@@ -1,0 +1,83 @@
+Nano is a simple text editor available in Linux.
+
+You can use Nano to create, open, edit, and save files.
+
+Think of it like Notepad in Windows, but for the Linux terminal.
+
+1. Why do we use Nano?
+
+Suppose you want to create a Shell Script:
+
+nano hello.sh
+
+Nano opens the file in the terminal.
+
+You can type:
+
+#!/bin/bash
+
+echo "Hello World"
+
+Then save the file and exit.
+
+2. How to open/create a file?
+
+Create a new file
+nano test.txt
+
+If test.txt doesn't exist, Nano creates it when you save.
+
+Open an existing file
+nano test.txt
+
+If the file already exists, Nano opens it for editing.
+
+So the same command is used for creating and editing.
+
+3. Important Nano shortcuts
+
+At the bottom of the Nano screen, you'll see things like:
+
+^G Help
+^O Write Out
+^X Exit
+
+Here ^ means Ctrl.
+
+So:
+
+| Shortcut   | Meaning              |
+| ---------- | -------------------- |
+| `Ctrl + O` | Save file            |
+| `Ctrl + X` | Exit Nano            |
+| `Ctrl + W` | Search text          |
+| `Ctrl + K` | Cut a line           |
+| `Ctrl + U` | Paste a line         |
+| `Ctrl + G` | Help                 |
+| `Ctrl + C` | Show cursor position |
+
+4. How to save a file?
+
+Suppose you are inside Nano and have written:
+
+Hello Linux
+
+Press:
+
+Ctrl + O
+
+Nano will ask:
+
+File Name to Write: test.txt
+
+Press:
+
+Enter
+
+The file is saved.
+
+Then press:
+
+Ctrl + X
+
+to exit.

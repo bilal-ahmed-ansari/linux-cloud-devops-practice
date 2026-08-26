@@ -1,0 +1,135 @@
+1. What is echo in Linux?
+
+echo is a Linux command used to display text or the value of something on the screen.
+
+For example:
+
+echo "Hello World"
+
+Output:
+
+Hello World
+
+Think of echo as:
+
+"Show this on the screen."
+
+2. echo with a variable
+
+For example:
+
+name="Bilal"
+echo "$name"
+
+Output:
+
+Bilal
+
+Here:
+
+name="Bilal"
+
+stores the value.
+
+And:
+
+echo "$name"
+
+displays the value.
+
+3. What is >?
+
+> is called the output redirection operator.
+
+It means:
+
+Take the output and put it into a file.
+
+=> For example:
+
+echo "Hello World" > test.txt
+
+Instead of displaying:
+
+Hello World
+
+on the terminal, Linux puts it inside test.txt.
+
+You can check:
+
+cat test.txt
+
+Output:
+
+Hello World
+
+4. Very important: > creates a file
+
+If test.txt doesn't exist:
+
+echo "Hello" > test.txt
+
+Linux will create:
+
+test.txt
+
+and put:
+
+Hello
+
+inside it.
+
+5. Very important: > overwrites the file
+
+Suppose test.txt contains:
+
+Hello
+
+Now you run:
+
+echo "Welcome" > test.txt
+
+The old content is replaced.
+
+Now:
+
+cat test.txt
+
+shows:
+
+Welcome
+
+=> So remember:
+
+> = create or overwrite
+
+6. What if I want to add instead of overwrite?
+
+Use:
+
+>>
+
+This is called append redirection.
+
+Example:
+
+echo "Hello" > test.txt
+
+Then:
+
+echo "Welcome" >> test.txt
+
+6. Simple real-world example
+
+Suppose you want to create a file containing server information.
+
+echo "Server Health Report" > report.txt
+
+Then:
+
+echo "Disk Usage:" >> report.txt
+df -h >> report.txt
+
+Now the file contains the report.
+
+This is useful in Shell Scripting because scripts can generate reports and save command output into files.

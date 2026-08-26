@@ -1,0 +1,177 @@
+1. How is Shell Scripting used in the industry?
+
+=> As a Linux/System Administrator or DevOps Engineer, you can use Shell scripts for many things.
+
+a) Example 1: Disk space checking
+
+You can create a script that checks:
+
+If / is above 80%
+        ↓
+Send an alert
+
+=> For example:
+
+Disk usage = 85%
+
+Script:
+"WARNING: Disk usage is above 80%"
+
+b) Example 2: Backup
+
+Suppose you need to backup a directory every night.
+
+Instead of manually doing:
+
+tar -czf backup.tar.gz /data
+
+=> you create a script.
+
+Then schedule it using cron.
+
+Every night at 11 PM
+        ↓
+Cron
+        ↓
+Backup script
+        ↓
+Backup created
+
+c) Example 3: Log cleanup
+
+Suppose old log files are taking too much space.
+
+A script can find old files and remove them.
+
+=> Find logs older than 30 days
+        ↓
+Delete them
+        ↓
+Free disk space
+
+d) Example 4: Service checking
+
+You can create a script to check whether a service is running.
+
+systemctl is-active nginx
+
+=> If nginx is down:
+
+Nginx is down
+      ↓
+Start nginx
+      ↓
+Send alert
+
+e) Example 5: User creation
+
+Suppose you need to create 20 Linux users.
+
+Instead of manually running:
+
+useradd user1
+useradd user2
+useradd user3
+...
+
+you can write a script that creates all users automatically.
+
+2. Shell scripting in your Linux Support job
+
+Since you are working toward Linux System Administration, Shell Scripting is useful because many Linux admin tasks can be automated.
+
+=> For example, your daily work might involve:
+
+Check server health
+      ↓
+Check disk
+      ↓
+Check memory
+      ↓
+Check services
+      ↓
+Check logs
+      ↓
+Restart service if required
+
+You can gradually automate these tasks with Shell scripts.
+
+3. Shell Scripting vs Ansible
+
+This is also important for you because you're learning Ansible.
+
+Think of it this way:
+
+a) Shell Script
+
+Usually good for automating tasks on one machine or tasks where command-line logic is enough.
+
+Linux Server
+     ↑
+Shell Script
+
+b) Ansible
+
+Designed to automate and manage multiple servers.
+
+             Ansible
+           /    |    \
+          ↓     ↓     ↓
+       Server1 Server2 Server3
+
+=> For example:
+
+a) Shell scripting:
+
+apt update
+apt install nginx
+systemctl start nginx
+
+b) Ansible:
+
+You can describe the desired state:
+
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+
+Ansible then manages the server for you.
+
+4. One simple real-world example
+
+Imagine you are a Linux administrator.
+
+Your manager says:
+
+"Every morning, check all servers and tell me if any server has low disk space."
+
+=> Manually:
+
+Login to server 1
+↓
+df -h
+
+Login to server 2
+↓
+df -h
+
+Login to server 3
+↓
+df -h
+
+...
+
+This is repetitive.
+
+=> With automation:
+
+Shell Script
+     ↓
+Check disk space
+     ↓
+If usage > 80%
+     ↓
+Show WARNING
+
+And later you could use Ansible to run that check across many servers.

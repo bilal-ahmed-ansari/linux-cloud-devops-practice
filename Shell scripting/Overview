@@ -1,0 +1,70 @@
+1. What is a "Shell"?
+
+A Shell is a program that allows us to communicate with the Linux operating system using commands.
+
+For example, when you type:
+
+ls
+
+or
+
+df -h
+
+or
+
+systemctl status ssh
+
+you are giving commands to the Shell.
+
+Think of it like this:
+
+You → Shell → Linux OS
+
+You give a command → Shell understands it → Shell asks Linux to perform the task → You get the result.
+
+Common shells are:
+
+Bash — most commonly used in Linux
+sh
+zsh
+ksh
+
+2. What is "Scripting"?
+
+A script is simply a file containing a series of commands that should be executed automatically.
+
+For example, suppose every morning you need to:
+
+a) Check disk space
+b) Check memory
+c) Check server uptime
+d) Check if SSH is running
+
+Instead of manually typing 4 commands every time, you can put them into one file:
+
+#!/bin/bash
+
+df -h
+free -h
+uptime
+systemctl status ssh
+
+This file is called a Shell Script.
+
+Then you can run:
+
+./check_server.sh
+
+So instead of running 4 commands manually, one script runs all 4 commands for you.
+
+3. So what does "Shell Scripting" mean?
+
+Very simply:
+
+Shell scripting means writing Linux commands in a file so that they can be executed automatically.
+
+Think:
+
+Shell = program that understands Linux commands
+
+Scripting = putting multiple commands together in a file.

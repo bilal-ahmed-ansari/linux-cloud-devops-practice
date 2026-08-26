@@ -1,0 +1,308 @@
+1. Suppose you create a file:
+
+nano test.sh
+
+Put this inside:
+
+#!/bin/bash
+
+echo "Hello Bilal"
+
+Save it.
+
+Now there are two common ways to run it.
+
+Method 1: Using Bash directly
+
+bash test.sh
+
+This usually works even if you haven't given execute permission.
+
+Why?
+
+Because you are telling Bash:
+
+"Bash, please read this file and execute it."
+
+Method 2: Running the script directly
+./test.sh
+
+Here you are telling Linux:
+
+"Execute this file directly."
+
+For this, the file needs execute permission.
+
+So you may need:
+
+chmod +x test.sh
+
+Then:
+
+./test.sh
+
+Output:
+
+Hello Bilal
+
+2. Why do we use chmod +x?
+
+Let's break it down.
+
+chmod
+
+chmod means:
+
+Change Mode
+
+It is used to change the permissions of a file.
+
++x
+
+x means:
+
+execute
+
+So:
+
+chmod +x test.sh
+
+means:
+
+Give execute permission to test.sh.
+
+You can check the permission with:
+
+ls -l test.sh
+
+Before:
+
+-rw-r--r-- test.sh
+
+After:
+
+-rwxr-xr-x test.sh
+
+The important part is the x.
+
+r = read
+w = write
+x = execute
+
+3. Why can't we just run it without chmod +x?
+
+Because Linux treats a script file like any other file.
+
+Creating a file does not automatically mean that the file is executable.
+
+Think about a normal file:
+
+notes.txt
+
+You can read it, but you normally don't execute it.
+
+Similarly, when you create:
+
+backup.sh
+
+Linux doesn't automatically assume:
+
+"This is a program. Let the user execute it."
+
+You have to give it execute permission if you want to run it directly:
+
+chmod +x backup.sh
+
+Then:
+
+./backup.sh
+
+4. What is ./?
+
+This is also important.
+
+When you write:
+
+./test.sh
+
+./ means:
+
+Current directory
+
+So:
+
+./test.sh
+
+means:
+
+"Run test.sh from my current directory."
+
+5. What is Shebang?
+
+Now let's understand this line:
+
+#!/bin/bash
+
+This is called a Shebang.
+
+It is normally placed at the first line of a script.
+
+#!/bin/bash
+echo "Hello"
+What does it mean?
+
+It tells Linux:
+
+"Use /bin/bash to execute this script."
+
+=> Break it down:
+
+#!       /bin/bash
+│          │
+│          └── Bash program
+│
+└── Shebang
+
+So:
+
+#!/bin/bash
+
+basically means:
+
+"This script should be interpreted by Bash."
+
+6. Why do we need the Shebang?
+
+Suppose your script contains Bash-specific commands or syntax.
+
+You want the system to know:
+
+"Run this script using Bash."
+
+The shebang tells Linux which interpreter to use.
+
+For example:
+
+#!/bin/bash
+
+means use Bash.
+
+You may also see:
+
+#!/bin/sh
+
+which means use sh.
+
+Or:
+
+#!/usr/bin/python3
+
+for a Python script.
+
+So the idea is:
+
+Shebang
+   ↓
+Which program should interpret this script.
+
+7. What happens when you run ./test.sh?
+
+Suppose your script is:
+
+#!/bin/bash
+
+echo "Hello"
+
+You run:
+
+./test.sh
+
+Linux basically does this:
+
+./test.sh
+     ↓
+Check execute permission
+     ↓
+Read the first line
+     ↓
+#!/bin/bash
+     ↓
+Use Bash
+     ↓
+Bash executes the commands
+     ↓
+Hello
+
+8. Difference between bash test.sh and ./test.sh
+
+This is very important.
+
+a) bash test.sh
+
+You are explicitly saying:
+
+"Use Bash to run this file."
+
+The execute permission isn't required in the same way because Bash itself is being executed, and it reads the script.
+
+b) ./test.sh
+./test.sh
+
+You are saying:
+
+"Linux, execute this file."
+
+Therefore the file needs execute permission:
+
+chmod +x test.sh
+
+And the shebang tells Linux which interpreter to use:
+
+#!/bin/bash
+
+9. Complete practical example
+
+Create a script:
+
+nano hello.sh
+
+Add:
+
+#!/bin/bash
+
+echo "Hello Bilal"
+echo "Welcome to Shell Scripting"
+
+Save it.
+
+Check permission:
+
+ls -l hello.sh
+
+If you see:
+
+-rw-r--r--
+
+there is no x.
+
+Give execute permission:
+
+chmod +x hello.sh
+
+Check again:
+
+ls -l hello.sh
+
+Now you should see something like:
+
+-rwxr-xr-x
+
+=> Run:
+
+./hello.sh
+
+Output:
+
+Hello Bilal
+Welcome to Shell Scripting
+

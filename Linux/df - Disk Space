@@ -1,0 +1,31 @@
+=> df means Disk Free.
+
+It tells you how much disk space is available and how much is being used.
+
+=> Basic command
+df
+
+Usually, we use:
+
+df -h
+
+-h means human-readable, so sizes are shown as GB, MB, etc.
+
+=> Example:
+
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        50G   30G   18G  63% /
+
+=> Meaning:
+
+Size → Total disk space = 50 GB
+Used → Used space = 30 GB
+Avail → Available space = 18 GB
+Use% → 63% used
+/ → Root filesystem
+Very common admin command
+df -h
+
+You use this when someone says:
+
+"Server disk is getting full."

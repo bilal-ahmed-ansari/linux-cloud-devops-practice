@@ -1,0 +1,190 @@
+=> Basic syntax
+curl URL
+
+Example:
+
+curl https://example.com
+
+This sends a request to example.com.
+
+The server sends a response, and curl displays that response in your terminal.
+
+=> Lab 1 — Test Internet connectivity
+
+Run:
+
+curl https://example.com
+
+You may see HTML like:
+
+<!doctype html>
+<html>
+<head>
+    <title>Example Domain</title>
+</head>
+...
+What happened?
+
+Your Linux machine:
+
+Linux machine
+     |
+     | curl request
+     ↓
+example.com
+     |
+     | response
+     ↓
+Linux terminal
+
+So curl can be used to check whether your machine can communicate with a web server.
+
+=> Lab 2 — See only HTTP headers
+
+Use:
+
+curl -I https://example.com
+
+-I means show only the HTTP headers.
+
+You may get:
+
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1256
+Server: ...
+
+The most important part is:
+
+HTTP/1.1 200 OK
+Common HTTP status codes
+
+| Code  | Meaning                 |
+| ----- | ----------------------- |
+| `200` | Success                 |
+| `301` | Redirect                |
+| `302` | Temporary redirect      |
+| `400` | Bad request             |
+| `401` | Authentication required |
+| `403` | Forbidden               |
+| `404` | Page/resource not found |
+| `500` | Server error            |
+| `503` | Service unavailable     |
+
+
+=> Lab 3 — Download a file
+
+Suppose you want to download a file.
+
+curl -O https://example.com/file.zip
+
+-O means:
+
+Save the file using the filename provided by the server.
+
+For example:
+
+file.zip
+
+will be downloaded to your current directory.
+
+Check:
+
+ls -l
+
+=> Lab 5 — Save webpage output into a file
+
+You can use -o:
+
+curl -o example.html https://example.com
+
+Now check:
+
+ls -l
+
+You should see:
+
+example.html
+
+You can view it with:
+
+cat example.html
+
+=> Difference between -O and -o
+
+a) curl -O URL
+
+→ Use the original filename.
+
+b) curl -o myfile.html URL
+
+→ Give the downloaded file your own filename.
+
+=> Lab 6 — Test an API
+
+This is one of the most important uses of curl.
+
+Try:
+
+curl https://jsonplaceholder.typicode.com/posts/1
+
+You may get:
+
+{
+  "userId": 1,
+  "id": 1,
+  "title": "...",
+  "body": "..."
+}
+
+The flow is:
+
+Linux
+  |
+  | curl request
+  ↓
+API server
+  |
+  | JSON response
+  ↓
+Linux terminal
+
+This is very common in DevOps and automation.
+
+=> Lab 7 — Send data using POST
+
+For example:
+
+curl -X POST https://jsonplaceholder.typicode.com/posts \
+-H "Content-Type: application/json" \
+-d '{"title":"Linux","body":"Learning curl","userId":1}'
+
+Here:
+
+-X POST → use the POST HTTP method
+-H → send an HTTP header
+-d → send data
+
+You don't need to memorize this now. Just understand the concept:
+
+curl can not only receive data from a server, but can also send data to a server.
+
+=> Very useful command for Linux admins
+
+Suppose your company has a web server:
+
+http://192.168.1.100
+
+You can test it:
+
+curl http://192.168.1.100
+
+If it is working, you should receive a response.
+
+You can also check headers:
+
+curl -I http://192.168.1.100
+
+This can help answer:
+
+"Is the web service responding?"

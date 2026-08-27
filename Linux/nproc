@@ -1,0 +1,48 @@
+=> Think of CPU like workers 
+
+Suppose you have a shop.
+
+1 worker → can work on 1 task at a time
+4 workers → can work on multiple tasks at the same time
+
+In Linux, these "workers" are basically the CPU processing units that the operating system can use.
+
+=> When you run:
+
+nproc
+
+Linux tells you:
+
+"How many CPU processing units can I use?"
+
+=> Example 1
+
+You run:
+
+nproc
+
+Output:
+
+4
+
+It means:
+
+Your Linux system has 4 CPU processing units available.
+
+You can imagine:
+
+CPU
+├── Worker 1
+├── Worker 2
+├── Worker 3
+└── Worker 4
+
+So Linux can distribute work among these 4 processing units.
+
+=> Note:- For CPU usage, we use commands/tools such as:
+
+top
+
+or
+
+htop

@@ -1,0 +1,135 @@
+1. What is Jinja2?
+
+Jinja2 is a templating language used by Ansible.
+
+In simple words:
+
+Jinja2 allows us to put variables and dynamic information inside files or Ansible playbooks.
+
+For example, suppose you have 10 servers.
+
+Each server has a different:
+
+hostname
+IP address
+environment
+application version
+port number
+
+=> Think of it like this:
+
+Template + Variables
+       ↓
+   Ansible/Jinja2
+       ↓
+Final configuration file
+
+2. Why do we need Jinja2?
+
+Imagine you have 3 servers:
+
+web1 → hostname = web-server-01
+web2 → hostname = web-server-02
+web3 → hostname = web-server-03
+
+Without Jinja2, you might create:
+
+web1.conf
+web2.conf
+web3.conf
+
+But with Jinja2, you create only:
+
+server.conf.j2
+
+Inside it:
+
+hostname = {{ ansible_facts['hostname'] }}
+
+Ansible automatically replaces the variable with the correct hostname.
+
+So:
+
+web1 → hostname = web-server-01
+web2 → hostname = web-server-02
+web3 → hostname = web-server-03
+
+One template → many servers.
+
+This is one of the main reasons Jinja2 is very useful in DevOps.
+
+3. What does {{ }} mean?
+
+You will see this syntax very often:
+
+{{ variable }}
+
+It basically means:
+
+"Ansible/Jinja2, please put the value of this variable here."
+
+Example:
+
+name: "{{ username }}"
+
+If:
+
+username: bilal
+
+then Ansible produces:
+
+name: bilal
+
+=> Easy way to remember
+{{ }} = Give me the value
+
+4. What is a .j2 file?
+
+A Jinja2 template file normally uses:
+
+.j2
+
+extension.
+
+Example:
+
+nginx.conf.j2
+index.html.j2
+test.j2
+
+The .j2 tells us:
+
+"This is a Jinja2 template."
+
+For example:
+
+templates/
+└── test.j2
+
+5. Important point — where does Jinja2 run?
+
+This is important for interviews.
+
+Suppose you have:
+
+WSL / Ansible Control Node
+          |
+          |
+          ↓
+       EC2 Server
+
+Jinja2 processing happens on the:
+
+Ansible Control Node
+
+Not on the target server.
+
+So:
+
+Jinja2 template
+      ↓
+Ansible Control Node
+      ↓
+Template is processed
+      ↓
+Final file sent to target server

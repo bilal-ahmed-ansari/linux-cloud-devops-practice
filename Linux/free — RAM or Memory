@@ -1,0 +1,30 @@
+=> free shows RAM and swap memory usage.
+
+=> Basic command:
+
+free
+
+Better:
+
+free -h
+
+=> Example:
+
+              total   used   free   shared  buff/cache  available
+Mem:           8.0G   3.2G   1.5G     200M       3.3G       4.4G
+Swap:          2.0G   100M   1.9G
+
+=> Important columns:
+
+total → Total RAM
+used → RAM currently being used
+free → Completely unused RAM
+buff/cache → RAM being used for cache/buffers
+available → Approximate RAM available for new applications
+
+=> Common command
+free -h
+
+=> You use this when troubleshooting:
+
+"Server RAM is high."

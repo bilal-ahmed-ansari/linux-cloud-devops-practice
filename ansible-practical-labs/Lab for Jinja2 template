@@ -1,0 +1,144 @@
+Step 1: Create lab directory
+
+On your Ubuntu WSL:
+
+mkdir jinja2-lab
+cd jinja2-lab
+
+Create the templates directory:
+
+mkdir templates
+
+Your structure:
+
+jinja2-lab/
+├── hostname.yml
+└── templates/
+    └── test.j2
+
+Step 2: Create the Jinja2 template
+
+Run:
+
+nano templates/test.j2
+
+Put:
+
+My hostname is {{ ansible_facts['hostname'] }}
+
+Save:
+
+Ctrl + O
+Enter
+Ctrl + X
+
+Step 3: Create playbook
+
+Run:
+
+nano hostname.yml
+
+Put:
+
+---
+- name: Write hostname
+  hosts: all
+
+  tasks:
+    - name: Create hostname file
+      ansible.builtin.template:
+        src: templates/test.j2
+        dest: /tmp/hostname
+
+Step 4: Understand the playbook
+
+This:
+
+ansible.builtin.template:
+
+means:
+
+Use Ansible's template module.
+
+This:
+
+src: templates/test.j2
+
+means:
+
+Take this Jinja2 template from my Ansible control machine.
+
+This:
+
+dest: /tmp/hostname
+
+means:
+
+Create /tmp/hostname on the target server.
+
+So:
+
+WSL
+ |
+ | templates/test.j2
+ |
+ ↓
+Ansible processes {{ ansible_facts['hostname'] }}
+ |
+ ↓
+Target server
+ |
+ └── /tmp/hostname
+
+This:
+
+dest: /tmp/hostname
+
+means:
+
+Create /tmp/hostname on the target server.
+
+So:
+
+WSL
+ |
+ | templates/test.j2
+ |
+ ↓
+Ansible processes {{ ansible_facts['hostname'] }}
+ |
+ ↓
+Target server
+ |
+ └── /tmp/hostname
+
+Step 6: Check the result
+
+SSH into your server:
+
+ssh ubuntu@SERVER_IP
+
+Then:
+
+cat /tmp/hostname
+
+You might get:
+
+My hostname is ip-172-31-5-139
+
+On another server:
+
+My hostname is ip-172-31-8-220
+
+=> What happened?
+
+Your template contained:
+
+My hostname is {{ ansible_facts['hostname'] }}
+
+Ansible automatically replaced:
+
+{{ ansible_facts['hostname'] }}
+
+with the actual hostname.
+

@@ -114,14 +114,18 @@ So:
 
 6. Real Linux Admin Example
 
-Suppose you want to check whether a service is running:
+a) Suppose you want to check whether a service is running:
 
 systemctl status ssh | grep Active
 
 Instead of viewing the complete systemctl status output, you filter it and see the line containing Active.
 
-Another example:
+b) Another example:
 
 df -h | grep "/"
 
 This can help you quickly find the filesystem information for /.
+
+c) cat /etc/passwd | grep bilal
+
+The last one is especially useful for Linux administration: it searches the /etc/passwd output for a particular username.

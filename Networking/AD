@@ -1,0 +1,119 @@
+1. What about Windows login?
+
+Suppose you have a company Windows laptop.
+
+You enter:
+
+Username: bilal
+Password: ********
+
+The computer can communicate with the company's Active Directory domain to authenticate the user.
+
+Simplified:
+
+Windows PC
+    ↓
+Active Directory
+    ↓
+"Is Bilal's account valid?"
+    ↓
+Yes
+    ↓
+Login
+
+2. What about Linux?
+
+A Linux server can also be connected to Active Directory.
+
+For example:
+
+             Active Directory
+                    |
+                    ↓
+                  SSSD
+                    |
+                    ↓
+                 Linux
+                    |
+                    ↓
+              User login
+
+3. Active Directory (AD) is a centralized system from Microsoft used by organizations to manage:
+
+👤 Users
+👥 Groups
+💻 Computers
+🔐 Passwords and access
+🏢 Company resources
+
+5. Why do companies use Active Directory?
+
+Imagine a company has:
+
+500 Employees
+200 Windows Computers
+50 Linux Servers
+
+Without centralized management, you would have to manage users separately on different machines.
+
+With Active Directory:
+
+                 Active Directory
+                ┌───────────────┐
+                │ Users         │
+                │ Groups        │
+                │ Computers     │
+                │ Policies      │
+                └───────┬───────┘
+                        │
+          ┌─────────────┼─────────────┐
+          ↓             ↓             ↓
+       Windows PC    Linux Server   Application
+
+The company can manage identities centrally.
+
+6. Example
+
+Suppose Bilal works in the IT department.
+
+His company account might be:
+
+Username: bilal
+Password: ********
+Department: IT
+Group: Linux-Admins
+
+This account can be managed centrally in Active Directory.
+
+If Bilal leaves the company, the administrator can disable his AD account.
+
+That can prevent him from accessing systems that rely on AD authentication.
+
+7. What is a Domain?
+
+You'll hear the word domain frequently with Active Directory.
+
+A domain is basically a central management/security boundary for users and computers.
+
+=> For example:
+
+Company domain:
+example.com
+
+You might have:
+
+example.com
+│
+├── Users
+│   ├── Bilal
+│   ├── Ahmed
+│   └── John
+│
+├── Groups
+│   ├── Linux-Admins
+│   └── Developers
+│
+└── Computers
+    ├── PC-01
+    ├── PC-02
+    └── Server-01

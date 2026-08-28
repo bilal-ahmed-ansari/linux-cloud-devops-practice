@@ -1,0 +1,133 @@
+1. A Domain Controller (DC) is a server that runs Active Directory services and is responsible for managing and verifying users, computers, and access in an Active Directory domain.
+
+2. What does a Domain Controller actually do?
+
+=> Authenticates users 🔐
+
+Suppose you log in to a company computer:
+
+Username: bilal
+Password: ********
+
+The computer can contact the Domain Controller:
+
+Computer
+   ↓
+Domain Controller
+   ↓
+"Is Bilal's username/password valid?"
+   ↓
+Yes
+   ↓
+Login allowed
+
+This is called authentication.
+
+=> Manage User:
+
+bilal
+ahmed
+john
+admin
+
+Administrators can create, disable, reset, or manage these accounts.
+
+=> Manages groups
+
+For example:
+
+Linux-Admins
+Developers
+HR
+Finance
+
+A user can belong to one or more groups.
+
+For example:
+
+Bilal
+  ↓
+Linux-Admins
+
+This group membership can be used to control access.
+
+=> Manages computers
+
+Company computers can join the domain.
+
+For example:
+
+Company Domain
+      |
+      ├── PC-01
+      ├── PC-02
+      ├── PC-03
+      └── Server-01
+
+The organization can centrally manage these computers.
+
+3. What happens when a user logs in?
+
+A simplified example:
+
+             User
+              |
+              | username + password
+              ↓
+         Windows PC
+              |
+              | authentication request
+              ↓
+       Domain Controller
+              |
+              ↓
+       Active Directory
+              |
+       Check the account
+              |
+          ┌───┴───┐
+          ↓       ↓
+       Valid    Invalid
+          ↓       ↓
+        Login   Denied
+
+So the Domain Controller is the server that handles domain authentication and related directory services.
+
+3. Domain Controller vs Active Directory
+
+This is another common confusion.
+
+a) Active Directory
+
+Think of it as the directory/service system.
+
+It contains information about:
+
+Users
+Groups
+Computers
+Policies
+
+b) Domain Controller
+
+Think of it as the server providing those Active Directory domain services.
+
+4. Can there be more than one Domain Controller?
+
+Yes.
+
+Companies usually have multiple DCs for redundancy and availability.
+
+For example:
+
+             Active Directory Domain
+                       |
+             ┌─────────┴─────────┐
+             ↓                   ↓
+           DC-01               DC-02
+             |                   |
+             └─────────┬─────────┘
+                       ↓
+                 Company PCs
+
+If DC-01 has a problem, DC-02 can continue providing domain services, depending on the environment and configuration.

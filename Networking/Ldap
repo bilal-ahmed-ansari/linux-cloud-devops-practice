@@ -155,3 +155,63 @@ LDAP/AD
 Authentication succeeds
  ↓
 Login
+
+=> Easy analogy 📖
+
+Imagine a college.
+
+LDAP = College database
+
+It contains:
+
+Student name
+Student ID
+Department
+Group
+SSSD = Office staff
+
+It communicates with the database.
+
+PAM = Security guard
+
+When you enter the college, the security guard checks whether you are allowed in.
+
+User = You
+
+You show your ID/password.
+
+So:
+
+You
+ ↓
+Security Guard (PAM)
+ ↓
+Office Staff (SSSD)
+ ↓
+College Database (LDAP)
+
+That's the basic idea.
+
+=> ldap vs AD
+
+a)LDAP
+
+LDAP is a protocol.
+
+It defines how applications and systems can communicate with a directory service.
+
+Often used for directory queries/authentication integration.
+
+b) Active Directory
+
+Active Directory is a Microsoft directory service.
+
+It stores and manages identities such as users, groups, and computers and provides many enterprise identity/security capabilities.
+
+AD supports LDAP, among other protocols.
+
+=> LDAP = Rules for communicating
+
+Active Directory = A system that uses those rules. Provides identity, authentication, authorization and policy capabilities.
+
+

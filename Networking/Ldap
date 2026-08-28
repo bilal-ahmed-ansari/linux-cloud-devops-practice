@@ -1,0 +1,157 @@
+=> LDAP stands for Lightweight Directory Access Protocol.
+
+In simple words:
+
+LDAP is a system/protocol used to store and manage information about users, groups, computers, etc., and allow applications/servers to check that information.
+
+Think of LDAP as a central user directory.
+
+1. Why do we need LDAP?
+
+Imagine a company has 500 employees and 200 Linux servers.
+
+Without centralized authentication, you might create users separately on every server:
+
+Server 1 → bilal
+Server 2 → bilal
+Server 3 → bilal
+...
+Server 200 → bilal
+
+This becomes difficult to manage.
+
+With LDAP:
+
+                 LDAP Server
+              ┌──────────────┐
+              │ Users        │
+              │ Groups       │
+              │ Information  │
+              └──────┬───────┘
+                     │
+          ┌──────────┼──────────┐
+          ↓          ↓          ↓
+       Server 1   Server 2   Server 3
+
+The servers can query the LDAP directory to authenticate users.
+
+2. Simple real-world example
+
+Suppose your company has a user:
+
+Username: bilal
+Password: ********
+Department: IT
+
+This information can be stored in a central directory.
+
+When you try to log in to a Linux server:
+
+ssh bilal@server
+
+The Linux server can ask the LDAP directory:
+
+"Does user bilal exist?"
+
+LDAP responds with the user's directory information.
+
+=> Then who actually handles Linux login?
+
+This is where PAM and SSSD come in.
+
+A simplified Linux login flow looks like this:
+
+User
+  |
+  | username + password
+  ↓
+Linux Server
+  |
+  ↓
+PAM
+  |
+  ↓
+SSSD
+  |
+  ↓
+LDAP / Active Directory
+
+=> Let's understand each one.
+
+a) User
+
+You type:
+
+ssh bilal@linux-server
+
+and provide your password.
+
+b) PAM
+
+PAM = Pluggable Authentication Modules
+
+PAM is part of Linux's authentication system.
+
+You can think of PAM as the authentication manager.
+
+It says:
+
+"Someone is trying to log in. I need to check whether this login is allowed."
+
+c) SSSD
+
+SSSD = System Security Services Daemon
+
+SSSD acts like a middleman between Linux and a central identity system such as LDAP or Active Directory.
+
+SSSD can obtain information about users and groups and participate in authentication,
+
+d) LDAP
+
+LDAP provides access to the central directory.
+
+For example:
+
+LDAP:
+bilal
+  ↓
+UID: bilal
+Group: linux-admins
+Department: IT
+
+=> Real-life example
+
+Imagine your company has:
+
+200 Linux servers
+500 employees
+
+You don't want to manually create every employee on every server.
+
+Instead, you have:
+
+             LDAP / AD
+                 |
+        ┌────────┼────────┐
+        ↓        ↓        ↓
+      Linux1   Linux2   Linux3
+
+Bilal's account is centrally managed.
+
+When Bilal logs into Linux1:
+
+Bilal
+ ↓
+Linux1
+ ↓
+PAM
+ ↓
+SSSD
+ ↓
+LDAP/AD
+ ↓
+"Bilal exists"
+ ↓
+Authentication succeeds
+ ↓
+Login

@@ -1,0 +1,240 @@
+=> Both ping and telnet are used for network troubleshooting, but they check different things.
+
+A simple way to remember:
+
+ping → Can I reach this machine?
+telnet → Can I reach this specific port/service?
+
+1. ping command
+
+What is ping?
+
+ping is used to check whether another machine is reachable over the network.
+
+For example, suppose your Linux server wants to communicate with:
+
+Server B → 192.168.1.20
+
+You can run:
+
+ping 192.168.1.20
+
+If the machine is reachable, you may see:
+
+64 bytes from 192.168.1.20: icmp_seq=1 ttl=64 time=0.5 ms
+64 bytes from 192.168.1.20: icmp_seq=2 ttl=64 time=0.4 ms
+
+This means:
+
+"I sent a request to that machine, and it replied."
+
+=> Basic syntax
+ping IP_ADDRESS
+
+or:
+
+ping hostname
+
+Example:
+
+ping google.com
+
+=> Lab 1 — Ping your own machine
+
+Run:
+
+ping 127.0.0.1
+
+127.0.0.1 means your own machine.
+
+You should get replies.
+
+Stop ping with:
+
+Ctrl + C
+
+=> Lab 2 — Ping a website
+ping google.com
+
+You may see:
+
+PING google.com (...)
+64 bytes from ...
+64 bytes from ...
+
+This tells you that the destination is responding to ICMP requests.
+
+=> What if ping fails?
+
+You may see:
+
+Destination Host Unreachable
+
+or:
+
+Request timeout
+
+Possible reasons include:
+
+Network problem
+Destination machine is down
+Firewall is blocking ICMP
+Routing problem
+
+2. telnet command
+
+Now let's understand telnet.
+
+telnet can be used to test whether a specific TCP port on a server is reachable.
+
+a) For example, SSH normally uses:
+
+Port 22
+
+b) Web HTTP:
+
+Port 80
+
+c) HTTPS:
+
+Port 443
+
+So you can test:
+
+telnet 192.168.1.20 22
+
+This basically asks:
+
+"Can I establish a TCP connection to port 22 on this server?"
+
+=> Simple example
+
+Imagine:
+
+Linux Server
+     |
+     | TCP connection
+     ↓
+192.168.1.20
+Port 22
+     |
+    SSH
+
+Run:
+
+telnet 192.168.1.20 22
+
+If the port is accessible, you might see:
+
+Connected to 192.168.1.20.
+
+=> This means:
+
+The server is reachable on TCP port 22.
+
+It does not mean that you successfully logged in through SSH.
+
+=> Test HTTP port
+
+You can test port 80:
+
+telnet example.com 80
+
+If it connects:
+
+Connected to example.com.
+
+Then TCP port 80 is reachable.
+
+You can exit telnet with:
+
+Ctrl + ]
+
+Then type:
+
+quit
+
+3. Real-world troubleshooting example
+
+Imagine you are a Linux Support Engineer.
+
+A user says:
+
+"I cannot connect to the application."
+
+You can troubleshoot like this:
+
+Step 1 — Check server connectivity
+
+ping 192.168.1.20
+
+If it works:
+
+Server is reachable
+
+Step 2 — Check application port
+
+Suppose the application uses port 8080:
+
+telnet 192.168.1.20 8080
+
+If it connects:
+
+TCP port 8080 is reachable
+
+If it doesn't:
+
+Connection refused
+
+or:
+
+Connection timed out
+
+Then you investigate things like:
+
+Is the application running?
+Is the port listening?
+Is the firewall blocking it?
+Is there a network/security-group issue?
+
+4. Very useful command: ss
+
+Instead of telnet, on modern Linux systems you will often use ss to check whether a service is listening.
+
+For example:
+
+ss -lntp
+
+You might see:
+
+LISTEN 0 128 0.0.0.0:22
+LISTEN 0 128 0.0.0.0:8080
+
+This means the server is listening on:
+
+22   → SSH
+8080 → Application
+
+=> Easy way to remember 🧠
+
+Think about a building:
+
+ping
+ ↓
+"Is the building reachable?"
+
+Then:
+
+telnet
+ ↓
+"Can I reach room/door number 22?"
+
+So:
+
+ping IP
+     ↓
+Machine connectivity
+
+telnet IP PORT
+     ↓
+TCP port connectivity

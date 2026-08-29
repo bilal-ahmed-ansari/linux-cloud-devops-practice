@@ -1,0 +1,54 @@
+=> Theory
+
+set -x is used to debug a shell script.
+
+It shows each command on the terminal before the command is executed.
+
+Think of it like:
+
+"Show me what the script is doing step by step."
+
+=> Example
+
+Create a script:
+
+nano debug.sh
+
+Add:
+
+#!/bin/bash
+
+set -x
+
+name="Bilal"
+echo "Hello $name"
+
+mkdir test
+echo "Directory created"
+
+Give execute permission:
+
+chmod +x debug.sh
+
+Run:
+
+./debug.sh
+
+You may see:
+
++ name=Bilal
++ echo 'Hello Bilal'
+Hello Bilal
++ mkdir test
++ echo 'Directory created'
+Directory created
+
+The + lines are produced because of set -x.
+
+=> When do we use it?
+
+When your script is not working correctly and you want to see:
+
+Which command is running
+What value a variable contains
+Where the script is failing

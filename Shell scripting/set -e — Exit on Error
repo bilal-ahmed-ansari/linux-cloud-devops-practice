@@ -1,0 +1,62 @@
+=> Theory
+
+set -e tells the shell:
+
+"If a command fails, stop the script."
+
+Normally, a shell script can continue even when one command fails.
+
+With set -e, the script generally stops when a command returns a non-zero exit status.
+
+=> Lab
+
+Create:
+
+nano error.sh
+
+Add:
+
+#!/bin/bash
+
+set -e
+
+echo "Step 1"
+
+ls /wrong-directory
+
+echo "Step 2"
+
+echo "Step 3"
+
+Run:
+
+chmod +x error.sh
+./error.sh
+
+Output will be similar to:
+
+Step 1
+ls: cannot access '/wrong-directory': No such file or directory
+
+Step 2 and Step 3 will not execute.
+
+=> Why?
+
+Because:
+
+ls /wrong-directory
+
+failed, and set -e told the script to stop.
+
+=> Without set -e
+
+If you remove:
+
+set -e
+
+the script may continue:
+
+Step 1
+ls: cannot access '/wrong-directory': No such file or directory
+Step 2
+Step 3

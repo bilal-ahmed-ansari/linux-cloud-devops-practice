@@ -1,0 +1,57 @@
+Linux is a kernel, not a complete OS.
+
+Think of it like this:
+
+Kernel = the core/engine of an operating system.
+Operating System (OS) = Kernel + tools + libraries + utilities + applications, etc.
+
+=> So what is Linux?
+
+Linux = Kernel
+
+The Linux kernel manages things like:
+
+CPU
+RAM
+Hard disk
+Network
+Processes
+Hardware devices
+
+For example:
+
+User
+  ↓
+Applications
+  ↓
+Shell / System tools
+  ↓
+Linux Kernel
+  ↓
+Hardware
+
+=> Then what is Ubuntu?
+
+Ubuntu is an Operating System (Linux distribution).
+
+It contains:
+
+Ubuntu
+ ├── Linux Kernel
+ ├── Shell (bash)
+ ├── System utilities
+ ├── Libraries
+ ├── Package manager (apt)
+ └── Other software
+
+Similarly:
+
+Ubuntu → OS / Linux distribution
+RHEL → OS / Linux distribution
+Rocky Linux → OS / Linux distribution
+Debian → OS / Linux distribution
+Linux → Kernel
+
+=> Linux kernel = Engine
+
+Ubuntu/RHEL = Complete car

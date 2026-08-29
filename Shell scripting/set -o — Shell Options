@@ -1,0 +1,87 @@
+=> Theory
+
+set -o is used to view or enable shell options.
+
+First, try:
+
+set -o
+
+It displays many shell options, for example:
+
+allexport       off
+braceexpand     on
+errexit         off
+noglob          off
+nounset         off
+pipefail        off
+xtrace          off
+
+The exact list can vary depending on the shell.
+
+=> You can also use:
+
+set -o xtrace
+
+This is another way of enabling debugging.
+
+It is equivalent to:
+
+set -x
+
+=> Similarly:
+
+set -o errexit
+
+is equivalent to:
+
+set -e
+
+=> Important: set -o itself vs set -o option
+
+There are two different things to understand.
+
+a) set -o
+
+Shows the current shell options and whether they are on/off.
+
+b) set -o option
+
+For example:
+
+set -o xtrace
+
+Enables a particular option.
+
+=> Simple Lab
+
+Create one script:
+
+nano options.sh
+
+Add:
+
+#!/bin/bash
+
+set -x
+set -e
+
+echo "Starting script"
+
+name="Bilal"
+
+echo "Name is $name"
+
+ls /tmp
+
+echo "Script completed"
+
+Run:
+
+chmod +x options.sh
+./options.sh
+
+You'll see the commands being displayed because of:
+
+set -x
+
+And if a command fails, set -e will stop the script.

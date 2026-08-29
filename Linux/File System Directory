@@ -1,0 +1,174 @@
+In Linux, everything starts from / (root directory).
+
+Think of / as the main folder of the entire Linux system.
+
+/
+├── bin
+├── boot
+├── dev
+├── etc
+├── home
+├── lib
+├── opt
+├── root
+├── tmp
+├── usr
+└── var
+
+1. / — Root
+
+This is the top/main directory.
+
+cd /
+ls
+
+All other directories are located under /.
+
+2. /home — Normal users' personal files
+
+Each normal user usually gets a directory here.
+
+Example:
+
+/home/bilal
+/home/user1
+/home/user2
+
+Your documents, scripts, downloads, etc. can be stored here.
+
+cd /home
+ls
+
+3. /root — Root user's home
+
+root is the administrator account.
+
+The root user's personal home directory is:
+
+/root
+
+⚠️ Don't confuse:
+
+/       → Root of the entire filesystem
+/root   → Home directory of root user
+
+4. /etc — Configuration files ⭐
+
+This is very important for a Linux administrator.
+
+It contains system and application configuration files.
+
+Examples:
+
+/etc/ssh/
+/etc/hosts
+/etc/passwd
+/etc/fstab
+
+For example:
+
+cat /etc/hosts
+
+5. /var — Frequently changing data
+
+var means variable.
+
+It contains data that changes frequently, such as:
+
+Logs
+Cache
+Application data
+
+For example:
+
+/var/log/
+
+As a Linux administrator, you'll frequently work with:
+
+cd /var/log
+ls
+
+6. /tmp — Temporary files
+
+Used for temporary data.
+
+cd /tmp
+
+Applications and users may create temporary files here.
+
+7. /boot — Boot-related files
+
+Contains files required during the Linux boot process.
+
+For example, you may see:
+
+/boot/vmlinuz...
+/boot/initrd...
+
+The Linux kernel is also stored here.
+
+8. /dev — Devices
+
+dev means devices.
+
+Linux represents many hardware devices as files inside /dev.
+
+Examples:
+
+/dev/sda
+/dev/nvme0n1
+/dev/null
+
+For example:
+
+ls /dev
+
+9. /usr — User programs and files
+
+Contains many programs, libraries and other files used by the system.
+
+For example:
+
+/usr/bin
+/usr/lib
+/usr/share
+
+You can think of /usr as a major location for installed software and supporting files.
+
+10. /bin — Essential commands
+
+Contains essential commands used by users and the system.
+
+Examples include commands such as:
+
+ls
+cp
+mv
+cat
+
+On modern Linux systems, /bin is often a symbolic link to /usr/bin.
+
+11. /sbin — System administration commands
+
+Contains commands mainly used for system administration.
+
+Examples include tools related to:
+
+Disk management
+Networking
+System configuration
+
+Like /bin, on many modern distributions /sbin is also linked into /usr.
+
+12. /opt — Optional software
+
+Used for additional/third-party software.
+
+For example, an organization might install some application under:
+
+/opt/application/
+13. /lib — Libraries
+
+Contains important libraries required by programs and the system.
+
+On modern distributions, /lib may also be a symbolic link into /usr/lib.

@@ -1,0 +1,129 @@
+In simple language, Linux Kernel Architecture means how different parts of the Linux kernel are organized and how they communicate with hardware and applications.
+
+=> Basic Structure 
+
+             USER
+              ↓
+      Applications
+   (Firefox, Python, etc.)
+              ↓
+        Shell / Libraries
+              ↓
+   ┌───────────────────────┐
+   │     Linux Kernel      │
+   │                       │
+   │  Process Management   │
+   │  Memory Management    │
+   │  File System          │
+   │  Network Management   │
+   │  Device Drivers       │
+   │  Security             │
+   └───────────────────────┘
+              ↓
+           Hardware
+     CPU | RAM | Disk | NIC
+
+=> Main components of Linux Kernel
+
+a) Process Management
+
+Manages running programs/processes.
+
+Example:
+
+ps aux
+
+The kernel decides things like which process gets CPU time.
+b) Memory Management
+
+Manages RAM.
+
+For example, if multiple applications are running:
+
+Firefox → RAM
+SSH     → RAM
+Python  → RAM
+
+The kernel manages how much memory each process can use.
+
+c) File System Management
+
+Manages files and directories on storage.
+
+For example:
+
+ls
+cat file.txt
+mkdir test
+
+When you access a file, the kernel communicates with the storage device.
+
+d) Device Drivers
+
+Drivers allow the kernel to communicate with hardware.
+
+For example:
+
+Linux Kernel
+     ↓
+GPU Driver
+     ↓
+GPU
+
+Examples include drivers for:
+
+Network cards
+GPUs
+USB devices
+Disk controllers
+
+e) Network Management
+
+Handles network communication.
+
+For example:
+
+ping 8.8.8.8
+
+The kernel handles the networking operations required to send and receive packets.
+
+f) Security
+
+The kernel controls things such as:
+
+Users
+Permissions
+Access to resources
+Process isolation
+
+For example:
+
+chmod 600 file.txt
+
+The kernel enforces the permissions when someone tries to access the file.
+
+=> Suppose you run:
+
+cat /etc/hosts
+
+What happens?
+
+You
+ ↓
+cat command
+ ↓
+System call
+ ↓
+Linux Kernel
+ ↓
+File system
+ ↓
+Disk
+ ↓
+Kernel
+ ↓
+cat
+ ↓
+Screen
+
+So the application doesn't directly control the hardware. It asks the Linux kernel to perform the required operation.

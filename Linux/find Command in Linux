@@ -1,0 +1,315 @@
+1. Theory
+
+find is a Linux command used to search for files and directories.
+
+Simple meaning:
+
+find = Find a file or directory based on name, type, size, time, permission, etc.
+
+For example, if you forgot where test.txt is located, you can use find to search for it.
+
+2. Basic Syntax
+
+find <location> <condition>
+
+Most commonly:
+
+find /path -name "filename"
+
+3. First understand the situation
+
+Suppose you have this directory:
+
+/home/bilal/test/
+        |
+        ├── file1.txt
+        ├── file2.txt
+        └── log.txt
+
+You want to find file1.txt.
+
+You can use:
+
+find test -name "file1.txt"
+
+=> Let's break this command into 3 parts:
+
+find    test    -name "file1.txt"
+ ↑       ↑          ↑
+command location   what to find
+
+a) find
+
+Means:
+
+Search for something.
+
+b) test
+find test
+
+This tells find:
+
+Start searching inside the test directory.
+
+It does not mean the file name is test.
+
+c) name "file1.txt"
+-name "file1.txt"
+
+This tells find:
+
+I am looking for something whose name is file1.txt.
+
+So the complete command:
+
+find test -name "file1.txt"
+
+means:
+
+"Search inside the test directory and find something named file1.txt."
+
+=> Now let's actually do the lab
+
+Step 1: Create a directory
+mkdir test
+
+Now:
+
+test/
+
+exists.
+
+Step 2: Go inside it
+cd test
+
+Now check:
+
+pwd
+
+You will see something like:
+
+/home/bilal/test
+
+Step 3: Create files
+
+touch file1.txt
+touch file2.txt
+touch log.txt
+
+Now check:
+
+ls
+
+You should see:
+
+file1.txt
+file2.txt
+log.txt
+
+Step 4: Go one level back
+cd ..
+
+Now your directory structure is:
+
+/home/bilal/
+       |
+       └── test/
+             ├── file1.txt
+             ├── file2.txt
+             └── log.txt
+
+Step 5: Find file1.txt
+
+Run:
+
+find test -name "file1.txt"
+
+Output:
+
+test/file1.txt
+
+This means find found the file here:
+
+test/file1.txt
+
+=> What if I want to search from the current directory?
+
+You can use .:
+
+find . -name "file1.txt"
+
+Here:
+
+. = current directory
+
+So:
+
+find . -name "file1.txt"
+
+means:
+
+"Search from my current location for file1.txt."
+
+************
+
+Remember this formula:
+find WHERE -name WHAT
+
+For example:
+
+a) find /home -name "test.txt"
+
+= Search WHERE /home for WHAT test.txt.
+
+b) find . -name "*.log"
+
+= Search WHERE current directory for WHAT all .log files.
+
+*********
+
+4. Lab 2 — Find All .txt Files
+
+find test -name "*.txt"
+
+Output:
+
+test/file1.txt
+test/file2.txt
+test/log.txt
+
+Here:
+
+*.txt
+
+means:
+
+Any file whose name ends with .txt.
+
+5. Lab 3 — Find a Directory
+
+Use -type d.
+
+find test -type d
+
+Output:
+
+test
+
+d means directory.
+
+For example:
+
+find /home -type d -name "Documents"
+
+means:
+
+Search /home for a directory named Documents.
+
+6. Lab 4 — Find Only Files
+
+Use:
+
+find test -type f
+
+f means regular file.
+
+Output:
+
+test/file1.txt
+test/file2.txt
+test/log.txt
+
+=> Remember:
+-type f  → file
+-type d  → directory
+
+7. Lab 5 — Case-Insensitive Search
+
+-name is case-sensitive.
+
+You can use -iname to ignore case:
+
+find test -iname "FILE1.TXT"
+
+It can find:
+
+test/file1.txt
+
+Difference
+-name: Case-sensitive
+
+-iname: case insensitive 
+
+8. Lab 6 — Find Files by Size
+
+For example, find files larger than 10 MB:
+
+find /var/log -type f -size +10M
+
+Meaning:
+
+Search /var/log for regular files larger than 10 MB.
+
+You can also search for files smaller than 10 MB:
+
+find /var/log -type f -size -10M
+
+9. Lab 7 — Find Recently Modified Files
+
+For example, files modified within the last 1 day:
+
+find /var/log -type f -mtime -1
+
+-mtime = modification time.
+
+-mtime -1  → modified within 1 day
+-mtime +7  → modified more than 7 days ago
+
+This is useful when troubleshooting:
+
+"Which files were recently modified?"
+
+10. Lab 8 — Find Files and Delete Them
+
+For example, find .tmp files:
+
+find test -type f -name "*.tmp"
+
+After verifying the result, you can delete them:
+
+find test -type f -name "*.tmp" -delete
+
+Be careful with -delete, especially when using it with /, /var, /home, etc. Always run the find command without -delete first and verify what it will match.
+
+11. Lab 9 — Find Files and Execute a Command
+
+You can use -exec.
+
+For example:
+
+find test -type f -name "*.txt" -exec ls -l {} \;
+
+Meaning:
+
+Find all .txt files and run ls -l on each file.
+
+Here:
+
+{}   → Current file found by find
+\;   → End of the -exec command
+
+12. Lab 10 — Real Linux Administration Example
+
+Suppose a server has many log files and you want to find large log files:
+
+find /var/log -type f -size +100M
+
+This can help when investigating:
+
+"Why is my /var filesystem becoming full?"
+
+You can also check:
+
+df -h /var
+
+Then use find to identify large files.

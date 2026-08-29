@@ -1,0 +1,114 @@
+1. Theory
+
+awk is a text-processing command in Linux.
+
+It is mainly used to:
+
+Read data line by line
+Select specific columns
+Search for particular text
+Perform calculations
+Format output
+
+Think of awk as:
+
+"Take this text/data, look at specific columns or conditions, and give me the required output."
+
+2. Basic Syntax
+
+awk 'pattern { action }' filename
+
+For example:
+
+awk '{print $1}' file.txt
+
+Here:
+
+$1 = first column
+$2 = second column
+$3 = third column
+$0 = complete line
+
+3. Lab 1 — Print a Specific Column
+
+Create a file:
+
+nano employees.txt
+
+Add:
+
+Bilal Linux 35000
+Rahul Windows 40000
+Amit Linux 45000
+Sara AWS 50000
+
+Now run:
+
+awk '{print $1}' employees.txt
+
+Output:
+
+Bilal
+Rahul
+Amit
+Sara
+
+=> Try:
+
+awk '{print $1, $3}' employees.txt
+
+Output:
+
+Bilal 35000
+Rahul 40000
+Amit 45000
+Sara 50000
+
+4. Lab 2 — Print Complete Line
+
+awk '{print $0}' employees.txt
+
+Output:
+
+Bilal Linux 35000
+Rahul Windows 40000
+Amit Linux 45000
+Sara AWS 50000
+
+$0 means the complete line.
+
+5. Lab 3 — Search Using a Condition
+
+Suppose you want only employees who use Linux.
+
+awk '$2 == "Linux" {print $1}' employees.txt
+
+Output:
+
+Bilal
+Amit
+
+Here:
+
+$2 == "Linux"
+
+means:
+
+Check whether column 2 contains Linux.
+
+6. Lab 4 — Find Salary Greater Than 40000
+
+awk '$3 > 40000 {print $1, $3}' employees.txt
+
+Output:
+
+Amit 45000
+Sara 50000
+
+Here:
+
+$3 > 40000
+
+means:
+
+Check whether salary is greater than 40000.

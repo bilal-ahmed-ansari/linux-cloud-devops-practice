@@ -112,3 +112,84 @@ $3 > 40000
 means:
 
 Check whether salary is greater than 40000.
+
+7. Lab 5 — Using BEGIN and END
+
+awk also has:
+
+BEGIN → runs before reading the file
+Main { } → runs while reading each line
+END → runs after reading the file
+
+Example:
+
+awk 'BEGIN {print "Employee List"} {print $1} END {print "Done"}' employees.txt
+
+Output:
+
+Employee List
+Bilal
+Rahul
+Amit
+Sara
+Done
+
+8. Lab 6 — awk With df
+
+This is useful for Linux administration.
+
+Run:
+
+df -h
+
+You can use awk to display filesystem and usage information:
+
+df -h | awk '{print $1, $5}'
+
+Example output:
+
+Filesystem Use%
+/dev/sda1 35%
+/dev/sda2 72%
+
+=> Here:
+
+$1
+
+= filesystem
+
+and
+
+$5
+
+= usage percentage.
+
+9. Lab 7 — awk in Shell Script
+
+Create:
+
+nano report.sh
+
+Add:
+
+#!/bin/bash
+
+echo "Employee Names:"
+
+awk '{print $1}' employees.txt
+
+Give permission:
+
+chmod +x report.sh
+
+Run:
+
+./report.sh
+
+Output:
+
+Employee Names:
+Bilal
+Rahul
+Amit
+Sara

@@ -61,3 +61,233 @@ Focus on these:
 ~/.bash_profile
 
 => Let's understand them one by one.
+
+4. /etc/profile
+
+This is a system-wide profile file.
+
+/etc/profile
+
+/etc = system configuration area.
+
+You can view it:
+
+cat /etc/profile
+
+⚠️ Don't modify it during this lab.
+
+5. ~/.profile
+
+Now look at:
+
+~/.profile
+
+Here ~ means:
+
+My home directory
+
+Check it:
+
+cat ~/.profile
+
+This is a user-specific configuration file.
+
+6. ~/.bashrc
+
+This is another very important file.
+
+~/.bashrc
+
+It is used for configuration of an interactive Bash shell.
+
+Check it:
+
+cat ~/.bashrc
+
+You may see many lines already present.
+
+Common things people put in .bashrc include:
+
+alias ll='ls -ltr'
+
+7. Lab: Create Your Own Alias
+
+Let's create an alias called ll.
+
+First, check whether it already exists:
+
+alias ll
+
+If it says something like:
+
+bash: alias: ll: not found
+
+that's okay.
+
+Now open .bashrc:
+
+nano ~/.bashrc
+
+Go to the bottom and add:
+
+alias ll='ls -ltr'
+
+Save and exit.
+
+8. Important Step: Reload .bashrc
+
+Your current terminal doesn't automatically reread the file just because you edited it.
+
+Run:
+
+source ~/.bashrc
+
+source means roughly:
+
+Read this file and apply its settings to my current shell.
+
+Now run:
+
+ll
+
+It should execute:
+
+ls -ltr
+
+=> Think of the flow like this:
+
+~/.bashrc
+    ↓
+alias ll='ls -ltr'
+    ↓
+source ~/.bashrc
+    ↓
+Shell learns the alias
+    ↓
+ll
+    ↓
+ls -ltr
+
+9. Lab: Environment Variable
+
+Profile files are also commonly used for environment variables.
+
+Let's create one.
+
+Open:
+
+nano ~/.bashrc
+
+Add:
+
+export MY_NAME="Bilal"
+
+Save it.
+
+Then:
+
+source ~/.bashrc
+
+Now check:
+
+echo $MY_NAME
+
+Output:
+
+Bilal
+
+So your shell now has an environment variable:
+
+MY_NAME = Bilal
+
+=> Why export?
+
+Compare:
+
+MY_NAME="Bilal"
+
+with:
+
+export MY_NAME="Bilal"
+
+export makes the variable available to child processes started from that shell.
+
+10. Difference Between .bashrc and .profile
+
+This is where beginners often get confused.
+
+a) .bashrc
+
+Think:
+
+"I am starting/using an interactive Bash shell."
+
+Common things:
+
+alias
+functions
+shell settings
+PATH
+
+b) .profile
+
+Think:
+
+"I am logging into my user account / starting a login environment."
+
+It can contain environment setup such as:
+
+PATH
+environment variables
+
+11. What is .bash_profile?
+
+You may also hear about:
+
+~/.bash_profile
+
+Bash checks login startup files in a particular order.
+
+If ~/.bash_profile exists, Bash uses it as the login startup file; otherwise it can use ~/.bash_login, and then ~/.profile.
+
+On many Ubuntu installations, you'll commonly see:
+
+~/.profile
+~/.bashrc
+
+rather than .bash_profile.
+
+So don't worry if .bash_profile doesn't exist on your Ubuntu VM.
+
+12. Login Shell vs Interactive Shell
+
+You don't need to go too deep into this initially, but understand the basic idea.
+
+a) Login shell
+
+A shell started as part of logging in.
+
+Example:
+
+SSH into server
+       ↓
+Login
+       ↓
+Login shell
+
+=> Files such as:
+
+/etc/profile
+can be involved.
+
+b) Interactive Bash shell
+
+A shell where you interact with Bash and type commands.
+
+For example:
+
+bash
+
+or a terminal session.
+
+.bashrc is commonly involved here.

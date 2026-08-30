@@ -1,0 +1,137 @@
+In simple language, the ps command is used to see the processes currently running on a Linux system.
+
+Think of a process as a running program.
+
+For example:
+
+When you run vim, it creates a process.
+When SSH is running, it has a process.
+When a script is running, it has a process.
+
+1. Basic ps
+
+Run:
+
+ps
+
+Example output:
+
+PID    TTY      TIME     CMD
+1234   pts/0    00:00:00 bash
+1456   pts/0    00:00:00 ps
+
+Important columns
+PID → Process ID (unique number of the process)
+TTY → Terminal associated with the process
+TIME → CPU time used
+CMD → Command/program running
+
+2. ps -ef
+
+This is very commonly used by Linux administrators.
+
+ps -ef
+
+Example:
+
+root       1     0  0 Aug30 ?        00:00:02 /sbin/init
+root     700     1  0 Aug30 ?        00:00:01 sshd
+bilal   1234  1200  0 23:10 pts/0    00:00:00 bash
+
+Here:
+
+-e → show all processes
+-f → show full details
+
+3. Find a particular process
+
+Suppose you want to check whether SSH is running:
+
+ps -ef | grep ssh
+
+Example:
+
+root       700       1  0 ... /usr/sbin/sshd
+bilal     1500    1400  0 ... grep ssh
+
+The | sends the output of ps -ef to grep.
+
+You can also use:
+
+ps -ef | grep nginx
+
+to look for Nginx processes.
+
+4. ps aux
+
+Another very common command:
+
+ps aux
+
+It shows processes for all users, including CPU and memory usage.
+
+Example:
+
+USER    PID   %CPU  %MEM   COMMAND
+root      1    0.0   0.1   /sbin/init
+root    700    0.1   0.5   sshd
+bilal  1234    2.0   1.2   bash
+
+Important columns:
+
+USER → Who started the process
+PID → Process ID
+%CPU → CPU usage
+%MEM → Memory usage
+COMMAND → Running program
+
+5. Simple Lab
+
+Let's create a process.
+
+Step 1: Start sleep
+
+Terminal 1:
+
+sleep 300
+
+The terminal will wait for 300 seconds.
+
+Open another terminal and run:
+
+ps -ef | grep sleep
+
+You should see something similar to:
+
+bilal    2345    1200  0 23:15 pts/1  00:00:00 sleep 300
+
+Step 2: Stop the process
+
+Use:
+
+kill 2345
+
+Replace 2345 with the PID you actually get.
+
+Then check:
+
+ps -ef | grep sleep
+
+The sleep process should be gone.
+
+Note:-
+
+Now:
+
+ps -p 1234
+
+Output:
+
+PID   TTY      TIME     CMD
+1234  ?        00:00:00 sshd
+
+It means:
+
+Show me information about process number 1234.
+
+Here p defines process id.

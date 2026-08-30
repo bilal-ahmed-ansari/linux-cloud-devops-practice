@@ -1,0 +1,65 @@
+A package manager is a tool in Linux that helps us install, update, remove, and manage software/packages.
+
+Think of it like an App Store for Linux, but we usually use commands instead of clicking.
+
+1. What is a package?
+
+A package is a software/application prepared in a format that Linux can install.
+
+For example:
+
+nginx → Web server
+git → Version control
+curl → Transfer data from/to servers
+tree → Shows directories in tree format
+vim → Text editor
+
+2. What does a package manager do?
+
+A package manager can:
+
+| Task         | Meaning                            |
+| ------------ | ---------------------------------- |
+| Install      | Add software                       |
+| Remove       | Delete software                    |
+| Update       | Get newer package information      |
+| Upgrade      | Upgrade installed software         |
+| Search       | Find a package                     |
+| Check status | See whether a package is installed |
+
+3. Common Linux Package Managers
+
+Different Linux distributions commonly use different package managers.
+
+a) Ubuntu / Debian
+
+Uses APT:
+
+apt
+
+Example:
+
+sudo apt install nginx
+
+b)!RHEL / CentOS / Rocky / AlmaLinux
+
+Usually uses DNF:
+
+dnf
+
+Example:
+
+sudo dnf install nginx
+
+=> Older RHEL/CentOS systems commonly used
+
+yum
+
+sudo yun install nginx
+
+=> Important
+
+You don't normally download a .deb or .rpm package manually just to install common software.
+
+The package manager can download the required package and its dependencies from configured repositories.
+

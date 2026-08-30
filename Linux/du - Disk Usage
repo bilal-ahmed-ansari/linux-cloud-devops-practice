@@ -1,0 +1,93 @@
+du means Disk Usage.
+
+It is used to check how much disk space files and directories are using.
+
+Basic syntax
+du [option] [file/directory]
+
+1. Basic du
+du /home
+
+It shows the disk usage of /home and its subdirectories.
+
+Example:
+
+8       /home/bilal/Documents
+20      /home/bilal/Downloads
+32      /home/bilal
+
+By default, the size is usually shown in KB.
+
+2. du -h 
+
+-h means human-readable.
+
+du -h /home
+
+Instead of:
+
+10240
+
+you get something easier to understand:
+
+10M
+
+3. du -sh 
+
+This is one of the most useful commands.
+
+du -sh /home/bilal
+-s = summary only
+-h = human-readable
+
+Example:
+
+4.5G    /home/bilal
+
+Meaning:
+
+/home/bilal is using approximately 4.5 GB of disk space.
+
+4. Check which folders are taking space
+du -h --max-depth=1 /var
+
+Example:
+
+500M    /var/cache
+2.5G    /var/log
+1.2G    /var/lib
+4.3G    /var
+
+Now you can quickly identify which directory is consuming the most space.
+
+Very useful for Linux troubleshooting 
+
+Suppose your server is showing:
+
+df -h
+
+and /var is almost full.
+
+You can investigate:
+
+du -sh /var/*
+
+Example:
+
+500M    /var/cache
+8.2G    /var/log
+15G     /var/lib
+
+Now you know that /var/lib is using 15 GB.
+
+You can investigate further:
+
+du -sh /var/lib/*
+df vs du
+
+=> This is important for interviews:
+
+| Command  | What it tells you                                        |
+| -------- | -------------------------------------------------------- |
+| `df -h`  | How much **filesystem/disk space** is available and used |
+| `du -sh` | How much space a **specific file/directory** is using    |

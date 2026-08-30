@@ -1,0 +1,103 @@
+sar means System Activity Reporter.
+
+In simple language:
+
+sar is used to monitor and check the performance/history of a Linux system.
+
+It can give you information about CPU, memory, disk, network, load, etc.
+
+Think of it as a system performance report.
+
+1. Check CPU usage
+
+sar
+
+or:
+
+sar -u
+
+Example:
+
+12:00:01  CPU  %user  %system  %idle
+12:10:01  all   10.2     3.1    86.7
+12:20:01  all   15.5     4.2    80.3
+
+Important columns:
+
+%user → CPU used by user applications
+%system → CPU used by kernel/system
+%idle → CPU that is free
+
+If %idle is very low, CPU usage is high.
+
+2. Check memory usage
+
+sar -r
+
+It gives information about RAM and memory usage.
+
+Example:
+
+kbmemfree   kbmemused   %memused
+  2000000     6000000       75.0
+
+So approximately 75% memory is being used.
+
+3. Check disk activity
+
+sar -d
+
+This helps you see disk/device activity.
+
+For example, if an application is slow, you can investigate whether the disk is heavily loaded.
+
+4. Check network activity
+
+sar -n DEV
+
+This shows network traffic for interfaces such as:
+
+eth0
+ens33
+enp0s3
+
+You can see things like packets received/sent and network throughput.
+
+5. Why is sar useful for a Linux administrator?
+
+Suppose a user says:
+
+"The server was very slow at 10 AM."
+
+If you only run:
+
+top
+
+you see current activity.
+
+But sar can help you look at historical performance data, provided sysstat collection is configured and running.
+
+You can investigate things like:
+
+CPU usage
+Memory usage
+Disk activity
+Network activity
+
+6. Lab Example
+
+a) First check whether sar is installed:
+
+sar -V
+
+b) If it isn't installed on Ubuntu:
+
+sudo apt install sysstat
+
+c) Then enable the data collection service:
+
+sudo systemctl enable --now sysstat
+
+=> Now try:
+
+sar -u

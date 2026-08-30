@@ -1,0 +1,51 @@
+It tells you how many processes are running or waiting for CPU/I/O resources.
+
+1. Where do I see load average?
+
+Run:
+
+uptime
+
+Example:
+
+11:30:20 up 5 days,  load average: 2.50, 1.80, 1.20
+
+These three numbers mean:
+
+2.50 → last 1 minute
+1.80 → last 5 minutes
+1.20 → last 15 minutes
+
+You can also see it in:
+
+top
+
+2. Is 2.50 high?
+
+It depends on the number of CPU cores. 
+
+This is the most important point.
+
+Suppose your server has:
+
+nproc
+
+Output:
+
+4
+
+That means you have 4 CPU cores.
+
+For a 4-core system:
+
+Load 0–4    → generally okay
+Load around 4 → CPU resources are fully busy
+Load >4     → processes are waiting
+
+| CPU cores | Load | Interpretation |
+| --------: | ---: | -------------- |
+|         4 |    1 | Low            |
+|         4 |  2.5 | Usually okay   |
+|         4 |    4 | Fully busy     |
+|         4 |    6 | High           |
+|         4 |   10 | Very high      |

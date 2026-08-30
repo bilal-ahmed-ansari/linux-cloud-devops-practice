@@ -1,0 +1,156 @@
+In Linux, redirection means changing where the output of a command goes.
+
+Normally:
+
+command → screen
+
+With redirection, we can send the output to a file instead:
+
+command → file
+
+This is very useful in Linux administration and shell scripting.
+
+1. > — Redirect output to a file
+
+> sends the output of a command into a file.
+
+Example:
+
+ls > files.txt
+
+Now the output of ls is saved inside files.txt.
+
+Check it:
+
+cat files.txt
+
+=> Important
+
+If files.txt already exists, > overwrites its old content.
+
+For example:
+
+echo "Hello" > test.txt
+
+Then:
+
+cat test.txt
+
+Output:
+
+Hello
+
+Now run:
+
+echo "Linux" > test.txt
+
+Check again:
+
+cat test.txt
+
+Output:
+
+Linux
+
+The old Hello was replaced.
+
+2. >> — Append output to a file
+
+>> also sends output to a file, but it adds the new content at the end.
+
+Example:
+
+echo "Hello" > test.txt
+
+Then:
+
+echo "Linux" >> test.txt
+
+Check:
+
+cat test.txt
+
+Output:
+
+Hello
+Linux
+
+Note:- So:
+
+>   = overwrite
+>>  = append
+
+This is very important to remember.
+
+3. < — Take input from a file
+
+Normally, a command takes input from the keyboard.
+
+Keyboard → Command
+
+With <, we tell Linux to take input from a file.
+
+Example:
+
+First create a file:
+
+echo "Bilal" > names.txt
+
+Now:
+
+cat < names.txt
+
+Output:
+
+Bilal
+
+Here:
+
+names.txt → cat
+
+4. 2> — Redirect error messages
+
+Linux has different types of output.
+
+The normal output is called standard output (stdout).
+
+Error messages are called standard error (stderr).
+
+We can save errors into a file using:
+
+2>
+
+Example:
+
+ls /abc 2> error.txt
+
+Because /abc probably doesn't exist, Linux generates an error.
+
+Check:
+
+cat error.txt
+
+You may see:
+
+ls: cannot access '/abc': No such file or directory
+
+So:
+
+2> = redirect error messages
+
+5. &> — Redirect both output and errors
+
+You can redirect normal output + error output into the same file.
+
+Example:
+
+ls /etc /abc &> output.txt
+
+Here:
+
+/etc exists → normal output
+/abc doesn't exist → error
+
+Both are saved in:
+
+output.txt

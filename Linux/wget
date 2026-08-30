@@ -1,0 +1,46 @@
+Both curl and wget can download files from the internet.
+
+The main difference is their primary purpose.
+
+=> Simple comparison
+
+| `wget`                                           | `curl`                                                                 |
+| ------------------------------------------------ | ---------------------------------------------------------------------- |
+| Mainly designed for **downloading files**        | Mainly designed for **transferring data / communicating with servers** |
+| Very convenient for downloading                  | Very powerful for APIs and HTTP requests                               |
+| Automatically saves downloaded content to a file | By default, displays the response in the terminal                      |
+| Good for large files and recursive downloads     | Excellent for API testing and sending requests                         |
+| Simple syntax for downloads                      | More options for HTTP methods, headers, authentication, etc.           |
+
+1. What is wget?
+
+wget is a Linux command used to download files from the internet using the command line.
+
+Simple way to remember:
+
+wget = download something from a URL
+
+For example, if you have a file available at:
+
+https://example.com/file.txt
+
+You can download it using:
+
+wget https://example.com/file.txt
+
+2. Why do we use wget?
+
+As a Linux administrator, you may use wget to:
+
+Download software/packages
+Download scripts
+Download configuration files
+Download ISO files
+Download files from internal web servers
+Test whether a URL is accessible
+Download files directly on a remote Linux server
+
+For example, if you SSH into a server and need to download a script, you don't need a browser. You can use wget.
+
+
+

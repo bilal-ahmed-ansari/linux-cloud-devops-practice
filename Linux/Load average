@@ -49,3 +49,122 @@ Load >4     → processes are waiting
 |         4 |    4 | Fully busy     |
 |         4 |    6 | High           |
 |         4 |   10 | Very high      |
+
+3. Does high load mean high CPU?
+
+Not always.
+
+This is where many people get confused.
+
+Load average includes processes that are:
+
+Waiting for CPU
+Waiting for certain I/O operations, such as disk I/O.
+
+4. How do I know whether CPU is the problem?
+
+Suppose:
+
+uptime
+
+shows:
+
+load average: 8.0, 7.5, 6.5
+
+and you have:
+
+nproc
+4
+
+Load is clearly high.
+
+Now check:
+
+top
+
+Look at:
+
+%Cpu(s): 90 us, 5 sy, 5 id
+
+Here CPU is around 95% busy.
+
+5. What if CPU is low but load is high?
+
+Suppose:
+
+Load average: 8.0, 7.5, 6.5
+
+on a 4-core server.
+
+But top shows:
+
+CPU idle: 70%
+
+This is interesting.
+
+It means the CPUs aren't heavily busy, but processes may be waiting on I/O.
+
+Check:
+
+iostat
+
+or:
+
+sar -d
+
+You might find heavy disk activity.
+
+6. Very important troubleshooting flow 
+
+Suppose someone says:
+
+"The server is slow."
+
+Don't immediately say CPU is high because load is high.
+
+Check step by step:
+
+Step 1 — Check CPU cores
+nproc
+
+Example:
+
+4
+
+Step 2 — Check load
+
+uptime
+
+Example:
+
+load average: 8.0, 7.5, 6.5
+
+Load is high compared with 4 cores.
+
+Step 3 — Check CPU
+
+top
+
+If CPU is very busy:
+
+95% CPU usage
+
+→ CPU could be the bottleneck.
+
+Step 4 — Check RAM
+free -h
+
+If memory is almost exhausted and swap is heavily used:
+
+→ Memory could be the problem.
+
+Step 5 — Check disk I/O
+iostat
+
+or:
+
+sar -d
+
+If disk I/O is very high:
+→ Disk I/O could be causing the high load.
+

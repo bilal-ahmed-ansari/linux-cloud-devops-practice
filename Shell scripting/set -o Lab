@@ -1,0 +1,207 @@
+1. Lab 1: Check current shell options
+
+First, create a script:
+
+nano options.sh
+
+Put this:
+
+#!/bin/bash
+
+set -o
+
+echo "Hello Bilal"
+
+Save and run:
+
+chmod +x options.sh
+./options.sh
+
+=> What will happen?
+
+You will see many options like:
+
+allexport       off
+braceexpand     on
+errexit         off
+noglob          off
+nounset         off
+pipefail        off
+xtrace          off
+
+This means:
+
+errexit off → set -e is currently disabled
+xtrace off → set -x is currently disabled
+nounset off → set -u is currently disabled
+
+So, set -o is mainly used to check which shell options are ON or OFF.
+
+2. Lab 2: Enable xtrace using set -o xtrace
+
+Now create:
+
+nano trace.sh
+
+Put:
+
+#!/bin/bash
+
+set -o xtrace
+
+echo "Starting script"
+
+name="Bilal"
+
+echo "My name is $name"
+
+echo "Script completed"
+
+Run:
+
+chmod +x trace.sh
+./trace.sh
+
+You will see something similar to:
+
++ echo 'Starting script'
+Starting script
++ name=Bilal
++ echo 'My name is Bilal'
+My name is Bilal
++ echo 'Script completed'
+Script completed
+
+=> What is happening?
+
+Normally:
+
+echo "Starting script"
+
+only shows:
+
+Starting script
+
+But with:
+
+set -o xtrace
+
+Bash also shows the command it is executing:
+
++ echo 'Starting script'
+Important
+
+These two are equivalent:
+
+set -x
+
+and:
+
+set -o xtrace
+
+3. Lab 3: set -o errexit
+
+Now let's understand errexit.
+
+Create:
+
+nano error.sh
+
+Put:
+
+#!/bin/bash
+
+set -o errexit
+
+echo "Step 1"
+
+ls /tmp
+
+echo "Step 2"
+
+ls /wrong-folder
+
+echo "Step 3"
+
+echo "Script completed"
+
+Run:
+
+chmod +x error.sh
+./error.sh
+
+You will see:
+
+Step 1
+Step 2
+ls: cannot access '/wrong-folder': No such file or directory
+
+Notice something important:
+
+Step 3
+Script completed
+
+will not be printed.
+
+=> Why?
+
+Because:
+
+set -o errexit
+
+means:
+
+If a command fails, exit/stop the script.
+
+And this command fails:
+
+ls /wrong-folder
+
+Therefore, Bash stops the script.
+
+=> set -o errexit = set -e
+
+These are the same:
+
+set -e
+
+and:
+
+set -o errexit
+
+4. Lab 4: Check whether an option is ON or OFF
+
+You can use:
+
+set -o
+
+For example, create:
+
+nano check.sh
+
+Put:
+
+#!/bin/bash
+
+echo "Before enabling xtrace:"
+
+set -o | grep xtrace
+
+set -o xtrace
+
+echo "Hello"
+
+echo "After enabling xtrace:"
+
+set +o xtrace
+
+Run:
+
+chmod +x check.sh
+./check.sh
+
+You should understand the important part:
+
+set -o | grep xtrace
+
+checks the current status of xtrace.

@@ -42,5 +42,163 @@ Download files directly on a remote Linux server
 
 For example, if you SSH into a server and need to download a script, you don't need a browser. You can use wget.
 
+3. Basic Syntax
+wget URL
 
+Example:
 
+wget https://example.com/file.txt
+
+The file will normally be downloaded into your current directory.
+
+You can check your current directory with:
+
+pwd
+
+And see the downloaded file with:
+
+ls -l
+
+4. Simple Lab
+
+Let's do a safe practice lab on your Ubuntu/WSL.
+
+Step 1: Create a lab directory
+mkdir wget-lab
+cd wget-lab
+
+Check where you are:
+
+pwd
+
+You should see something similar to:
+
+/home/bilal/wget-lab
+
+Step 2: Download a test file
+
+Run:
+
+wget https://www.example.com/
+
+You may see output showing that wget connected to the website and downloaded the page.
+
+Now check:
+
+ls -l
+
+You should see a file such as:
+
+index.html
+
+Step 3: Read the downloaded file
+
+Run:
+
+cat index.html
+
+You will see the HTML content of the downloaded webpage.
+
+So the flow is:
+
+URL
+ ↓
+wget
+ ↓
+Download
+ ↓
+File saved in current directory
+
+5. Download and Give the File a Different Name
+
+Suppose you want to save the downloaded file with a specific name.
+
+Use:
+
+wget -O myfile.html https://www.example.com/
+
+Here:
+
+-O = output filename
+
+Check:
+
+ls -l
+
+You should see:
+
+myfile.html
+
+6. Download to a Specific Directory
+
+You can tell wget where to save the file.
+
+Example:
+
+wget -P /tmp https://www.example.com/
+
+Here:
+
+-P /tmp
+
+means:
+
+Save the downloaded file inside /tmp.
+
+Check:
+
+ls -l /tmp
+
+7. See Download Progress
+
+Normally wget already shows download progress:
+
+Downloading...
+[=======>........] 45%
+
+This is useful when downloading large files such as ISO images.
+
+8. Resume an Interrupted Download
+
+One very useful option is:
+
+wget -c URL
+
+-c means continue.
+
+For example:
+
+wget -c https://example.com/bigfile.iso
+
+If the download gets interrupted, wget -c can continue from where it stopped, when the server supports resuming.
+
+9. Download in the Background
+
+You can use:
+
+wget -b URL
+
+-b means background.
+
+Example:
+
+wget -b https://example.com/bigfile.iso
+
+This is useful when downloading a large file and you don't want the terminal to remain occupied.
+
+10. Check if wget is Installed
+
+Run:
+
+wget --version
+
+If it is installed, you will see version information.
+
+If you get:
+
+wget: command not found
+
+On Ubuntu/Debian, install it with:
+
+sudo apt update
+sudo apt install wget

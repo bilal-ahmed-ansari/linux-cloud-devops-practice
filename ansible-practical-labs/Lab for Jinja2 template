@@ -142,3 +142,84 @@ Ansible automatically replaced:
 
 with the actual hostname.
 
+Note: This will be your inventory file
+
+[servers]
+server1 ansible_host=3.110.20.50 ansible_user=ubuntu ansible_ssh_private_key_file=/path/to/key.pem
+
+**********
+
+1. Create directory
+↓
+2. Create test.j2
+↓
+3. Create inventory.ini
+↓
+4. Test ansible ... -m ping
+↓
+5. Create hostname.yml
+↓
+6. Run ansible-playbook
+↓
+7. SSH to server
+↓
+8. cat /tmp/hostname
+
+=> One important thing to remember
+
+.j2 file is NOT the final file.
+
+It is a template.
+
+For example:
+
+test.j2
+
+contains:
+
+My hostname is {{ ansible_facts['hostname'] }}
+
+After Ansible processes it, the target gets:
+
+/tmp/hostname
+
+containing:
+
+My hostname is ip-172-31-5-139
+
+=> Flow:-
+
+                 WSL
+          Ansible Control Node
+                  |
+                  |
+        templates/test.j2
+                  |
+                  |
+                  ↓
+     My hostname is
+     {{ ansible_facts['hostname'] }}
+                  |
+                  | Ansible processes Jinja2
+                  ↓
+            Target Server
+                  |
+                  ↓
+          /tmp/hostname
+                  |
+                  ↓
+     My hostname is
+     ip-172-31-5-139
+
+Also it will create the final file at /tmp/hostname on the target server.
+
+This is important.
+
+src → Control Node
+
+dest → Target Server
+
+**********
+
+
+

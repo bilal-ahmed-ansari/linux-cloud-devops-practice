@@ -1,0 +1,190 @@
+sed stands for Stream Editor.
+
+In simple language, sed is used to read text and make changes automatically.
+
+It is very useful for:
+
+Find and replace text
+Delete lines
+Print specific lines
+Modify configuration files
+Make bulk changes in files
+
+1. Basic syntax
+
+sed 'command' filename
+
+Example:
+
+sed 's/Linux/Ubuntu/' file.txt
+
+Here:
+
+s = substitute/replace
+Linux = old text
+Ubuntu = new text
+file.txt = file to read
+
+Important: By default, sed only displays the changed output. It does not modify the original file.
+
+2. Lab: Create a file
+
+Let's create a practice file.
+
+mkdir sed-lab
+cd sed-lab
+
+Create a file:
+
+nano users.txt
+
+Put this content:
+
+Bilal is learning Linux
+Ahmed is learning Linux
+Rahul is learning Linux
+Bilal is learning Ansible
+Ahmed is learning Git
+
+Save and exit.
+
+Check it:
+
+cat users.txt
+
+3. Replace text using sed
+
+Suppose we want to replace Linux with Ubuntu.
+
+sed 's/Linux/Ubuntu/' users.txt
+
+Output:
+
+Bilal is learning Ubuntu
+Ahmed is learning Ubuntu
+Rahul is learning Ubuntu
+Bilal is learning Ansible
+Ahmed is learning Git
+
+But check the original:
+
+cat users.txt
+
+You will still see:
+
+Bilal is learning Linux
+Ahmed is learning Linux
+Rahul is learning Linux
+...
+
+=> Why?
+
+Because sed didn't change the file. It only showed the modified output.
+
+4. Replace all occurrences in a line
+
+Consider:
+
+Linux Linux Linux
+
+If you run:
+
+sed 's/Linux/Ubuntu/' file.txt
+
+Only the first Linux on that line is replaced.
+
+To replace all occurrences:
+
+sed 's/Linux/Ubuntu/g' file.txt
+
+g means global — replace every occurrence on the line.
+
+5. Actually modify the file using -i
+
+If you want sed to modify the original file:
+
+sed -i 's/Linux/Ubuntu/g' users.txt
+
+Now:
+
+cat users.txt
+
+The file itself has changed.
+
+Important
+
+Before using -i on an important configuration file, make a backup.
+
+=> For example:
+
+cp users.txt users.txt.bak
+
+Then:
+
+sed -i 's/Linux/Ubuntu/g' users.txt
+
+6. Delete a line
+
+Suppose you want to delete the line containing Rahul.
+
+sed '/Rahul/d' users.txt
+
+Here:
+
+/Rahul/ = find Rahul
+d = delete
+
+Again, this only displays the result.
+
+To actually delete it:
+
+sed -i '/Rahul/d' users.txt
+
+7. Delete a specific line number
+
+Suppose you want to delete line 2:
+
+sed '2d' users.txt
+
+Delete lines 2 to 3:
+
+sed '2,3d' users.txt
+
+8. Print a specific line
+
+Print line 2:
+
+sed -n '2p' users.txt
+
+Output:
+
+Ahmed is learning Linux
+
+Here:
+
+-n = don't print everything
+2p = print line 2
+
+Print lines 2–4:
+
+sed -n '2,4p' users.txt
+
+9. Very useful Linux admin example
+
+Imagine you have this configuration file:
+
+server=production
+port=8080
+debug=false
+
+You want to change:
+
+debug=false
+
+to:
+
+debug=true
+
+Use:
+
+sed -i 's/debug=false/debug=true/' config.txt

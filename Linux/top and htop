@@ -1,0 +1,144 @@
+Both top and htop are used to monitor running processes and system performance in real time.
+
+Think of them as a live dashboard of your Linux server.
+
+1. top command
+
+Run:
+
+top
+
+You will see something like:
+
+PID   USER    %CPU   %MEM   COMMAND
+1234  bilal   80.0    5.2   python
+2345  root    20.0    2.1   nginx
+3456  bilal    5.0    1.0   bash
+
+Important columns
+
+PID → Process ID
+
+Every running process gets a unique number.
+
+USER → User who started the process
+
+%CPU → How much CPU the process is using
+
+%MEM → How much RAM the process is using
+
+=> What can you see in top?
+
+At the top, you can see information about:
+
+CPU
+Memory
+Swap
+Load Average
+Running processes
+
+For example:
+
+%Cpu(s): 20% us, 5% sy, 75% id
+
+Here:
+
+us → CPU used by user processes
+sy → CPU used by system/kernel
+id → CPU idle/free
+
+2. htop command
+
+htop does basically the same job as top, but it is more user-friendly.
+
+Run:
+
+htop
+
+It provides a colorful interactive display with:
+
+CPU  ███████
+MEM  █████
+SWP  ██
+
+PID   USER   CPU%   MEM%   COMMAND
+1234  bilal   80     5.2   python
+2345  root    20     2.1   nginx
+
+You can also use your arrow keys to select processes.
+
+=> top vs htop
+
+| `top`                                  | `htop`                     |
+| -------------------------------------- | -------------------------- |
+| Usually already installed              | May need to install        |
+| Basic interface                        | More user-friendly         |
+| Keyboard based                         | Interactive                |
+| Can manage processes                   | Easier to manage processes |
+| Available on almost every Linux server | Not always installed       |
+
+=> Install htop on Ubuntu:
+
+sudo apt install htop
+
+Then:
+
+htop
+
+3. Practical Lab 
+
+Step 1: Start top
+top
+
+Look at:
+
+PID
+%CPU
+%MEM
+COMMAND
+
+Press:
+
+q
+
+to exit.
+
+Step 2: Start htop
+htop
+
+Select a process using the arrow keys.
+
+Press:
+
+F9
+
+to get the option to terminate a process.
+
+4. Real-world example
+
+Suppose a user tells you:
+
+"The Linux server is very slow."
+
+As a Linux administrator, you can run:
+
+top
+
+You notice:
+
+python    95% CPU
+
+This tells you that the Python process is consuming a lot of CPU.
+
+You can note its PID, investigate the process, and take the appropriate action.
+
+You can also use:
+
+ps aux
+
+for more detailed process information.
+
+=> And remember the difference from sar:
+
+top / htop → What is happening NOW?
+sar        → What is happening / what happened over time?

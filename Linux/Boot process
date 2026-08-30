@@ -1,0 +1,169 @@
+Linux boot process means:
+
+What happens from the time you press the power button until you get the Linux login screen.
+
+Think of it as a step-by-step chain:
+
+Power ON
+   ↓
+BIOS / UEFI
+   ↓
+Bootloader (GRUB)
+   ↓
+Linux Kernel
+   ↓
+initramfs
+   ↓
+systemd (PID 1)
+   ↓
+Services start
+   ↓
+Login screen
+
+1. BIOS / UEFI
+
+When you switch ON the computer, the first thing that runs is BIOS or UEFI.
+
+Its job is to:
+
+Check the hardware
+Find the bootable disk
+Start the bootloader
+
+You can think:
+
+BIOS/UEFI = "Is the hardware OK, and where should I boot from?"
+
+2. Bootloader — GRUB 
+
+After BIOS/UEFI, the bootloader starts.
+
+On most Linux systems, the bootloader is GRUB.
+
+GRUB's job is to:
+
+Show the boot menu
+Find the Linux kernel
+Load the kernel into memory
+Pass required information to the kernel
+
+Example:
+
+GRUB
+ ├── Ubuntu
+ ├── Advanced options
+ └── Other OS
+
+The GRUB configuration is commonly related to:
+
+/boot/grub/
+
+3. Linux Kernel ⭐
+
+GRUB loads the Linux kernel into RAM.
+
+The kernel now starts working with:
+
+CPU
+RAM
+Disk
+Network
+Other hardware
+
+The kernel is the core of Linux.
+
+You can check the running kernel with:
+
+uname -r
+
+Example output:
+
+6.8.0-31-generic
+
+4. initramfs
+
+After the kernel starts, it uses initramfs (initial RAM filesystem).
+
+It contains temporary files, drivers and tools needed to access the actual root filesystem.
+
+For example:
+
+Kernel
+   ↓
+initramfs
+   ↓
+Find/mount root filesystem
+
+Why is this needed?
+
+Imagine your actual / filesystem is on a particular disk or needs a special driver. The kernel may need some drivers/tools before it can access that filesystem.
+
+initramfs helps with this early boot work.
+
+You may see files such as:
+
+/boot/initrd.img-...
+
+5. systemd — PID 1 
+
+Once the root filesystem is available, Linux starts the init system.
+
+On modern Ubuntu/RHEL systems, this is usually systemd.
+
+Its process ID is:
+
+PID 1
+
+You can check:
+
+ps -p 1
+
+You may see:
+
+PID   COMMAND
+1     systemd
+
+systemd starts and manages services such as:
+
+SSH
+Network
+Logging
+Cron
+
+6. Services Start
+
+systemd starts the services required by the system.
+
+For example:
+
+systemctl status ssh
+
+or:
+
+systemctl status sshd
+
+depending on the Linux distribution.
+
+7. Login Screen
+
+Finally, the system reaches the login stage.
+
+For a GUI system:
+
+Boot
+ ↓
+Login screen
+ ↓
+User enters username/password
+ ↓
+Desktop
+
+For a server:
+
+Boot
+ ↓
+Services start
+ ↓
+SSH available
+ ↓
+You connect remotely

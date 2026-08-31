@@ -1,6 +1,6 @@
 => df means Disk Free.
 
-It tells you how much disk space is available and how much is being used.
+It tells you how much disk space is available on filesystem, total size and how much space it has used in filesystem and where this filesystem is mounted.
 
 => Basic command
 df

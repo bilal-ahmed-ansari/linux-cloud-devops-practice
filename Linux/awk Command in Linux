@@ -193,3 +193,69 @@ Bilal
 Rahul
 Amit
 Sara
+
+________________
+
+=> How to deal with spacing/alignment issue in awk command?
+
+There is no extra spacing in your output because awk is replacing the original whitespace with one space.
+
+Your command:
+
+df -h | awk '{print $1,$5}'
+
+Here:
+
+$1 → Filesystem
+$5 → Use%
+, → tells awk to put the output field separator (OFS) between them.
+Default OFS is one space.
+
+So:
+
+Filesystem Use%
+none 0%
+none 1%
+If you want more spacing
+
+You can set OFS yourself:
+
+df -h | awk 'BEGIN {OFS="    "} {print $1,$5}'
+
+But here the problem is Why the spacing looks different?
+
+You set:
+
+OFS="        "
+
+That means 8 spaces between $1 and $5.
+
+So awk produces:
+
+Filesystem        Use%
+none        0%
+drivers        78%
+/dev/sdd        1%
+
+The solution is for a properly aligned table, use printf:
+
+df -h | awk '{printf "%-20s %s\n", $1, $5}'
+
+Output will look more like:
+
+Filesystem           Use%
+none                 0%
+none                 1%
+drivers              78%
+/dev/sdd             1%
+rootfs               1%
+C:\                  78%
+tmpfs                0%
+
+=> Understand %-20s
+%    → format
+-    → left align
+20   → give 20 characters of space
+s    → string
+
+____________

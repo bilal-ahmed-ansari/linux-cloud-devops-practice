@@ -1,4 +1,10 @@
-It tells you how many processes are running or waiting for CPU/I/O resources.
+Load average tells us how much work the Linux system is handling or waiting to handle.
+
+Think of it like a queue at a shop:
+
+CPU = cashier
+Processes = customers
+Load average = number of customers waiting/being served
 
 1. Where do I see load average?
 

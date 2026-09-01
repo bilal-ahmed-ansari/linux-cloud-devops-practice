@@ -1,4 +1,5 @@
 Sure. Think of curl and wget as command-line tools that help you talk to websites or download files.
+
 1. Real-life example of curl
 
 Imagine you are working as a DevOps engineer and want to check whether your company's website is working.
@@ -105,3 +106,295 @@ GET /              → Client requested the home page
 HTTP/2.0           → HTTP protocol
 200                → Request successful
 1256               → Response size in bytes
+
+4. curl vs wget — easiest way to remember
+
+Situation	                     Use
+Test an API	                     curl
+Check HTTP response	             curl
+Send POST request	             curl
+Download one file	             wget
+Download large files	         wget
+Resume a download	             wget -c
+Download recursively	         wget
+
+5. Start with curl -v
+
+The -v means verbose — show me what is happening behind the scenes.
+
+curl -v https://example.com
+
+You may see something like:
+
+* Host example.com:443 was resolved.
+* IPv4: 93.184.216.34
+*   Trying 93.184.216.34:443...
+* Connected to example.com (93.184.216.34) port 443
+* SSL connection using TLSv1.3
+> GET / HTTP/2
+> Host: example.com
+> User-Agent: curl/8.5.0
+> Accept: */*
+>
+< HTTP/2 200
+< content-type: text/html
+< content-length: 1256
+<
+<!doctype html>
+<html>
+...
+
+Don't worry about every line.
+
+The important part is:
+
+> GET /
+
+This is the request sent by curl.
+
+And:
+
+< HTTP/2 200
+
+This is the response from the server.
+
+Think of it like a conversation:
+
+curl → Server
+       "Give me /"
+
+Server → curl
+         "Sure. Here is /"
+         "Status: 200"
+
+6. Understanding HTTP status codes
+
+These are extremely important in DevOps.
+200 — Success ✅
+
+HTTP/2 200
+
+Means:
+
+    Everything worked.
+
+Example:
+
+curl https://myserver.com/api/health
+
+Response:
+
+{
+  "status": "healthy"
+}
+
+Log:
+
+10.0.0.15 - - [01/Sep/2026:12:30:01 +0530] "GET /api/health HTTP/1.1" 200 28
+
+a) 301 — Permanently redirected
+
+Suppose someone visits:
+
+http://example.com
+
+but the website wants everyone to use HTTPS.
+
+The server might respond:
+
+HTTP/1.1 301 Moved Permanently
+Location: https://example.com/
+
+You can investigate with:
+
+curl -I http://example.com
+
+You might get:
+
+HTTP/1.1 301 Moved Permanently
+Location: https://example.com/
+
+Basically:
+
+    "Don't use this address. Go over there instead."
+
+b) 302 — Temporary redirect
+
+Similar idea:
+
+HTTP/1.1 302 Found
+Location: /login
+
+For example, you visit:
+
+/dashboard
+
+but you're not logged in.
+
+The server might send you to:
+
+/login
+
+c) 404 — Not Found ❌
+
+You run:
+
+curl https://example.com/abc123
+
+And get:
+
+HTTP/2 404
+
+This means:
+
+    The server is working, but that particular resource doesn't exist.
+
+Your log might contain:
+
+10.0.0.20 - - [01/Sep/2026:12:35:10 +0530] "GET /abc123 HTTP/1.1" 404 153
+
+As a DevOps engineer, you'd immediately notice the 404.
+
+For example:
+
+curl https://myserver.com/api/payment
+
+Response:
+
+HTTP/1.1 500 Internal Server Error
+
+7. A realistic troubleshooting example
+
+a) Imagine your customer says:
+
+    "The website is down."
+
+You don't immediately restart the server.
+
+First:
+
+curl -I https://mycompany.com
+
+You get:
+
+HTTP/2 200
+
+Website is responding.
+
+b) Then customer says:
+
+    "Login isn't working."
+
+You test:
+
+curl -I https://mycompany.com/login
+
+You get:
+
+HTTP/2 200
+
+So /login itself is reachable.
+
+c) Now you check the application API:
+
+curl -I https://mycompany.com/api/login
+
+You get:
+
+HTTP/2 500
+
+8. Now look at the log
+
+You open the access log:
+
+tail -f /var/log/nginx/access.log
+
+tail -f means:
+
+    Show me the end of the file and keep watching for new lines.
+
+You might see:
+
+10.0.0.15 - - [01/Sep/2026:12:40:01 +0530] "GET / HTTP/2.0" 200 1256
+10.0.0.15 - - [01/Sep/2026:12:40:03 +0530] "GET /login HTTP/2.0" 200 3421
+10.0.0.15 - - [01/Sep/2026:12:40:05 +0530] "POST /api/login HTTP/2.0" 500 721
+10.0.0.15 - - [01/Sep/2026:12:40:06 +0530] "GET /favicon.ico HTTP/2.0" 404 153
+
+This tells you:
+
+/                  → 200 ✅
+/login             → 200 ✅
+/api/login         → 500 ❌
+/favicon.ico       → 404 ⚠️
+
+The important problem is probably:
+
+POST /api/login → 500
+
+9. Access log vs error log
+
+This distinction is very important.
+
+a) Access log
+
+Usually tells you:
+
+    Who requested what, when, and what status they got.
+
+Example:
+
+10.0.0.15 - - [01/Sep/2026:12:40:05 +0530] \
+"POST /api/login HTTP/2.0" 500 721
+
+b) Error log
+
+Usually tells you:
+
+    What went wrong on the server.
+
+For example:
+
+2026/09/01 12:40:05 [error] 1234#1234:
+*567 upstream prematurely closed connection
+while reading response header from upstream,
+client: 10.0.0.15,
+request: "POST /api/login HTTP/2.0",
+upstream: "http://127.0.0.1:8080/api/login"
+
+10. Useful commands to remember:
+
+a) Watch an Nginx log live
+
+tail -f /var/log/nginx/access.log
+
+b) Look at the last 50 log lines
+
+tail -50 /var/log/nginx/access.log
+
+c) Search for errors
+
+grep "500" /var/log/nginx/access.log
+
+d) Download a file
+
+wget https://example.com/file.zip
+
+e) Follow redirects with curl
+
+curl -L https://example.com
+
+f) Resume a partially downloaded file with wget
+
+wget -c https://example.com/bigfile.zip
+
+g) Test a website
+
+curl https://example.com
+
+h) Check only HTTP headers
+
+curl -I https://example.com
+
+i) See detailed connection information
+
+curl -v https://example.com

@@ -1,0 +1,87 @@
+    You said:
+    ChatGPT said:
+
+    Sure. Think of curl and wget as command-line tools that help you talk to websites or download files.
+    1. Real-life example of curl
+
+    Imagine you are working as a DevOps engineer and want to check whether your company's website is working.
+
+    You can run:
+
+    curl https://example.com
+
+    This sends a request to the website and prints the response.
+
+    For example:
+
+    $ curl https://example.com
+
+    <!doctype html>
+    <html>
+    <head>
+        <title>Example Domain</title>
+    </head>
+    <body>
+        <h1>Example Domain</h1>
+    </body>
+    </html>
+
+    A more practical example: checking an API
+
+    Suppose your application has this API:
+
+    curl https://api.example.com/health
+
+    The server might return:
+
+    {
+      "status": "healthy",
+      "database": "connected"
+    }
+
+    In simple words:
+
+        curl = "Go to this URL and show me what the server says."
+
+    You can also see HTTP details using:
+
+    curl -I https://example.com
+
+    Example:
+
+    HTTP/2 200
+    content-type: text/html
+    server: nginx
+    content-length: 1256
+
+2. Real-life example of wget
+
+Now imagine your manager gives you a 500 MB application package:
+
+https://downloads.example.com/app.tar.gz
+
+You want to download it to your Linux server.
+
+Use:
+
+wget https://downloads.example.com/app.tar.gz
+
+You might see:
+
+--2026-09-01 12:15:20--  https://downloads.example.com/app.tar.gz
+Resolving downloads.example.com... 192.0.2.10
+Connecting to downloads.example.com|192.0.2.10|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 524288000 (500M) [application/gzip]
+Saving to: 'app.tar.gz'
+
+app.tar.gz        100%[===================>] 500.00M  25.4MB/s    in 20s
+
+2026-09-01 12:15:40 (25.4 MB/s) - 'app.tar.gz' saved [524288000/524288000]
+
+In simple words:
+
+    wget = "Go to this URL and download this file for me."
+
+
+    Here, 200 means the request was successful.

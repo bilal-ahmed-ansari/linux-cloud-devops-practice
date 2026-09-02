@@ -1,0 +1,51 @@
+Debugging and troubleshooting are related, but they are not exactly the same.
+
+1. Troubleshooting
+
+Troubleshooting means finding and fixing a problem in a system.
+
+It is usually used when a service, server, network, or application is not working properly.
+
+Example: SSH is not working
+
+Suppose a user says:
+
+"I cannot connect to the server using SSH."
+
+We can troubleshoot it step by step:
+
+a) systemctl status ssh
+
+b) Check if SSH is listening on port 22:
+
+ss -tlnp | grep :22
+
+c) Check network connectivity:
+
+ping <server-ip>
+
+d) Check the firewall:
+
+sudo ufw status
+
+This complete process of checking the problem and fixing it is called troubleshooting.
+
+2. Debugging
+
+Debugging means finding the exact bug or error in code, scripts, or applications.
+
+It is commonly used when a Bash script, Python program, or application is not working as expected.
+
+Example: Bash Script
+
+Suppose we have:
+
+#!/bin/bash
+
+name="Bilal"
+
+echo "Hello $nme"
+
+The variable name is incorrect. We used $nme instead of $name.
+
+This process of finding and fixing the bug is called debugging.

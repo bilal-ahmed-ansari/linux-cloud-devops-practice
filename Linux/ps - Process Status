@@ -70,6 +70,16 @@ ps aux
 
 It shows processes for all users, including CPU and memory usage.
 
+Understand the command
+
+| Part | Meaning                              |
+| ---- | ------------------------------------ |
+| `ps` | Show running processes               |
+| `a`  | Show processes from all users        |
+| `u`  | Show detailed information            |
+| `x`  | Include processes without a terminal |
+
+
 Example:
 
 USER    PID   %CPU  %MEM   COMMAND
@@ -84,6 +94,50 @@ PID → Process ID
 %CPU → CPU usage
 %MEM → Memory usage
 COMMAND → Running program
+
+=> Find your terminal process
+
+Run:
+
+ps aux | grep bash
+
+What happens?
+You will see processes related to bash, which is your shell.
+
+Example:
+
+bilal     1234  0.0  0.2  25000  18000 pts/0  Ss  10:30  0:00 bash
+
+Here, 1234 is the PID (Process ID).
+
+=> Find a running process
+
+Run:
+
+ps aux | grep systemd
+
+This searches the output for systemd.
+
+You may see:
+
+root         1  0.0  0.1  22500  14500 ?  Ss  10:00  0:01 /sbin/init
+
+Note: On Ubuntu, PID 1 is usually the first process started by the system.
+
+=> Check which process uses the most CPU
+
+Run:
+
+ps aux --sort=-%cpu | head
+
+Meaning:
+
+--sort=-%cpu → Sort by CPU usage, highest first.
+head → Show only the first few lines.
+
+Real-world use:
+
+If a server is slow, I can use this command to identify processes consuming high CPU.
 
 5. Simple Lab
 

@@ -49,4 +49,38 @@ Checking basic HTTP connectivity.
 Measuring website response time.
 Testing APIs.
 
+Note:-
 
+1. STATUS=$(command)
+
+This means:
+
+"Run the command inside $(...), take its output, and store it in STATUS."
+
+=> In our script:
+
+STATUS=$(curl ...)
+
+The output of curl becomes the value of STATUS.
+
+2. -s → Silent mode
+
+This means:
+
+"Do not display the normal curl progress or error messages."
+
+=> Why use it in a script?
+Because we only want the status code, not unnecessary output.
+
+3. -o /dev/null → Throw away the website content
+
+Here:
+
+-o = Save output to a file.
+/dev/null = A special Linux location that discards anything written to it.
+
+4. -w → Write a custom result
+
+This means:
+
+"After the request, print the information I specify."

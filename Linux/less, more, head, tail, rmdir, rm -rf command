@@ -1,0 +1,159 @@
+1. What is less?
+
+The less command is used to read a large file one screen at a time. It is useful when the file contains many lines.
+
+=> Practical Examples
+
+Create a sample file:
+
+cat > sample.txt <<EOF
+Line 1
+Line 2
+Line 3
+Line 4
+Line 5
+EOF
+
+Read the file:
+
+less sample.txt
+
+=> Useful keys inside less:
+
+Space — Move to the next page
+b — Move to the previous page
+↑ / ↓ — Move one line
+/word — Search for a word
+q — Quit
+
+Note:- What I Learned
+
+I learned how to read large files page by page without displaying the entire file at once.
+
+2. What is more?
+
+The more command displays a file one screen at a time. It is useful for reading long files in the terminal.
+
+Practical Examples
+more sample.txt
+
+=> Useful keys:
+
+Space — Next page
+Enter — Next line
+q — Quit
+
+Note:- What I Learned
+
+I learned how to read long files page by page using the more command.
+
+3. What is head?
+
+The head command displays the beginning of a file. By default, it shows the first 10 lines.
+
+=> Practical Examples
+
+a) Display the first 10 lines:
+
+head sample.txt
+
+b) Display the first 3 lines:
+
+head -n 3 sample.txt
+
+c) Display the first 20 bytes:
+
+head -c 20 sample.txt
+
+Note:- What I Learned
+
+I learned how to quickly check the beginning of a file without opening the complete file.
+
+4. What is tail?
+
+The tail command displays the end of a file. By default, it shows the last 10 lines.
+
+It is commonly used by Linux administrators to check log files.
+
+=> Practical Examples
+
+a) Display the last 10 lines:
+
+tail sample.txt
+
+b) Display the last 3 lines:
+
+tail -n 3 sample.txt
+
+c) Follow a file continuously:
+
+tail -f /var/log/syslog
+
+The -f option displays new lines as they are added to the file.
+
+Press Ctrl + C to stop the command.
+
+Note:- What I Learned
+
+I learned how to check the latest lines of a file and monitor log files in real time.
+
+5. What is rmdir?
+
+The rmdir command is used to remove an empty directory.
+
+=> Practical Examples
+
+a) Create an empty directory:
+
+mkdir test-directory
+
+b) Remove the empty directory:
+
+rmdir test-directory
+
+Check whether it was removed:
+
+ls
+
+If the directory contains files, rmdir will not remove it.
+
+Note:- What I Learned
+
+I learned how to remove empty directories safely using rmdir.
+
+6. What is rm -rf?
+
+The rm -rf command is used to remove directories and their contents.
+
+-r means recursive
+-f means force
+
+=> Practical Examples
+
+Create a directory with a file:
+
+mkdir -p test-directory
+touch test-directory/file.txt
+
+Remove the directory and its contents:
+
+rm -rf test-directory
+
+Check whether it was removed:
+
+ls
+
+=> Important Note
+
+rm -rf permanently deletes files and directories. It does not move them to the Trash.
+
+Always check the path before running this command:
+
+pwd
+ls
+
+Note:- What I Learned
+
+I learned how to remove a directory and its contents using rm -rf. I also learned that this command must be used carefully because deleted files may not be recoverable.
+
+

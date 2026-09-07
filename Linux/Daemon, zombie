@@ -1,0 +1,204 @@
+The main difference is:
+
+Daemon = A process that keeps running in the background to provide a service.
+Zombie = A process that has finished, but its parent has not yet collected its exit status.
+
+1. First, remember what a process is
+
+A process is a running program.
+
+For example:
+
+sleep 100
+
+While it is running:
+
+Bash
+  |
+  └── sleep 100
+
+Here:
+
+Bash = parent process
+sleep = child process
+
+When sleep finishes, the child process is no longer doing work.
+
+2. What is a daemon?
+
+A daemon is a background process that provides a service.
+
+Think of a daemon like a security guard in an office.
+
+The guard keeps working in the background.
+
+You don't need to stand beside the guard and give instructions every minute.
+
+Similarly, a daemon keeps running and waits for work.
+
+Example: SSH daemon
+
+On a Linux server, you may have an SSH service.
+
+Its job is to allow users to connect remotely.
+
+Your PC
+   |
+   | SSH connection
+   ↓
+Linux Server
+   |
+   └── SSH daemon
+
+The daemon waits for incoming SSH connections.
+
+When someone connects, it handles the request.
+
+3. Why do we need daemons?
+
+Imagine a Linux server running in a data center.
+
+Nobody is sitting at the terminal all the time.
+
+But the server still needs to:
+
+Accept SSH connections
+Run scheduled tasks
+Provide web services
+Monitor systems
+Manage logging
+Handle other background services
+
+Daemons do this work.
+
+4. What does "background" mean?
+
+It means the process is running without requiring you to interact with it directly in the terminal.
+
+For example:
+
+sleep 100 &
+
+The & runs the command in the background.
+
+But remember:
+
+Not every background process is a daemon.
+
+This is important.
+
+Background process
+
+sleep 100 &
+
+This is just a background process.
+
+It is not automatically a daemon.
+
+Daemon
+
+A daemon is designed to provide a background service.
+
+Examples include SSH, cron, and logging services.
+
+5. What is systemd?
+
+On modern Ubuntu systems, systemd is commonly used to manage services.
+
+Think of systemd as a service manager.
+
+It can:
+
+Start services
+Stop services
+Restart services
+Check service status
+Start services automatically at boot
+
+Example:
+
+systemctl status ssh
+
+This checks the SSH service.
+
+You can also check:
+
+systemctl status cron
+
+Or:
+
+systemctl status systemd-journald
+
+6. What is a zombie process?
+
+Now let's understand the second concept.
+
+A zombie process is a process that has finished executing, but its parent has not yet collected its exit status.
+
+This sounds complicated, so let's use a simple example.
+
+Imagine:
+
+Parent
+  |
+  └── Child
+
+The child is working.
+
+Then the child finishes:
+
+Parent
+  |
+  └── Child → Finished
+
+But the parent has not yet collected the child's result.
+
+So the child remains as a zombie.
+
+7. Real-life analogy
+
+Imagine you give an employee a task.
+
+Manager
+   |
+   └── Employee
+
+The employee finishes the task and says:
+
+"I have completed it."
+
+But the manager is busy and has not yet recorded the completion.
+
+The employee is no longer doing work, but the manager still needs to collect the result.
+
+This is similar to a zombie process.
+
+8. What is wait()?
+
+wait() is a system call used by a parent process to collect information about a child process that has finished.
+
+For example:
+
+Parent
+  |
+  └── Child
+
+Child finishes:
+
+Parent
+  |
+  └── Zombie
+
+Parent calls:
+
+wait();
+
+Then:
+
+Parent
+
+The zombie is removed from the process table.
+
+Think:
+
+wait() = Parent collects the child's result.

@@ -186,3 +186,178 @@ ls
 Output
  ↓
 Bash prompt returns
+
+3. What happens with a background command?
+
+Now try:
+
+sleep 100 &
+
+The & means:
+
+"Run this command in the background."
+
+Example:
+
+Bash
+  |
+  └── sleep 100
+
+Bash does not wait for sleep to finish.
+
+You immediately get the prompt back.
+
+bilal@ubuntu:~$
+
+You can run another command:
+
+ls
+
+So:
+
+Bash
+  |
+  ├── sleep 100
+  |
+  └── ls
+
+This is a very practical example of child processes.
+
+4. How can I see parent and child processes?
+
+Use:
+
+ps
+
+Example:
+
+    PID TTY          TIME CMD
+   1200 pts/0    00:00:00 bash
+   1250 pts/0    00:00:00 ps
+
+Here:
+
+PID = Process ID
+CMD = Command
+
+But ps alone may not clearly show the parent-child relationship.
+
+Use:
+
+ps --forest
+
+Example:
+
+    PID TTY          TIME CMD
+   1200 pts/0    00:00:00 bash
+   1300 pts/0    00:00:00  \_ sleep
+
+The tree-like structure helps you understand the relationship.
+
+Another useful command:
+
+pstree
+
+Example:
+
+systemd
+  └─bash
+      └─sleep
+
+5. What is PID?
+
+PID = Process ID
+
+Every running process has a unique ID.
+
+Example:
+
+Bash → PID 1200
+sleep → PID 1300
+
+Check your Bash PID:
+
+echo $$
+
+Example:
+
+1200
+
+$$ means:
+
+"PID of my current shell."
+
+6. What is PPID?
+
+PPID = Parent Process ID
+
+It tells you the PID of the process that started your process.
+
+Example:
+
+Bash PID = 1200
+Bash PPID = 1100
+
+Check:
+
+ps -o pid,ppid,cmd
+
+Example output:
+
+    PID    PPID CMD
+   1200    1100 bash
+   1300    1200 sleep 100
+
+This means:
+
+PID 1100
+   |
+   └── PID 1200 bash
+          |
+          └── PID 1300 sleep
+
+So:
+
+sleep's PPID = Bash's PID
+
+7. Practical lab for your Ubuntu VM
+
+Let's do a small lab.
+
+Step 1 — Open Ubuntu Terminal
+
+Step 2 — Check your shell
+echo $SHELL
+
+Step 3 — Check your current shell PID
+echo $$
+
+Step 4 — Run a background process
+sleep 100 &
+
+You may see:
+
+[1] 1450
+
+Here:
+
+1450 = PID of the background process
+Step 5 — Check the process
+ps -f
+
+You may see something like:
+
+UID   PID  PPID  CMD
+bilal 1200 1100  bash
+bilal 1450 1200  sleep 100
+
+Step 6 — Understand the relationship
+Bash
+  |
+  └── sleep 100
+Step 7 — Stop the process
+kill 1450
+
+Replace 1450 with the actual PID shown on your system.
+
+=> A child process is a process created by a parent process. In Linux, a shell commonly uses fork() to create a child process and exec() to run a command in that child process.

@@ -1,0 +1,178 @@
+1. What is cp?
+
+The cp command is used to copy files and directories from one location to another.
+
+=> Practical Examples
+
+Create a sample file:
+
+echo "This is a sample file" > file1.txt
+
+Copy the file:
+
+cp file1.txt file2.txt
+
+Check the copied file:
+
+ls
+cat file2.txt
+
+Copy a file into another directory:
+
+mkdir backup
+cp file1.txt backup/
+
+Copy a directory and its contents:
+cp -r backup backup-copy
+
+The -r option is required when copying directories.
+
+Note:- What I Learned
+
+I learned how to copy files and directories while keeping the original files unchanged.
+
+2. What is mv?
+
+The mv command is used to move files and directories. It can also be used to rename them.
+
+Practical Examples
+
+Rename a file:
+
+mv file1.txt renamed-file.txt
+
+Move a file into a directory:
+
+mv renamed-file.txt backup/
+
+Rename a directory:
+
+mv backup backup-files
+
+Note:- What I Learned
+
+I learned how to move files and directories and how to rename them using the mv command.
+
+3. What is SSH?
+
+SSH stands for Secure Shell.
+
+It is used to connect securely to a remote Linux server through the terminal.
+
+=> Practical Examples
+
+a) Connect to a remote Ubuntu server:
+
+ssh ubuntu@SERVER_IP
+
+b) Connect using a private key:
+
+ssh -i ~/Downloads/testing.pem ubuntu@SERVER_IP
+
+Example:
+
+ssh -i ~/Downloads/testing.pem ubuntu@15.252.157.185
+
+After connecting, I can run commands on the remote server.
+
+Check the remote system:
+
+hostname
+pwd
+
+Exit the remote server:
+
+exit
+
+Note:- What I Learned
+
+I learned how to connect to a remote Linux server securely using SSH and a private key.
+
+4. What is SCP?
+
+SCP stands for Secure Copy Protocol.
+
+It is used to securely copy files between a local system and a remote server.
+
+=> Practical Examples
+
+a) Copy a local file to a remote server:
+
+scp -i ~/Downloads/testing.pem app.conf ubuntu@SERVER_IP:/home/ubuntu/
+
+Example:
+
+scp -i ~/Downloads/testing.pem app.conf ubuntu@15.252.157.185:/home/ubuntu/
+
+b) Copy a file from the remote server to the local system:
+
+scp -i ~/Downloads/testing.pem ubuntu@SERVER_IP:/home/ubuntu/app.conf .
+
+c) Copy a directory:
+
+scp -r -i ~/Downloads/testing.pem my-folder
+
+Note:- What I Learned
+
+I learned how to securely transfer files and directories between Ubuntu and an AWS EC2 server using SCP.
+
+5. What is rsync?
+
+The rsync command is used to copy and synchronize files and directories.
+
+It is useful for backups because it copies only the files or changes that are needed.
+
+=> Install rsync
+sudo apt update
+sudo apt install -y rsync
+
+=> Practical Examples
+
+Create a source directory:
+
+_____________________
+
+  In rsync, synchronize means make the destination folder match the source folder.
+
+Simple example
+
+Suppose your source folder contains:
+
+source-folder/
+├── file1.txt
+└── file2.txt
+
+You run:
+
+rsync -av source-folder/ backup-folder/
+
+Now the backup folder contains the same files:
+
+backup-folder/
+├── file1.txt
+└── file2.txt
+
+=> What happens when a file changes?
+
+If you update file1.txt in the source folder:
+
+echo "Updated data" >> source-folder/file1.txt
+
+Run rsync again:
+
+rsync -av source-folder/ backup-folder/
+
+rsync checks the differences and copies the changed file to the backup folder.
+
+It does not normally copy every file again. It copies only the files that need updating.
+
+=> What happens when a new file is created?
+touch source-folder/file3.txt
+
+Run:
+
+rsync -av source-folder/ backup-folder/
+
+The new file3.txt is copied to the backup folder.
+
+_____________________

@@ -1,0 +1,39 @@
+Here-document (<<) is a way to give multiple lines of input to a Linux command.
+
+Think of it like:
+
+“I want to give this whole block of text to a command.”
+
+Basic example
+
+cat << EOF
+Hello Bilal
+Welcome to Linux
+Today I am learning Here Documents
+EOF
+
+Output:
+
+Hello Bilal
+Welcome to Linux
+Today I am learning Here Documents
+
+=> How does it work?
+cat << EOF
+Hello Bilal
+Welcome to Linux
+EOF
+
+Explanation:-
+cat → command that reads input
+<< → tells Bash to start a here-document
+EOF → marks the beginning and end
+Text between the two EOFs → input given to cat
+
+You can actually use any matching word instead of EOF:
+
+cat << END
+Line 1
+Line 2
+Line 3
+END

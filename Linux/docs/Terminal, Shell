@@ -1,0 +1,49 @@
+1. A terminal is the place where you type commands.
+
+For example, you open Ubuntu Terminal and type:
+
+ls
+
+The terminal displays the result.
+
+Think of it like this:
+
+Terminal = Your window for talking to Linux.
+
+Example:
+
+You
+ ↓
+Terminal
+ ↓
+You type: ls
+ ↓
+Result appears
+
+Important: The terminal itself does not understand Linux commands. It is mainly the window/interface.
+
+2. What is a Shell?
+
+A shell is the program that understands your commands and asks Linux to execute them.
+
+For example, you type:
+
+ls
+
+The shell understands:
+
+"The user wants to list files."
+
+Then it asks Linux to perform that work.
+
+Think:
+
+You
+ ↓
+Terminal (window)
+ ↓
+Shell (understands commands)
+ ↓
+Linux
+ ↓
+Result

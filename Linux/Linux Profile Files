@@ -190,3 +190,189 @@ source ~/.bashrc
 source basically means:
 
 "Read this file now and apply its commands/settings to my current shell."
+
+9. Now understand environment variables
+
+Suppose you run:
+
+MY_NAME="Bilal"
+
+You created a variable.
+
+Check it:
+
+echo $MY_NAME
+
+Output:
+
+Bilal
+
+But if you want child processes to inherit it, use:
+
+export MY_NAME="Bilal"
+
+Then:
+
+echo $MY_NAME
+
+gives:
+
+Bilal
+
+This is why you often see export in profile files.
+
+For example:
+
+export PATH="$PATH:$HOME/scripts"
+
+This tells Bash:
+
+"Add my scripts directory to the PATH."
+
+10. Now let's understand PATH
+
+Suppose you have a script:
+
+/home/bilal/scripts/myscript.sh
+
+Normally, you might have to type:
+
+/home/bilal/scripts/myscript.sh
+
+But you can add that directory to PATH:
+
+export PATH="$PATH:$HOME/scripts"
+
+Now Bash knows where to look for commands.
+
+Think of PATH as a list of directories where Bash searches for commands.
+
+Check your PATH:
+
+echo $PATH
+
+You might see something like:
+
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+11. /etc/profile
+
+Notice:
+
+/etc
+
+This is system-wide.
+
+It can affect users on the system.
+
+Think:
+
+/etc/profile
+      ↓
+System
+ ├── User A
+ ├── User B
+ └── User C
+
+Don't modify it casually.
+
+12. ~/.bashrc
+
+Notice:
+
+~
+
+That means your home directory.
+
+So:
+
+/home/bilal/.bashrc
+
+belongs to your user.
+
+13. .profile vs .bashrc
+
+a) .bashrc
+
+Think:
+
+"I am using an interactive Bash terminal."
+
+Common things:
+
+alias ll='ls -ltr'
+export PATH="$PATH:$HOME/scripts"
+
+Bash functions and shell customization can also go here.
+
+b) .profile
+
+Think:
+
+"I am starting/logging into my user environment."
+
+It can contain things such as:
+
+PATH
+environment variables
+
+On Ubuntu, .profile commonly exists even when .bash_profile doesn't.
+
+14. What about .bash_profile?
+
+This one is easier than it looks.
+
+For a Bash login shell, Bash looks for a login startup file.
+
+The usual order is:
+
+~/.bash_profile
+      ↓
+if not found
+      ↓
+~/.bash_login
+      ↓
+if not found
+      ↓
+~/.profile
+
+So if your Ubuntu doesn't have:
+
+~/.bash_profile
+
+that's completely normal.
+
+You might have:
+
+~/.profile
+~/.bashrc
+
+instead.
+
+15. Login shell vs interactive shell
+
+a) Login shell
+
+Think:
+
+"A shell associated with logging into the system."
+
+For example, SSH:
+
+Your PC
+   ↓
+ssh user@server
+   ↓
+Login
+   ↓
+Shell
+
+b) Interactive shell
+
+Think:
+
+"A shell where I can type commands and interact with Bash."
+
+For example:
+
+bash

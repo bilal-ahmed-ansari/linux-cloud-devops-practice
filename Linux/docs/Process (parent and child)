@@ -1,0 +1,77 @@
+1. A process is a running program.
+
+For example:
+
+sleep 100
+
+This command runs a program that waits for 100 seconds.
+
+While it is running, it is a process.
+
+Another example:
+
+top
+
+top is a running process.
+
+Think:
+
+Program = Instructions stored on disk.
+Process = That program currently running.
+
+2. What is a Parent Process?
+
+A parent process is a process that starts another process.
+
+The process it starts is called a child process.
+
+Think of a parent and child in a family:
+
+Parent
+  |
+  └── Child
+
+In Linux:
+
+Parent process
+      |
+      └── Child process
+
+The parent creates/starts the child.
+
+3. What is a Child Process?
+
+A child process is a process started by another process.
+
+Example:
+
+You open a terminal.
+
+The terminal starts Bash.
+
+Terminal
+   |
+   └── Bash
+
+Here, Bash is a child process of the terminal's process.
+
+Then you run:
+
+sleep 100
+
+Bash starts the sleep process.
+
+Terminal
+   |
+   └── Bash
+         |
+         └── sleep
+
+So:
+
+Terminal → parent of Bash
+Bash → child of Terminal
+Bash → parent of sleep
+sleep → child of Bash
+
+This is the basic idea.

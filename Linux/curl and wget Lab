@@ -1,0 +1,52 @@
+Overview
+
+Today I practiced curl and wget commands in Ubuntu Linux.
+
+I learned how to check websites, download files, measure response time, and test APIs.
+
+=> What I Practiced
+
+1. Check Website Response
+curl -I https://www.google.com
+
+This command displays the HTTP headers of a website.
+
+I learned how to check whether a website is responding.
+
+2. Download a File Using curl
+curl -o robots.txt https://www.google.com/robots.txt
+
+This command downloads a file and saves it with the name robots.txt.
+
+3. Download a File Using wget
+wget -O robots-wget.txt https://www.google.com/robots.txt
+
+This command downloads a file and saves it with a specific filenam
+
+4. Check the Downloaded File
+ls -lh robots.txt
+cat robots.txt
+
+I learned how to check the file size and view its contents.
+
+5. Check Website Response Time
+curl -o /dev/null -s -w "Time: %{time_total}s\n" https://www.google.com
+
+This command measures how long the website request takes.
+
+I learned how to perform a basic website response-time check.
+
+6. Test an API
+curl https://api.github.com
+
+This command sends a request to the GitHub API and displays the response.
+
+=> As a Linux Support Engineer, these commands are useful for:
+
+Checking whether a website is responding.
+Downloading files from a web server.
+Checking basic HTTP connectivity.
+Measuring website response time.
+Testing APIs.
+
+

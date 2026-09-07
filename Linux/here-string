@@ -1,0 +1,43 @@
+1. In Linux, <<< is called a here-string. It is used to send a string directly to a command as input.
+
+Simple example
+wc -w <<< "Hello Linux"
+
+Output:
+
+2
+
+=> What happens?
+
+"Hello Linux" → <<< → wc -w
+<<< sends the text to the command.
+  
+wc -w counts the words.
+Output is 2.
+
+=> Practice in Ubuntu
+
+1. Count characters
+
+wc -c <<< "Ubuntu"
+
+Output: 7 (6 letters + newline)
+
+2. Count lines
+
+wc -l <<< "Hello Linux"
+
+Output: 1
+
+3. Convert text to uppercase
+
+tr 'a-z' 'A-Z' <<< "hello linux"
+
+Output:
+
+HELLO LINUX
+
+4. Use it with a variable
+
+name="Bilal"
+wc -c <<< "$name"

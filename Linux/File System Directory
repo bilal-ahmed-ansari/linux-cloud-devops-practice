@@ -1,6 +1,28 @@
-In Linux, everything starts from / (root directory).
+Imagine your Linux system is a big tree.
 
-Think of / as the main folder of the entire Linux system.
+The starting point of the tree is:
+
+/
+
+This / is called root directory.
+
+Everything in Linux is organized underneath this /.
+
+Think about Windows:
+
+C:\
+ ├── Windows
+ ├── Users
+ ├── Program Files
+ └── ...
+
+Linux doesn't normally start with C:\.
+
+Linux starts with:
+
+/
+
+Then everything comes underneath it.
 
 /
 ├── bin
@@ -11,121 +33,318 @@ Think of / as the main folder of the entire Linux system.
 ├── lib
 ├── opt
 ├── root
+├── sbin
 ├── tmp
 ├── usr
 └── var
 
-1. / — Root
+1. / — Root directory
 
-This is the top/main directory.
+This is the top of the entire Linux filesystem.
+
+It is not the same thing as the root user.
+
+For example:
 
 cd /
 ls
 
-All other directories are located under /.
+You will see directories such as:
 
-2. /home — Normal users' personal files
+bin
+boot
+dev
+etc
+home
+lib
+opt
+root
+sbin
+tmp
+usr
+var
 
-Each normal user usually gets a directory here.
+Think:
+/ = entire Linux filesystem
 
-Example:
+Everything starts from here.
+
+⚠️ Very important: / vs /root
+
+This confuses almost every beginner.
+
+/
+
+Means:
+
+The top/main directory of the entire filesystem.
+
+/root
+
+Means:
+
+The home directory of the root user.
+
+So:
+
+/       → Main filesystem
+/root   → root user's personal home
+/home   → Normal users' personal homes
+
+Don't think /root means "the main root directory."
+
+2. /home — Normal users' homes
+
+Suppose your Linux machine has three normal users:
+
+bilal
+user1
+user2
+
+Linux can have:
+
+/home
+├── bilal
+├── user1
+└── user2
+
+For example:
 
 /home/bilal
-/home/user1
-/home/user2
 
-Your documents, scripts, downloads, etc. can be stored here.
+is Bilal's home directory.
+
+You can keep things like:
+
+Documents
+Downloads
+Pictures
+Scripts
+Projects
+
+there.
+
+For example:
 
 cd /home
 ls
 
+You might see:
+
+bilal
+user1
+
+Then:
+
+cd /home/bilal
+
+Now you are inside Bilal's home directory.
+
+Simple memory:
+/home = normal users' houses
+
+Each user gets their own "room/house."
+
 3. /root — Root user's home
 
-root is the administrator account.
+Linux has a special administrator account called:
 
-The root user's personal home directory is:
+root
+
+The root user's home directory is:
 
 /root
 
-⚠️ Don't confuse:
+For example:
 
-/       → Root of the entire filesystem
-/root   → Home directory of root user
+cd /root
 
-4. /etc — Configuration files ⭐
+if you have permission.
+
+So:
+
+/root
+
+contains the root user's personal files/configuration.
+
+Remember this:
+/       → Root of filesystem
+/root   → Home of root user
+
+They are completely different concepts.
+
+4. /etc — Configuration ⭐⭐⭐
 
 This is very important for a Linux administrator.
 
-It contains system and application configuration files.
+Think of /etc as the configuration cupboard of Linux.
+
+It contains configuration files for:
+
+Linux system
+Services
+Applications
+Networking
+Users
+Storage
+SSH
+etc.
 
 Examples:
 
-/etc/ssh/
 /etc/hosts
 /etc/passwd
 /etc/fstab
+/etc/ssh/
 
 For example:
 
 cat /etc/hosts
 
-5. /var — Frequently changing data
+You may see:
+
+127.0.0.1 localhost
+
+Another example:
+
+ls /etc/ssh
+
+You may see SSH configuration files.
+
+5. /var — Data that changes frequently ⭐⭐⭐
 
 var means variable.
 
-It contains data that changes frequently, such as:
+The idea is:
+
+Data stored here changes frequently while the system is running.
+
+Examples include:
 
 Logs
 Cache
 Application data
+Spool data
+Databases/application-related changing data
+
+One of the most important directories is:
+
+/var/log
+
+This contains system/application logs.
 
 For example:
-
-/var/log/
-
-As a Linux administrator, you'll frequently work with:
 
 cd /var/log
 ls
 
+You may see files/directories such as:
+
+journal
+apt
+auth.log
+syslog
+
+depending on your Linux distribution.
+
 6. /tmp — Temporary files
 
-Used for temporary data.
+tmp means temporary.
+
+Programs and users can use /tmp to store temporary data.
+
+For example:
 
 cd /tmp
+ls
 
-Applications and users may create temporary files here.
+You may find temporary files created by applications.
 
-7. /boot — Boot-related files
+Think of /tmp like a temporary working table.
 
-Contains files required during the Linux boot process.
+You put something there temporarily, use it, and eventually it can be cleaned up.
 
-For example, you may see:
+7. /boot — Files needed to boot Linux
+
+When you switch on your computer, Linux has to start/boot.
+
+The /boot directory contains important files used during that process.
+
+For example:
 
 /boot/vmlinuz...
 /boot/initrd...
 
-The Linux kernel is also stored here.
+You may see files related to:
 
-8. /dev — Devices
+Linux kernel
+Initial RAM filesystem
+Bootloader configuration/files
+
+The Linux kernel is commonly represented by files beginning with:
+
+vmlinuz
+
+For example:
+
+ls /boot
+
+You might see:
+
+vmlinuz-...
+initrd.img-...
+
+8. /dev — Devices ⭐⭐⭐
+
+This is a very important Linux concept.
 
 dev means devices.
 
-Linux represents many hardware devices as files inside /dev.
+Linux represents many hardware devices and special devices as files under /dev.
 
-Examples:
+For example:
 
 /dev/sda
 /dev/nvme0n1
 /dev/null
 
-For example:
+You might think:
+
+"Why is a disk represented as a file?"
+
+That's part of the Linux philosophy:
+
+Many things are represented through files/interfaces.
+
+For example, a disk might appear as:
+
+/dev/sda
+
+An NVMe disk might appear as:
+
+/dev/nvme0n1
+
+And /dev/null is a special device that essentially discards data written to it.
+
+Try:
 
 ls /dev
 
-9. /usr — User programs and files
+You'll see many device entries.
 
-Contains many programs, libraries and other files used by the system.
+9. /usr — Programs, libraries and shared files
+
+This one is confusing because the name /usr can make you think:
+
+"Is this where user files are stored?"
+
+No.
+
+Normal users' personal files are generally under:
+
+/home
+
+/usr is mainly a major location for programs, libraries and other system/shareable files.
 
 For example:
 
@@ -133,11 +352,21 @@ For example:
 /usr/lib
 /usr/share
 
-You can think of /usr as a major location for installed software and supporting files.
+You will find many installed programs under:
+
+/usr/bin
+
+For example:
+
+ls /usr/bin
+
+You'll see many commands/programs.
 
 10. /bin — Essential commands
 
-Contains essential commands used by users and the system.
+bin means binary.
+
+Historically, /bin contained essential executable commands.
 
 Examples include commands such as:
 
@@ -146,29 +375,70 @@ cp
 mv
 cat
 
-On modern Linux systems, /bin is often a symbolic link to /usr/bin.
+You can check:
+
+ls /bin
+But there is an important modern Linux detail ⭐
+
+On many modern Linux distributions, /bin is a symbolic link to:
+
+/usr/bin
+
+You can check:
+
+ls -ld /bin
+
+You may see something similar to:
+
+/bin -> usr/bin
+
+So don't be surprised if /bin and /usr/bin appear connected.
 
 11. /sbin — System administration commands
 
-Contains commands mainly used for system administration.
+sbin historically means system binaries.
 
-Examples include tools related to:
+It contains commands primarily associated with system administration.
+
+For example, commands/tools related to:
 
 Disk management
 Networking
 System configuration
+System administration
 
-Like /bin, on many modern distributions /sbin is also linked into /usr.
+You can check:
 
-12. /opt — Optional software
+ls /sbin
 
-Used for additional/third-party software.
+Again, on many modern Linux distributions:
 
-For example, an organization might install some application under:
+/sbin
 
-/opt/application/
-13. /lib — Libraries
+is also linked into /usr.
 
-Contains important libraries required by programs and the system.
+You can check:
 
-On modern distributions, /lib may also be a symbolic link into /usr/lib.
+ls -ld /sbin
+
+11. /lib — Libraries
+
+lib means libraries.
+
+Programs often need libraries to perform certain operations.
+
+Think about a program as a person who wants to do some work.
+
+Instead of every program creating everything itself, it can use libraries that provide functionality.
+
+So:
+
+/lib
+
+contains important libraries needed by programs and the system.
+
+On modern Linux systems, /lib may also be a symbolic link into /usr/lib.
+
+You can check:
+
+ls -ld /lib

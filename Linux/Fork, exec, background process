@@ -128,3 +128,223 @@ Hello
 The shell starts sleep and immediately gives you the prompt back.
 
 You can continue working.
+
+3. Understand this output
+
+You got:
+
+[1] 5454
+
+This is job control information.
+
+[1] = Job number
+[1]
+
+means:
+
+This is job number 1 in the current shell.
+
+Job numbers are used by Bash commands such as:
+
+jobs
+fg
+bg
+5454 = Process ID
+5454
+
+This is the PID of the sleep process.
+
+So:
+
+[1] 5454
+
+means:
+
+Bash started background job number 1, and its process ID is 5454.
+
+Job number and PID are not the same thing.
+
+4. Find the sleep process
+
+You ran:
+
+ps -o pid,ppid,cmd -C sleep
+
+Let's break it down.
+
+What is ps?
+
+ps means:
+
+Process Status
+
+It shows information about running processes.
+
+For example:
+
+ps
+
+might show:
+
+PID TTY          TIME CMD
+4430 pts/0    00:00:00 bash
+
+This tells you which processes are running.
+
+=> What does -o mean?
+-o pid,ppid,cmd
+
+means:
+
+Show only the columns I specify.
+
+You requested three columns:
+
+pid
+ppid
+cmd
+
+Meaning of each column
+
+| Column | Meaning                           |
+| ------ | --------------------------------- |
+| `PID`  | Process ID                        |
+| `PPID` | Parent Process ID                 |
+| `CMD`  | Command used to start the process |
+
+=> What does -C sleep mean?
+-C sleep
+
+means:
+
+Show processes whose command name is sleep.
+
+So the complete command:
+
+ps -o pid,ppid,cmd -C sleep
+
+5. Understand your actual output
+
+You got:
+
+    PID    PPID CMD
+   5454    4430 sleep 100
+
+Let's understand every value.
+
+=> PID = 5454
+
+This is the process ID of:
+
+sleep 100
+
+Linux assigned this number to the process.
+
+=> PPID = 4430
+
+This means:
+
+The parent process of sleep 100 is process 4430.
+
+=> CMD = sleep 100
+CMD = sleep 100
+
+This tells you the command that is running.
+
+=> Visualize your actual process tree
+
+Based on your output:
+
+Bash
+PID = 4430
+   |
+   └── sleep 100
+       PID = 5454
+       PPID = 4430
+
+This is the key concept:
+
+Bash started the sleep process. Therefore, Bash is the parent and sleep is the child.
+
+6. Find the PID of the current shell
+
+You ran:
+
+echo $$
+
+Output:
+
+4430
+
+7. Understand the [1]+ Done message
+
+You got:
+
+[1]+  Done                       sleep 100
+
+This appeared after the command finished.
+
+Meaning
+[1]
+
+= Background job number 1.
+
+Done
+
+= The process has completed.
+
+sleep 100
+
+= The command that finished.
+
+8. Check the current shell process
+
+You ran:
+
+ps -p $$ -o pid,ppid,cmd
+
+Let's break it down.
+
+What does -p mean?
+-p
+
+means:
+
+Select a process by PID.
+
+You used:
+
+$$
+
+which means:
+
+The PID of the current shell.
+
+So:
+
+ps -p $$ -o pid,ppid,cmd
+
+means:
+
+Show information about my current Bash shell.
+
+9. Understand your actual output
+
+You got:
+
+PID    PPID CMD
+4430    4403 /usr/bin/bash
+
+=> PID = 4430
+
+This is your current Bash shell.
+
+=> PPID = 4403
+
+This means:
+
+Your Bash shell was started by another process whose PID is 4403.
+
+=> CMD = /usr/bin/bash
+
+This tells you that the process is Bash.

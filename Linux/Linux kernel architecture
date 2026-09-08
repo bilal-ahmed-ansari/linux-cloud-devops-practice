@@ -203,3 +203,243 @@ Memory used by processes
 Virtual memory
 Swap
 Memory protection
+
+=> Simple example
+
+Suppose your computer has:
+
+RAM = 16 GB
+
+You start:
+
+Firefox → 2 GB
+VS Code → 1 GB
+Python  → 500 MB
+
+The kernel keeps track of how much memory each process is using.
+
+=> Try in Ubuntu
+free -h
+
+Example:
+
+               total        used        free
+Mem:            3.8Gi       1.5Gi       500Mi
+Swap:           2.0Gi       100Mi       1.9Gi
+
+This shows memory information.
+
+=> What is swap?
+
+Swap is disk space used as additional memory when RAM is under pressure.
+
+RAM becomes limited
+        ↓
+Kernel may use swap
+        ↓
+Some memory pages move to disk
+
+But swap is much slower than RAM.
+
+=> Important
+
+The kernel does not simply give all RAM to one application.
+
+It manages memory so multiple processes can run safely.
+
+C. File System Management
+
+This is especially important for Linux administrators.
+
+What does it mean?
+
+The kernel manages how applications access:
+
+Files
+Directories
+Storage
+File permissions
+File system
+
+Example
+
+You run:
+
+cat /etc/hosts
+
+The cat command wants to read a file.
+
+But cat does not directly control the disk.
+
+It asks the kernel:
+
+"Please read this file."
+
+The kernel checks the file system and accesses the storage.
+
+=> Simple flow
+You
+ ↓
+cat /etc/hosts
+ ↓
+System Call
+ ↓
+Linux Kernel
+ ↓
+File System
+ ↓
+Storage
+ ↓
+Kernel
+ ↓
+cat
+ ↓
+Screen
+
+=> What is a system call?
+
+A system call is a request from a program to the kernel.
+
+For example:
+
+Application: "Open this file."
+Kernel: "Okay, I will handle it."
+
+Common system calls include:
+
+open() → Open a file
+read() → Read data
+write() → Write data
+close() → Close a file
+
+=> Try in Ubuntu
+cat /etc/hosts
+
+You see the contents of the file.
+
+Now:
+
+ls -l /etc/hosts
+
+Example:
+
+-rw-r--r-- 1 root root 220 Sep 8 10:00 /etc/hosts
+
+The kernel is involved in enforcing access to that file.
+
+D. Device Drivers
+
+This is one of the most important concepts.
+
+What is a driver?
+
+A device driver is software that helps the kernel communicate with a hardware device.
+
+Think of it as a translator.
+
+Example
+
+You have a GPU.
+
+Linux Kernel
+      ↓
+GPU Driver
+      ↓
+GPU Hardware
+
+The kernel does not need to understand every hardware device directly. The driver handles the device-specific communication.
+
+=> Examples of devices
+Network card
+GPU
+USB device
+Disk controller
+Keyboard
+Mouse
+
+=> Real-life example
+
+Imagine you speak English and the hardware speaks another language.
+
+Kernel → Driver → Hardware
+
+The driver translates the kernel's requests into something the hardware understands.
+
+=> Linux administrator example
+
+Suppose your server has a network problem.
+
+You may check:
+
+ip link
+
+or:
+
+lspci
+
+Device Drivers = Software that allows the kernel to communicate with hardware.
+
+E. Network Management
+What does it mean?
+
+The kernel manages network communication.
+
+For example:
+
+ping 8.8.8.8
+
+You are asking your system to send network packets.
+
+=> Flow
+
+You
+ ↓
+ping command
+ ↓
+System Call
+ ↓
+Linux Kernel
+ ↓
+Network Stack
+ ↓
+Network Driver
+ ↓
+Network Card
+ ↓
+Internet
+
+When the reply comes back:
+
+Internet
+ ↓
+Network Card
+ ↓
+Network Driver
+ ↓
+Kernel
+ ↓
+ping
+ ↓
+Screen
+
+=> What does the kernel handle?
+
+Sending packets
+Receiving packets
+TCP/IP communication
+Network interfaces
+Routing
+Network connections
+
+=> Try in Ubuntu
+ip addr
+
+This shows network interfaces and IP addresses.
+
+ip route
+
+This shows routing information.
+
+ping -c 4 8.8.8.8
+
+This sends 4 ping packets.

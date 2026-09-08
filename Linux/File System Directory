@@ -442,3 +442,37 @@ On modern Linux systems, /lib may also be a symbolic link into /usr/lib.
 You can check:
 
 ls -ld /lib
+
+13. /opt — Optional / third-party software
+
+opt is commonly used for optional software, particularly additional or third-party applications.
+
+For example, an organization might install an application like:
+
+/opt/application/
+
+You might see software installed under:
+
+/opt/
+
+Note:- One very important thing: directory vs file
+
+Look at this:
+
+/etc/ssh/sshd_config
+
+Break it down:
+
+/
+└── etc
+    └── ssh
+        └── sshd_config
+
+Here:
+
+/               → root directory
+/etc             → configuration directory
+/etc/ssh         → SSH configuration directory
+/etc/ssh/sshd_config → SSH configuration file
+
+

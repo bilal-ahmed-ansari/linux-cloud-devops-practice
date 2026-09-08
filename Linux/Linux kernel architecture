@@ -443,3 +443,307 @@ This shows routing information.
 ping -c 4 8.8.8.8
 
 This sends 4 ping packets.
+
+F. Security
+What does the kernel protect?
+
+The kernel controls access to system resources.
+
+For example:
+
+Files
+Processes
+Devices
+Network resources
+
+=> Example: File permissions
+
+Create a file:
+
+touch test.txt
+
+Check permissions:
+
+ls -l test.txt
+
+Example:
+
+-rw-r--r-- 1 bilal bilal 0 Sep 8 10:00 test.txt
+
+Now run:
+
+chmod 600 test.txt
+
+=> Check again:
+
+ls -l test.txt
+
+Example:
+
+-rw------- 1 bilal bilal 0 Sep 8 10:00 test.txt
+
+What does 600 mean?
+Owner → Read + Write
+Group → No permission
+Others → No permission
+
+The kernel enforces these permissions when a process tries to access the file.
+
+=> Simple example
+
+Suppose another user tries to read the file.
+
+User
+ ↓
+cat test.txt
+ ↓
+Kernel checks permissions
+ ↓
+Access allowed or denied
+
+=> Remember
+
+Security = Controlling who can access system resources and what they can do.
+
+6. Now understand the complete example
+
+Let's take your example:
+
+cat /etc/hosts
+
+Step 1: You type the command
+cat /etc/hosts
+
+You are using the shell.
+
+You → Bash
+
+Bash → cat
+
+cat is a user-space program.
+
+Step 3: cat asks the kernel to open the file
+cat → System Call → Kernel
+
+The request is something like:
+
+"Please open /etc/hosts."
+
+Step 4: Kernel checks access
+
+The kernel checks whether the process is allowed to access the file.
+
+Kernel → Permission Check
+
+Step 5: Kernel accesses the file system
+Kernel → File System
+
+The file system knows how files are organized on storage.
+
+Step 6: Kernel gets the data
+Storage → Kernel
+
+The data may come from disk or from memory cache.
+
+Step 7: Data is returned to cat
+Kernel → cat
+
+Step 8: cat displays the data
+cat → Screen
+
+=> One more example: Running a Python script
+
+Suppose you run:
+
+python3 script.py
+
+What happens?
+
+You
+ ↓
+Bash
+ ↓
+Python Interpreter
+ ↓
+System Calls
+ ↓
+Linux Kernel
+ ↓
+CPU / RAM / Files / Network
+
+The Python interpreter may ask the kernel to:
+
+Read the script file
+Allocate memory
+Use CPU
+Open another file
+Create a network connection
+
+=> Example
+
+Your Python script contains:
+
+print("Hello")
+
+The Python interpreter runs the instruction.
+
+But if it needs to read a file:
+
+open("test.txt")
+
+It uses the operating system's services to access the file.
+
+7. User Space vs Kernel Space
+
+This is another important part of kernel architecture.
+
+User Space
+
+This is where normal applications run.
+
+Examples:
+
+Firefox
+Bash
+Python
+cat
+ls
+Kernel Space
+
+This is where the kernel runs.
+
+Process Management
+Memory Management
+File System
+Network Stack
+Device Drivers
+
+=> Diagram 
+
+┌─────────────────────────────┐
+│         USER SPACE          │
+│                             │
+│  Firefox | Bash | Python    │
+│  cat | ls | Other Programs  │
+│                             │
+└──────────────┬──────────────┘
+               │
+          System Calls
+               │
+┌──────────────▼──────────────┐
+│        KERNEL SPACE         │
+│                             │
+│  Process Management         │
+│  Memory Management           │
+│  File System                 │
+│  Network Management          │
+│  Device Drivers              │
+│  Security                    │
+│                             │
+└──────────────┬──────────────┘
+               │
+          HARDWARE
+
+=> But why these spaces are separated with each other?
+
+a) Suppose you are running:
+
+Firefox
+
+Firefox has a bug.
+
+If Firefox could directly access kernel memory, it could accidentally or intentionally change important kernel data.
+
+Linux says:
+
+You are an ordinary application. You cannot directly touch my memory. Ask me through a controlled interface.
+
+b) Application should not directly control the disk
+
+Imagine Python says:
+
+"Write these bytes directly to the disk controller!"
+
+If every application could do that, one bad application could corrupt the entire disk.
+
+Instead:
+
+Python
+   ↓
+open()/write()
+   ↓
+Kernel
+   ↓
+File system
+   ↓
+Disk driver
+   ↓
+Disk
+
+c) Application should not access another process's private memory
+
+Suppose you have:
+
+Process A → Firefox
+Process B → Banking application
+
+Firefox should not be able to simply read:
+
+Process B's memory
+
+because that memory might contain sensitive information.
+
+Linux keeps their memory spaces separated:
+
+RAM
+┌──────────────────────┐
+│ Firefox memory      │ ← Firefox can access
+├──────────────────────┤
+│ Banking app memory  │ ← Firefox cannot directly access
+├──────────────────────┤
+│ Kernel memory       │ ← Firefox cannot directly access
+└──────────────────────┘
+
+This is called process isolation.
+
+=> So what does "controlled access" mean?
+
+It means:
+
+Applications cannot directly do everything they want. They must ask the kernel to perform operations for them.
+
+For example, when Python wants to read a file:
+
+Python
+  │
+  │ "Please open this file"
+  ↓
+Kernel
+  │
+  │ checks permissions
+  │
+  ↓
+File system / Disk
+
+Python doesn't need to know how the disk controller works.
+
+The kernel handles that complicated and sensitive part.
+
+=> Simple real-life example
+
+Think of a bank:
+
+You → Bank counter → Bank system → Money
+
+You don't enter the bank's server room and directly modify the database.
+
+The counter is a controlled interface.
+
+Similarly:
+
+Application → System Call → Kernel → Hardware
+
+The system call is like the counter.
+
+That's why Linux separates User Space and Kernel Space: to prevent applications from directly damaging the operating system, other applications, or hardware, while still allowing them to request the services they need.
+

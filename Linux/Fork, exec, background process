@@ -1,363 +1,130 @@
 1. What does fork mean?
 
-This is the most important part.
+fork() — Create a child process
+Simple meaning
 
-fork() is a Linux system call used to create a new process.
+Imagine you are a parent process. You create a child process.
 
-A system call is a way for a program to ask the Linux kernel to perform an operation.
+Parent process
+      |
+    fork()
+      |
+ ┌────┴────┐
+Parent   Child
+Practical
 
-Think of fork() like:
+Open Ubuntu terminal and run:
 
-"Linux, please create another process for me."
+sleep 100 &
+
+Example output:
+
+[1] 2500
+
+Now check the process:
+
+ps -o pid,ppid,cmd -C sleep
 
 Example:
 
-Parent Process
-      |
-      | fork()
-      ↓
-Linux creates another process
-      |
-      ├── Parent Process
-      |
-      └── Child Process
+  PID  PPID CMD
+ 2500  2000 sleep 100
+Understand
+PID 2500  → sleep process
+PPID 2000 → Parent process
 
-=> Simple family analogy
+The sleep process was started by another process.
 
-Imagine a parent makes a copy of itself.
+This is the same parent-child process relationship that fork() creates.
 
-Before fork:
+Remember: fork() = Create a child process.
 
-Parent
+2. First, understand the main concept
 
-After fork:
+Imagine you open Ubuntu and see this:
 
-Parent
-  |
-  └── Child
-
-The child is a new process.
-
-It has its own process ID (PID).
-
-2. Does fork() create a completely different program?
-
-Not exactly.
-
-The child initially gets a copy of the parent's process state.
-
-For a beginner, think:
-
-The child starts as a copy of the parent, but becomes a separate process.
-
-For example:
-
-Parent PID = 1000
-Child PID  = 1001
-
-They are separate processes.
-
-The child can then do different work.
-
-3. Very simple fork() example
-
-Imagine this C program:
-
-#include <stdio.h>
-#include <unistd.h>
-
-int main() {
-    fork();
-
-    printf("Hello\n");
-
-    return 0;
-}
-
-What happens?
-
-Before fork():
-
-One process
-
-After fork():
-
-Two processes
-
-Both continue from the next line.
-
-So the output may be:
-
-Hello
-Hello
-
-Why twice?
-
-Because both the parent and child execute:
-
-printf("Hello\n");
-Important
-
-fork() does not mean:
-
-"Run the same program twice from the beginning."
-
-It means:
-
-"Create a child process, and both processes continue from the point after fork()."
-
-4. What is exec()?
-
-You don't need to go deep yet.
-
-Just remember:
-
-fork() → Create a new process.
-exec() → Replace the child process with another program.
-
-5. What happens when you type ls?
-
-Let's follow the complete flow.
-
-You type:
-
-ls
-
-Step 1: You type the command
-You
- ↓
 Terminal
+   |
+   └── Bash shell
+          |
+          └── sleep 100
 
-Step 2: Terminal sends your input to Bash
-Terminal
- ↓
-Bash
+Here:
 
-Step 3: Bash understands the command
+Terminal = The window where you type commands.
+Bash = The program that reads and executes your commands.
+sleep 100 = A process that waits for 100 seconds.
+PID = Process ID, a unique number given to a running process.
+PPID = Parent Process ID, the PID of the process that started it.
 
-Bash sees:
+=> Simple example
+Bash starts sleep
+       |
+       v
+Bash = Parent
+sleep = Child
 
-ls
+This is the basic parent-child process concept.
 
-and understands that you want to list files.
+2. What is sleep 100?
 
-Step 4: Bash starts the command
+sleep is a Linux command that waits for a specified amount of time.
 
-Simplified:
+sleep 100
 
-Bash
-  |
-  | fork()
-  ↓
-Child process
-  |
-  | exec()
-  ↓
-ls program
+means:
 
-Step 5: ls runs
-ls
- ↓
-Reads directory contents
- ↓
-Displays files
-Step 6: Bash waits for the command to finish
+Wait for 100 seconds, then finish.
 
-Then Bash gives you the prompt again:
+Normally, if you run:
 
-bilal@ubuntu:~$
+sleep 100
 
-So the complete picture is:
+your terminal waits until the command finishes.
 
-You
- ↓
-Terminal
- ↓
-Bash
- ↓
-fork()
- ↓
-Child process
- ↓
-exec()
- ↓
-ls
- ↓
-Output
- ↓
-Bash prompt returns
+You cannot immediately use that same shell for another command.
 
-3. What happens with a background command?
+Example
+sleep 100
 
-Now try:
+Your terminal appears to be waiting.
 
+After 100 seconds:
+
+Command finishes
+Shell becomes ready
+
+What does & mean?
 sleep 100 &
 
 The & means:
 
-"Run this command in the background."
+Run this command in the background.
 
-Example:
-
-Bash
-  |
-  └── sleep 100
-
-Bash does not wait for sleep to finish.
-
-You immediately get the prompt back.
-
-bilal@ubuntu:~$
-
-You can run another command:
-
-ls
-
-So:
+So instead of waiting:
 
 Bash
-  |
-  ├── sleep 100
-  |
-  └── ls
+ |
+ └── sleep 100
+       |
+       └── Bash is waiting
 
-This is a very practical example of child processes.
+with &:
 
-4. How can I see parent and child processes?
-
-Use:
-
-ps
-
-Example:
-
-    PID TTY          TIME CMD
-   1200 pts/0    00:00:00 bash
-   1250 pts/0    00:00:00 ps
-
-Here:
-
-PID = Process ID
-CMD = Command
-
-But ps alone may not clearly show the parent-child relationship.
-
-Use:
-
-ps --forest
-
-Example:
-
-    PID TTY          TIME CMD
-   1200 pts/0    00:00:00 bash
-   1300 pts/0    00:00:00  \_ sleep
-
-The tree-like structure helps you understand the relationship.
-
-Another useful command:
-
-pstree
-
-Example:
-
-systemd
-  └─bash
-      └─sleep
-
-5. What is PID?
-
-PID = Process ID
-
-Every running process has a unique ID.
-
-Example:
-
-Bash → PID 1200
-sleep → PID 1300
-
-Check your Bash PID:
-
-echo $$
-
-Example:
-
-1200
-
-$$ means:
-
-"PID of my current shell."
-
-6. What is PPID?
-
-PPID = Parent Process ID
-
-It tells you the PID of the process that started your process.
-
-Example:
-
-Bash PID = 1200
-Bash PPID = 1100
-
-Check:
-
-ps -o pid,ppid,cmd
-
-Example output:
-
-    PID    PPID CMD
-   1200    1100 bash
-   1300    1200 sleep 100
-
-This means:
-
-PID 1100
-   |
-   └── PID 1200 bash
-          |
-          └── PID 1300 sleep
-
-So:
-
-sleep's PPID = Bash's PID
-
-7. Practical lab for your Ubuntu VM
-
-Let's do a small lab.
-
-Step 1 — Open Ubuntu Terminal
-
-Step 2 — Check your shell
-echo $SHELL
-
-Step 3 — Check your current shell PID
-echo $$
-
-Step 4 — Run a background process
+Bash
+ |
+ └── sleep 100
+       |
+       └── Bash is free to accept more commands
+Example
 sleep 100 &
+echo "Hello"
 
-You may see:
+Output:
 
-[1] 1450
+[1] 5454
+Hello
 
-Here:
+The shell starts sleep and immediately gives you the prompt back.
 
-1450 = PID of the background process
-Step 5 — Check the process
-ps -f
-
-You may see something like:
-
-UID   PID  PPID  CMD
-bilal 1200 1100  bash
-bilal 1450 1200  sleep 100
-
-Step 6 — Understand the relationship
-Bash
-  |
-  └── sleep 100
-Step 7 — Stop the process
-kill 1450
-
-Replace 1450 with the actual PID shown on your system.
-
-=> A child process is a process created by a parent process. In Linux, a shell commonly uses fork() to create a child process and exec() to run a command in that child process.
+You can continue working.

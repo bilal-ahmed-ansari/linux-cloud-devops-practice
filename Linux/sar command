@@ -101,3 +101,92 @@ sudo systemctl enable --now sysstat
 => Now try:
 
 sar -u
+
+7. You may see this directory:
+
+/var/log/sa
+
+This is commonly used by sysstat, a Linux system monitoring package.
+
+It stores historical performance data.
+
+Think:
+
+/var/log/sa = A place where Linux performance statistics are stored.
+
+For example:
+
+CPU usage
+Memory usage
+Disk activity
+Network activity
+System load
+
+These statistics are useful when troubleshooting.
+
+8. Why is /var/log/sa useful?
+
+Suppose a server became slow yesterday.
+
+You were not watching it at that exact time.
+
+How can you investigate?
+
+Historical monitoring data can help.
+
+For example:
+
+Yesterday at 10:00 AM
+CPU usage was high
+
+or:
+
+Yesterday at 11:00 AM
+Memory usage increased
+
+This helps you understand what happened.
+
+9. What is sar?
+
+The command commonly used to read these statistics is:
+
+sar
+
+SAR = System Activity Report
+
+It is part of the sysstat package.
+
+You can install it on Ubuntu:
+
+sudo apt update
+sudo apt install sysstat
+
+Then check:
+
+sar
+
+You may see CPU statistics.
+
+10. What is stored in /var/log/sa?
+
+You may see files such as:
+
+sa08
+sa09
+sa10
+
+These are commonly named using the day of the month.
+
+For example:
+
+/var/log/sa/sa08
+
+may contain activity data for the 8th day of the month.
+
+And:
+
+/var/log/sa/sa09
+
+may contain activity data for the 9th.
+
+

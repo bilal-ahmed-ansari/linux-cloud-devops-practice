@@ -1,0 +1,109 @@
+1. What does &1 mean?
+
+First, understand file descriptors.
+
+Linux has three standard places where a program sends or receives data:
+
+Number	    Name	  Simple meaning
+0	          stdin	  Input
+1	          stdout	Normal output
+2	          stderr	Error output
+
+=> For example:
+
+ls
+
+Normal output goes to stdout (1).
+
+If you run:
+
+ls /wrong_directory
+
+the error goes to stderr (2).
+
+=> For example:
+
+command > output.log 2>&1
+
+Let's break it down:
+
+command > output.log
+
+means:
+
+Send normal output to output.log.
+
+Then:
+
+2>&1
+
+means:
+
+Send error output to the same place as normal output.
+
+So both go into the file.
+
+Normal output ──┐
+                ├── output.log
+Error output ───┘
+Example
+ls /etc /wrong_directory > output.log 2>&1
+
+Now check:
+
+cat output.log
+
+You will see:
+
+Output from /etc
+Error for /wrong_directory
+
+Both are saved in the same file.
+
+2. Practical lab
+
+Run:
+
+ls /etc /wrong_directory > output.log 2>&1
+
+Then:
+
+cat output.log
+
+You should see both normal output and an error message.
+
+Now try:
+
+ls /etc /wrong_directory > output.log
+
+This time, only normal output goes into the file.
+
+The error may still appear on the terminal.
+
+Why?
+
+Because you did not redirect stderr.
+
+3. Let's understand 2>&1
+
+Correct:   2>&1
+Incorrect: 2&1
+
+Why?
+
+Because:
+
+2 = stderr
+> = redirection
+&1 = file descriptor 1
+
+So:
+
+2>&1
+
+means:
+
+Redirect stderr to stdout.
+
+
+

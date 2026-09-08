@@ -348,3 +348,83 @@ Your Bash shell was started by another process whose PID is 4403.
 => CMD = /usr/bin/bash
 
 This tells you that the process is Bash.
+
+10. What is exec()?
+
+exec() is a concept in Linux process management.
+
+Its job is:
+
+Replace the current process with another program.
+
+Imagine:
+
+Before exec:
+Bash
+  |
+  └── Process A
+
+After exec:
+Process A → New Program
+
+The important point is:
+
+The process does not create a new PID. It becomes the new program.
+
+11. fork() vs exec()
+
+| Concept             | What happens?                                              |
+| ------------------- | ---------------------------------------------------------- |
+| `fork()`            | Creates a new process                                      |
+| `exec()`            | Replaces the current process with another program          |
+| `fork()` + `exec()` | Creates a new process, then runs another program inside it |
+
+Simple example
+fork()
+  |
+  ├── Parent
+  |
+  └── Child
+
+Child calls exec()
+  |
+  └── Child becomes another program
+
+12. Lab Explaination 
+
+Step 1: Open a new terminal
+
+Run:
+
+echo $$
+
+Example:
+
+4430
+
+This is your current Bash PID.
+
+Step 2: Check the shell
+ps -p $$ -o pid,ppid,cmd
+
+Example:
+
+PID    PPID CMD
+4430   4403 /usr/bin/bash
+
+Meaning:
+
+PID = 4430
+Program = Bash
+
+Step 3: Replace Bash with sleep
+
+Run:
+
+exec sleep 100
+
+Now:
+
+Bash → sleep
+
+The shell is no longer running as Bash.

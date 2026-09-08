@@ -19,6 +19,37 @@ Think:
 Program = Instructions stored on disk.
 Process = That program currently running.
 
+=> In other words, a process is a running program.
+
+Examples:
+
+bash
+sleep
+ps
+ls
+
+Each running program has a PID.
+
+Example
+
+When you run:
+
+sleep 100 &
+
+Linux creates a process:
+
+PID = 5454
+
+When you run:
+
+ps
+
+Linux also runs ps as a process.
+
+So:
+
+A process is simply a running program.
+
 2. What is a Parent Process?
 
 A parent process is a process that starts another process.

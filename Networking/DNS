@@ -222,7 +222,7 @@ So the meaning is:
 
 --------------
 
-First, forget DNS for a moment
+1. First, forget DNS for a moment
 
 Imagine you are in your house and you want to ask a question.
 
@@ -241,3 +241,348 @@ You → Brother → Father
 Both can give you the answer.
 
 Now DNS works similarly.
+
+2. What happens when Ubuntu needs an IP address?
+
+Suppose you type:
+
+ping google.com
+
+Ubuntu needs to know:
+
+"What is the IP address of google.com?"
+
+Your application does not necessarily ask Google's DNS server directly.
+
+Instead, on many Ubuntu systems, the flow is:
+
+Your application
+      ↓
+127.0.0.53
+      ↓
+systemd-resolved
+      ↓
+Actual DNS server
+      ↓
+IP address
+
+127.0.0.53 is like the local "brother" in this example.
+
+3. What exactly is 127.0.0.53?
+
+Let's break it into two parts.
+
+127.0.0.1
+
+This means:
+
+This computer itself.
+
+For example:
+
+127.0.0.1 → My own computer
+127.0.0.53
+
+This is also a local address.
+
+It means:
+
+"A service running on my own computer."
+
+In Ubuntu, that service is commonly systemd-resolved.
+
+So:
+
+127.0.0.53
+      ↓
+A DNS service running on your Ubuntu
+
+It is not Google's IP address.
+
+It is not your VM's network IP address.
+
+It is a local address used for DNS.
+
+4. Why does Ubuntu use this local address?
+
+Because Ubuntu can use a local DNS service to manage DNS requests.
+
+Imagine you have three applications:
+
+Firefox
+   ↓
+Terminal
+   ↓
+Another application
+
+All of them need DNS.
+
+Instead of each application managing DNS separately, they can ask the local DNS service.
+
+Firefox ──────┐
+Terminal ─────┼──→ 127.0.0.53
+Application ──┘          ↓
+                   DNS service
+                         ↓
+                  Actual DNS server
+
+This is the basic idea.
+
+5. What is systemd-resolved?
+
+systemd-resolved is a Linux service that helps with DNS.
+
+You can think of it as:
+
+A local DNS helper.
+
+Its job can include:
+
+Receiving DNS questions from applications
+Sending those questions to an actual DNS server
+Receiving the answer
+Returning the answer to the application
+Caching DNS answers
+
+So:
+
+Application
+     ↓
+systemd-resolved
+     ↓
+Actual DNS server
+
+----------------------
+
+10. Let's use your Ubuntu example
+
+You run:
+
+cat /etc/resolv.conf
+
+And see:
+
+nameserver 127.0.0.53
+
+This means:
+
+"For DNS questions, use the DNS service available at 127.0.0.53."
+
+It does not mean:
+
+"Google's DNS server is 127.0.0.53."
+
+It means:
+
+"Ask the local DNS service."
+
+11. But where is the actual DNS server?
+
+This is the important part.
+
+Suppose your Ubuntu is configured to use Google's DNS:
+
+8.8.8.8
+
+The flow may look like:
+
+You type google.com
+        ↓
+Ubuntu application
+        ↓
+127.0.0.53
+        ↓
+systemd-resolved
+        ↓
+8.8.8.8
+        ↓
+Google's DNS answer
+        ↓
+IP address returned
+
+So:
+
+127.0.0.53 = Local DNS service
+8.8.8.8     = Actual DNS server
+
+These are two different things.
+
+11. Very simple real-life example
+
+Imagine:
+
+You: "What is Google's address?"
+
+You ask your local helper:
+
+127.0.0.53: "Please find Google's address."
+
+The helper asks the actual DNS server:
+
+8.8.8.8: "What is Google's address?"
+
+The actual DNS server replies:
+
+8.8.8.8: "Here is the IP address."
+
+The helper gives the answer back to you.
+
+You ← 127.0.0.53 ← 8.8.8.8
+
+That's it.
+
+12. Let's see it in your Ubuntu
+
+Run:
+
+cat /etc/resolv.conf
+
+If you see:
+
+nameserver 127.0.0.53
+
+Then run:
+
+resolvectl status
+
+You may see something like:
+
+DNS Servers: 192.168.1.1
+
+or:
+
+DNS Servers: 8.8.8.8
+
+That is the actual DNS server Ubuntu is using.
+
+So you may have:
+
+/etc/resolv.conf
+        ↓
+127.0.0.53
+        ↓
+Actual DNS server: 192.168.1.1
+
+13. What is DNS caching?
+
+Suppose you ask:
+
+google.com → What is your IP?
+
+DNS finds the answer.
+
+Your computer may remember that answer for some time.
+
+Next time:
+
+google.com → "I already know the IP."
+
+This is called DNS caching.
+
+Why caching?
+
+Because it avoids asking the DNS server again and again.
+
+First request:
+Ubuntu → DNS server → IP
+
+Second request:
+Ubuntu → Cached answer
+
+14. What is a DNS query?
+
+A query is simply a question.
+
+Example:
+
+"What is the IP address of google.com?"
+
+That is a DNS query.
+
+=> Meaning:
+
+| Word       | Meaning                             |
+| ---------- | ----------------------------------- |
+| Query      | Ask a question                      |
+| Resolve    | Find the answer                     |
+| DNS server | Computer that answers DNS questions |
+| IP address | Network address                     |
+| Cache      | Remember an answer temporarily      |
+
+15. What is a DNS record?
+
+A DNS record is an entry containing information about a name.
+
+Example:
+
+google.com → 142.250.x.x
+
+That is a DNS record.
+
+The most common record types:
+
+| Record | Meaning                  |
+| ------ | ------------------------ |
+| A      | Name → IPv4 address      |
+| AAAA   | Name → IPv6 address      |
+| CNAME  | Name → Another name      |
+| MX     | Mail server              |
+| NS     | Authoritative DNS server |
+
+For now, focus on A record.
+
+A record example
+webserver.example.com → 192.168.1.20
+
+Meaning:
+
+"The IPv4 address of webserver.example.com is 192.168.1.20."
+
+16. What is /etc/hosts?
+
+This is another important Linux file.
+
+/etc/hosts
+
+It can manually map names to IP addresses.
+
+Example:
+
+192.168.1.20   webserver
+
+Meaning:
+
+"When I use the name webserver, use IP 192.168.1.20."
+
+Think of it like a small local phonebook.
+Name       IP
+webserver  192.168.1.20
+dbserver   192.168.1.30
+
+=> DNS vs /etc/hosts
+
+| DNS                          | `/etc/hosts`             |
+| ---------------------------- | ------------------------ |
+| Uses DNS servers             | Local file               |
+| Can contain many records     | You manually add records |
+| Useful for networks/internet | Useful for local testing |
+
+17. DNS vs /etc/hosts — important for Linux admins
+
+Suppose you have:
+
+webserver → 192.168.1.20
+
+You can configure it in /etc/hosts.
+
+Then:
+
+ping webserver
+
+Ubuntu can find the IP from the local file.
+
+No external DNS server is required for that entry.
+
+This is very useful in labs.
+
+

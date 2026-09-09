@@ -1,0 +1,243 @@
+1. What is DNS?
+
+DNS = Domain Name System
+
+Its main job is:
+
+Convert a website name into an IP address.
+
+For example, you type:
+
+google.com
+
+But your computer needs an IP address to communicate with the server.
+
+DNS helps find that IP address.
+
+You type: google.com
+          ↓
+DNS finds the IP address
+          ↓
+Computer connects to that IP
+
+Think of DNS like a phone contact list.
+
+| Phone example              | DNS example                   |
+| -------------------------- | ----------------------------- |
+| You search for "Ahmed"     | You search for `google.com`   |
+| Phone finds Ahmed's number | DNS finds Google's IP address |
+| You call the number        | Computer connects to the IP   |
+
+=> DNS does not download the website. It helps find where the website is.
+
+2. First understand: What is an IP address?
+
+An IP address is an address used to identify a device on a network.
+
+Example:
+
+192.168.1.10
+
+Another example:
+
+8.8.8.8
+
+You can think of it like a house address.
+
+House name: MyHome
+House address: 192.168.1.10
+
+DNS is like asking:
+
+"What is the address of this house?"
+
+3. What does "resolve" mean?
+
+This word is important.
+
+Resolve = Find the IP address for a name.
+
+For example:
+
+google.com → 142.250.x.x
+
+We say:
+
+DNS resolved google.com to an IP address.
+
+In simple English:
+
+Resolve means find the answer.
+
+Another example
+Server name: webserver
+IP address: 192.168.1.20
+
+If someone asks:
+
+"What is the IP address of webserver?"
+
+And your computer finds it, that is name resolution.
+
+Name → IP address
+
+4. Why do we need DNS?
+
+Imagine you want to visit a website.
+
+Without DNS, you would need to remember IP addresses:
+
+142.250.x.x
+
+But names are easier:
+
+google.com
+
+DNS makes this possible.
+
+Without DNS
+You → Remember IP → Connect
+With DNS
+You → Type website name → DNS finds IP → Connect
+
+5. How DNS works — simple example
+
+Suppose you type:
+
+www.example.com
+
+Your Ubuntu computer does something like this:
+
+1. You type www.example.com
+              ↓
+2. Ubuntu asks: "What is the IP address?"
+              ↓
+3. DNS server receives the question
+              ↓
+4. DNS server finds the IP address
+              ↓
+5. DNS server sends the answer
+              ↓
+6. Ubuntu connects to that IP
+
+Example answer:
+
+www.example.com → 93.184.216.34
+
+The IP above is only an example.
+
+6. What is a DNS server?
+
+A DNS server is a computer that answers DNS questions.
+
+Example:
+
+Your Ubuntu
+     ↓
+DNS server
+     ↓
+"google.com = this IP address"
+
+You can think of it as:
+
+A DNS server is a phone directory for computer names.
+
+Common public DNS servers:
+
+| DNS server     | IP        |
+| -------------- | --------- |
+| Google DNS     | `8.8.8.8` |
+| Cloudflare DNS | `1.1.1.1` |
+
+Your Ubuntu may also use a DNS server provided by your router, company network, or ISP.
+
+7. What happens when you type a website?
+
+Let's understand the complete flow.
+
+You type google.com
+        ↓
+Ubuntu checks its local information
+        ↓
+If it does not know the IP,
+it asks a DNS server
+        ↓
+DNS server replies with the IP
+        ↓
+Ubuntu connects to the website
+
+=> Important
+
+DNS is not the same as internet.
+
+DNS helps answer:
+
+"Where is this website?"
+
+The actual website connection happens afterward.
+
+8. What is /etc/resolv.conf?
+
+This is one of the most important Linux DNS files.
+
+/etc/resolv.conf
+
+It contains DNS configuration.
+
+For example:
+
+nameserver 192.168.1.1
+
+This means:
+
+"Use 192.168.1.1 as the DNS server."
+
+Another example:
+
+nameserver 8.8.8.8
+
+Means:
+
+"Ask Google's DNS server."
+
+=> Remember
+/etc/resolv.conf
+        ↓
+Tells Ubuntu where to ask DNS questions.
+
+9. What is nameserver?
+
+Example:
+
+nameserver 8.8.8.8
+
+Break it down:
+
+nameserver = DNS server
+8.8.8.8    = IP address of that DNS server
+
+So the meaning is:
+
+"When you need to find a website's IP, ask 8.8.8.8."
+
+--------------
+
+First, forget DNS for a moment
+
+Imagine you are in your house and you want to ask a question.
+
+You have two options:
+
+Option A: Ask your father directly.
+
+Option B: Ask your brother, and your brother asks your father.
+
+You → Father
+
+or
+
+You → Brother → Father
+
+Both can give you the answer.
+
+Now DNS works similarly.

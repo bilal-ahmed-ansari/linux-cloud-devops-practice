@@ -1,0 +1,242 @@
+i) You run a command:
+
+sleep 60
+
+This command waits for 60 seconds.
+
+While it is running, your terminal is busy. You cannot normally type another command in that same terminal.
+
+This is called a foreground process.
+
+=> Foreground = working directly in your terminal
+Terminal
+   |
+   └── sleep 60
+          |
+          └── Terminal is busy
+
+ii) Now imagine you want the command to continue running, but you also want to use the terminal.
+
+That is where background processes are useful.
+
+=> Background = command runs while you continue using the terminal
+
+Terminal
+   |
+   ├── sleep 60  → Background
+   |
+   └── You can type other commands
+
+Important: Background does not mean the command is stopped. It means the command is running without occupying your terminal.
+
+1. What is &?
+
+The & symbol tells Linux:
+
+"Start this command in the background."
+
+Example:
+
+sleep 60 &
+
+You may see something like:
+
+[1] 12345
+
+Here:
+
+[1] = Job number
+12345 = Process ID (PID)
+
+Now your terminal is free.
+
+You can run:
+
+pwd
+ls
+date
+
+The sleep command is still running in the background.
+
+Remember
+sleep 60
+
+➡️ Foreground
+
+sleep 60 &
+
+➡️ Background
+
+2. What is jobs?
+
+The jobs command shows the background jobs of your current terminal.
+
+Example:
+
+sleep 100 &
+
+Then:
+
+jobs
+
+Output:
+
+[1]+  Running                 sleep 100 &
+
+Meaning:
+
+| Part          | Meaning                       |
+| ------------- | ----------------------------- |
+| `[1]`         | Job number                    |
+| `+`           | Current/default job           |
+| `Running`     | Job is running                |
+
+=> Very important
+
+jobs shows shell jobs, not every process running on the Linux system.
+
+For example:
+
+ps aux
+
+shows processes across the system.
+
+But:
+
+jobs
+
+shows jobs started from your current shell.
+
+What is fg?
+
+fg means:
+
+Foreground
+
+It brings a background job back to the foreground.
+
+Example
+
+Start a background job:
+
+sleep 100 &
+
+Check jobs:
+
+jobs
+
+Output:
+
+[1]+  Running                 sleep 100 &
+
+Now run:
+
+fg
+
+The job comes back to the foreground.
+
+sleep 100
+
+Your terminal becomes busy again.
+
+Simple meaning
+
+Background job
+      |
+      | fg
+      ↓
+Foreground job
+| `sleep 100 &` | Command running in background |
+
+3. What is bg?
+
+bg means:
+
+Background
+
+It resumes a stopped job and makes it run in the background.
+
+This is slightly different from fg.
+
+4. Practical Lab: Stop → Background → Foreground
+
+We will use sleep.
+
+Step 1: Start a command
+sleep 100
+
+The terminal is busy.
+
+Step 2: Press Ctrl + Z
+
+This is very important.
+
+Ctrl + Z
+
+It stops (suspends) the foreground job.
+
+You may see:
+
+^Z
+[1]+  Stopped                 sleep 100
+
+Now the command is not running.
+
+It is stopped.
+
+Think of it like this
+sleep 100
+    |
+    | Ctrl + Z
+    ↓
+Stopped
+
+Step 3: Check the job
+jobs
+
+Output:
+
+[1]+  Stopped                 sleep 100
+
+Notice the word:
+
+Stopped
+
+Step 4: Run it in the background
+bg
+
+Output may look like:
+
+[1]+ sleep 100 &
+
+Now check:
+
+jobs
+
+Output:
+
+[1]+  Running                 sleep 100 &
+
+The command is running again, but in the background.
+
+=> What happened?
+Foreground
+    |
+    | Ctrl + Z
+    ↓
+Stopped
+    |
+    | bg
+    ↓
+Background
+
+Step 5: Bring it back to foreground
+fg
+
+Now the command is again running in the foreground.
+
+Background
+    |
+    | fg
+    ↓
+Foreground

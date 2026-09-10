@@ -1,0 +1,12 @@
+| Command                             | Meaning                  |
+| ----------------------------------- | ------------------------ |
+| `hostname`                          | Show computer name       |
+| `hostname -I`                       | Show IP address          |
+| `cat /etc/resolv.conf`              | Show DNS configuration   |
+| `cat /etc/hosts`                    | Show local name mappings |
+| `getent hosts google.com`           | Resolve a hostname       |
+| `nslookup google.com`               | Query DNS                |
+| `dig google.com`                    | Detailed DNS query       |
+| `dig +short google.com`             | Short DNS answer         |
+| `systemctl status systemd-resolved` | Check DNS service        |
+| `resolvectl status`                 | Show DNS status          |

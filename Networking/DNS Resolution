@@ -1,0 +1,4 @@
+DNS resolution is the process of converting a hostname into an IP address so that a computer can connect to the correct server.
+
+Example
+webserver.example.com → 192.168.1.20

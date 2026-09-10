@@ -533,3 +533,25 @@ So:
 means:
 
 "This name refers to my own computer."
+
+Note:- Important: /etc/hosts is not a DNS server
+
+This is a common beginner confusion.
+
+When you add:
+
+127.0.0.1   myserver
+
+You are not creating a DNS server.
+
+You are only telling your local computer:
+
+"If someone asks for this name, use this IP."
+
+=> Difference
+/etc/hosts
+    ↓
+Local name mapping
+DNS server
+    ↓
+Answers DNS queries for many computers

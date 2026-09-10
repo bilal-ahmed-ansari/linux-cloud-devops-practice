@@ -1,0 +1,29 @@
+You can troubleshoot:
+
+getent hosts appserver
+
+If it fails, check:
+
+cat /etc/resolv.conf
+
+Then:
+
+resolvectl status
+
+Then:
+
+dig appserver
+
+Then check network connectivity.
+
+=> Simple troubleshooting flow
+
+Hostname not working
+        ↓
+Can the name resolve?
+        ↓
+getent hosts appserver
+        ↓
+If no → Check DNS configuration
+        ↓
+If yes → Check network/service

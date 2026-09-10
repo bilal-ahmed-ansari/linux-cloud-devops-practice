@@ -1,0 +1,34 @@
+Suppose you run:
+
+ping google.com
+
+And get:
+
+Temporary failure in name resolution
+
+This means:
+
+Ubuntu could not find the IP address for google.com.
+
+It does not automatically mean the internet is completely down.
+
+Maybe:
+
+DNS server is not reachable
+DNS configuration is wrong
+Network is not working
+DNS service has a problem
+Troubleshooting approach
+
+First test the IP:
+
+ping -c 3 8.8.8.8
+
+Then test the name:
+
+ping -c 3 google.com
+Understand
+Ping IP works
+Ping name fails
+        ↓
+Possible DNS problem

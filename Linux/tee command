@@ -1,0 +1,41 @@
+1. What is tee?
+
+tee is used when you want to:
+
+see command output on the screen AND save the same output into a file.
+
+Think of it like a T-junction:
+
+                 ┌──> Screen
+Command Output ──┤
+                 └──> File
+
+Normally:
+
+ls -l
+
+shows output only on the screen.
+
+With tee:
+
+ls -l | tee files.txt
+
+you get the output:
+
+on the screen
+saved in files.txt
+
+Lab 1: Basic tee
+
+Run:
+
+mkdir ~/tee-lab
+cd ~/tee-lab
+
+Now:
+
+ls -l | tee files.txt
+
+Check the file:
+
+cat files.txt

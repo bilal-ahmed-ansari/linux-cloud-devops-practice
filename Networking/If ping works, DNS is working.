@@ -1,0 +1,19 @@
+Not always.
+
+For example:
+
+ping 8.8.8.8
+
+This uses an IP address directly.
+
+DNS is not needed.
+
+But:
+
+ping google.com
+
+This needs DNS to find the IP first.
+
+=> Remember
+ping IP address → DNS not required
+ping hostname   → DNS may be required

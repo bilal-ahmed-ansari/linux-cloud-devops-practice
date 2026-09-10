@@ -1,0 +1,535 @@
+Lab 1: Check your hostname
+
+Run:
+
+hostname
+
+Example output:
+
+bilal-ahmed-VMware-Virtual-Platform
+
+This is your computer's name.
+
+Now run:
+
+hostname -I
+
+Example:
+
+192.168.1.105
+
+This shows your VM's IP address.
+
+=> Remember
+hostname = Computer name
+hostname -I = Computer IP address
+
+Lab 2: Check DNS configuration
+
+Run:
+
+cat /etc/resolv.conf
+
+You may see:
+
+nameserver 127.0.0.53
+
+or another IP.
+
+Understand the output
+
+If you see:
+
+nameserver 127.0.0.53
+
+It means:
+
+Ubuntu is using a local DNS listener.
+
+If you see:
+
+nameserver 8.8.8.8
+
+It means:
+
+Ubuntu is configured to ask Google's DNS server.
+
+Lab 3: Resolve a website name
+
+Run:
+
+getent hosts google.com
+
+Example output:
+
+142.250.x.x google.com
+What happened?
+
+You asked:
+
+"What is the IP address of google.com?"
+
+Ubuntu answered.
+
+That is DNS resolution.
+
+Remember this command
+getent hosts google.com
+
+Means:
+
+Find the IP address of google.com.
+
+Lab 4: Use nslookup
+
+bilal-ahmed@bilal-ahmed-VMware-Virtual-Platform:~$ sudo apt install dnsutils
+[sudo: authenticate] Password:                      
+Note, selecting 'bind9-dnsutils' instead of 'dnsutils'
+bind9-dnsutils is already the newest version (1:9.20.24-1ubuntu0.3).
+bind9-dnsutils set to manually installed.
+Summary:                    
+  Upgrading: 0, Installing: 0, Removing: 0, Not Upgrading: 9
+bilal-ahmed@bilal-ahmed-VMware-Virtual-Platform:~$ nslookup google.com
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+Name:	google.com
+Address: 192.178.134.100
+Name:	google.com
+Address: 192.178.134.101
+Name:	google.com
+Address: 192.178.134.102
+Name:	google.com
+Address: 192.178.134.138
+Name:	google.com
+Address: 192.178.134.139
+Name:	google.com
+Address: 192.178.134.113
+Name:	google.com
+Address: 2404:6800:4009:808::200e
+
+-----------------------
+
+Explaination:-
+
+1. First command: installing dnsutils
+
+You ran:
+
+sudo apt install dnsutils
+
+Ubuntu replied:
+
+Note, selecting 'bind9-dnsutils' instead of 'dnsutils'
+
+This simply means:
+
+On your version of Ubuntu, the package called dnsutils is provided/handled through bind9-dnsutils.
+
+Then:
+
+bind9-dnsutils is already the newest version
+
+means:
+
+It is already installed on your computer.
+
+So nothing needed to be installed.
+
+This part:
+
+Upgrading: 0, Installing: 0, Removing: 0
+
+confirms that.
+
+So your first part is completely fine. 
+
+2. Now the important part: nslookup google.com
+
+You ran:
+
+nslookup google.com
+
+And got:
+
+Server:         127.0.0.53
+Address:        127.0.0.53#53
+
+This is exactly what we were discussing.
+
+Let's translate it into simple English.
+
+Server: 127.0.0.53
+
+It means:
+
+Your Ubuntu is asking the local DNS service at 127.0.0.53 to resolve google.com.
+
+Remember:
+
+127.0.0.53
+      ↓
+local DNS service
+
+It is running on your own Ubuntu machine.
+
+3. What does #53 mean?
+
+You have:
+
+127.0.0.53#53
+
+The #53 means port 53.
+
+DNS normally uses:
+
+Port 53
+
+So you can read:
+
+127.0.0.53#53
+
+as:
+
+DNS service at 127.0.0.53, using port 53.
+
+For now, just remember:
+
+DNS → port 53
+
+4. Now look at this
+
+You got:
+
+Non-authoritative answer:
+
+Don't worry about this yet.
+
+It sounds complicated, but the simple meaning is:
+
+The DNS server that answered you is not the original/official DNS server responsible for google.com.
+
+It got the answer from somewhere else, or from its cache/forwarding process.
+
+For your beginner DNS learning, you can simply remember:
+
+Non-authoritative answer
+        ↓
+"I can give you the answer,
+but I'm not the official owner of this DNS information."
+
+5. Now the most important part
+
+You asked:
+
+google.com
+
+Your DNS system returned:
+
+Name: google.com
+Address: 192.178.134.100
+Name: google.com
+Address: 192.178.134.101
+...
+
+This means:
+
+google.com → 192.178.134.100
+google.com → 192.178.134.101
+google.com → 192.178.134.102
+...
+
+So Google has multiple IP addresses being returned for the name google.com.
+
+Why multiple?
+
+Because large services such as Google have many servers and locations. DNS can return multiple addresses so clients can connect to an appropriate/available server.
+
+6. You also got this
+2404:6800:4009:808::200e
+
+This is an IPv6 address.
+
+Earlier you saw addresses like:
+
+192.178.134.100
+
+Those are IPv4.
+
+So:
+
+192.178.134.100
+        ↓
+IPv4
+
+and:
+
+2404:6800:4009:808::200e
+        ↓
+IPv6
+
+For now, focus mainly on IPv4.
+
+7. Let's connect everything together
+
+Your command was:
+
+nslookup google.com
+
+What happened internally?
+
+Think of it like this:
+
+             You
+              |
+              | nslookup google.com
+              ↓
+        Your Ubuntu
+              |
+              ↓
+        127.0.0.53
+       Local DNS service
+              |
+              ↓
+       Actual DNS server
+              |
+              ↓
+        "google.com"
+              |
+              ↓
+       IP address(es)
+
+And finally you got:
+
+google.com
+     ↓
+192.178.134.100
+192.178.134.101
+192.178.134.102
+...
+
+That whole process is called DNS Resolution
+
+Resolve = Find the IP address.
+
+=> So when I say:
+
+"nslookup resolved google.com"
+
+I simply mean:
+
+"nslookup found the IP address(es) belonging to google.com."
+
+-----------------------
+
+Lab 5: Use dig
+
+dig is a very useful DNS troubleshooting command.
+
+Run:
+
+dig google.com
+
+You will see a lot of output.
+
+Focus on this part:
+
+;; ANSWER SECTION:
+google.com.    ...    A    142.250.x.x
+
+=> What does this mean?
+google.com → A → 142.250.x.x
+
+Meaning:
+
+The IPv4 address of google.com is that IP.
+
+Lab 6: Check your DNS service
+
+Run:
+
+systemctl status systemd-resolved
+
+If it is running, you may see:
+
+Active: active (running)
+Meaning
+systemd-resolved is running.
+
+=> You can also check:
+
+resolvectl status
+
+This shows DNS information for your network interfaces.
+
+=> In my lab, I run and got the output
+
+bilal-ahmed@bilal-ahmed-VMware-Virtual-Platform:~$ resolvectl status
+Global
+         Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+  resolv.conf mode: stub
+
+Link 2 (ens33)
+    Current Scopes: DNS
+         Protocols: +DefaultRoute -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+Current DNS Server: 192.168.114.2
+       DNS Servers: 192.168.114.2
+        DNS Domain: localdomain
+     Default Route: yes
+
+-----------------------
+
+Explaination:-
+
+1. The most important thing
+
+You have two different addresses here:
+
+127.0.0.53
+192.168.114.2
+
+They have different jobs.
+
+127.0.0.53
+
+This is your local DNS listener.
+
+192.168.114.2
+
+This is the actual DNS server your Ubuntu is using
+
+So your DNS flow is approximately:
+
+Ubuntu application
+       ↓
+127.0.0.53
+       ↓
+192.168.114.2
+       ↓
+DNS answer
+
+That's the main thing I want you to understand.
+
+=> So 127.0.0.53 is the local entry point, while 192.168.114.2 is the DNS server that actually handles the query.
+
+2. What does resolv.conf mode: stub mean?
+
+You have:
+
+resolv.conf mode: stub
+
+Here, stub basically means:
+
+/etc/resolv.conf is configured to point applications to a local DNS listener.
+
+And that local listener is:
+
+127.0.0.53
+
+=> So:
+
+/etc/resolv.conf
+       ↓
+127.0.0.53
+       ↓
+systemd-resolved
+       ↓
+192.168.114.2
+
+This is why your /etc/resolv.conf probably contains:
+
+nameserver 127.0.0.53
+
+3. What is ens33?
+
+You have:
+
+Link 2 (ens33)
+
+ens33 is the name of your network interface.
+
+Because you're using VMware, your Ubuntu VM has a virtual network adapter.
+
+You can think of it as:
+
+Ubuntu VM
+   |
+   └── ens33
+         |
+         └── Network
+
+You can check it with:
+
+ip addr show ens33
+
+You'll probably see an IP address such as:
+
+192.168.114.xxx
+
+4. What does this mean?
+Current Scopes: DNS
+
+Simple meaning:
+
+DNS is available through this network interface.
+
+Your ens33 interface has DNS configuration.
+
+5. Where did 192.168.114.2 probably come from?
+
+Because you're using VMware, 192.168.114.2 is very likely part of your VMware virtual networking setup.
+
+Your VM has a virtual network.
+
+For example:
+
+VMware virtual network
+
+192.168.114.0/24
+
+192.168.114.1
+192.168.114.2
+192.168.114.xxx
+
+The exact VMware network configuration can vary, but in your case Ubuntu has been given:
+
+DNS server = 192.168.114.2
+
+6. What does Default Route: yes mean?
+
+You have:
+
+Default Route: yes
+
+For DNS purposes, it means:
+
+This network interface is the default interface to use for DNS queries.
+
+------------------
+
+Lab 7: Understand /etc/hosts
+
+Run:
+
+cat /etc/hosts
+
+You may see something like:
+
+127.0.0.1       localhost
+127.0.1.1       your-hostname
+What is 127.0.0.1?
+
+It means:
+
+This computer itself.
+
+It is called localhost.
+
+So:
+
+127.0.0.1 → localhost
+
+means:
+
+"This name refers to my own computer."

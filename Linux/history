@@ -1,0 +1,182 @@
+1. history Command
+
+history shows commands that you previously executed in your shell.
+
+Try:
+
+history
+
+You may see:
+
+  101  pwd
+  102  ls
+  103  cd /tmp
+  104  df -h
+  105  history
+
+The numbers are called history numbers.
+
+=> Why is history useful?
+
+Suppose yesterday you ran a complicated command:
+
+ansible-playbook -i inventory playbook.yml --ask-vault-pass
+
+But today you don't remember the exact command.
+
+You can search your command history instead of typing it again.
+
+=> Lab 1: Basic history
+
+Run:
+
+pwd
+ls
+df -h
+free -h
+uptime
+
+Now:
+
+history
+
+You should see these commands.
+
+=> Lab 2: Show last 10 commands
+history 10
+
+This means:
+
+Show my last 10 commands.
+
+=> Lab 3: Search history using grep
+
+This is one of the most useful ways to deal with history.
+
+For example:
+
+history | grep ansible
+
+You might get:
+
+  250  ansible --version
+  251  ansible all -m ping
+  255  ansible-playbook site.yml
+
+Search for Docker:
+
+history | grep docker
+
+=> Lab 4: Re-run a command using history number
+
+Suppose:
+
+history
+
+shows:
+
+300  df -h
+301  free -h
+302  uptime
+
+You can execute command 300 again:
+
+!300
+
+This runs:
+
+df -h
+
+=> Lab 5: Run the previous command
+
+First you run:
+
+df -h
+
+Then you type:
+
+!!
+
+Linux understands !! as:
+
+“Take the command I just ran and execute it again.”
+
+So:
+
+!!
+
+becomes:
+
+df -h
+
+=> !!
+
+becomes:
+
+df -h
+
+=> Lab 6: Search previous commands interactively
+
+Press:
+
+Ctrl + R
+
+Then type:
+
+ansible
+
+Your shell searches backward through your previous commands.
+
+For example:
+
+(reverse-i-search)`ansible': ansible-playbook -i inventory site.yml
+
+If that's the command you want:
+
+Enter
+
+runs it.
+
+This is probably the most useful history shortcut.
+
+Remember:
+
+Ctrl + R → search command history
+
+=> Lab 7: Clear history
+
+To clear the current shell's history:
+
+history -c
+
+Then:
+
+history
+
+You may see little or no previous history for that shell.
+
+Note:- Important
+
+Linux history isn't just one simple file. Bash keeps history in memory and normally writes it to:
+
+~/.bash_history
+
+Check it:
+
+cat ~/.bash_history
+
+=> Lab 8: Delete one history entry
+
+Suppose:
+
+history
+
+shows:
+
+500  ls
+501  df -h
+502  free -h
+
+You can delete entry 501:
+
+history -d 501

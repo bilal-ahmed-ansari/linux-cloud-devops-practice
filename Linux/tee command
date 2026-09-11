@@ -25,7 +25,7 @@ you get the output:
 on the screen
 saved in files.txt
 
-Lab 1: Basic tee
+=> Lab 1: Basic tee
 
 Run:
 
@@ -39,3 +39,65 @@ ls -l | tee files.txt
 Check the file:
 
 cat files.txt
+
+=> What happened?
+ls -l
+
+generates output.
+
+The | sends that output to:
+
+tee files.txt
+
+tee displays it and writes it to files.txt.
+
+=> Lab 2: Save command output
+
+Try:
+
+df -h | tee disk-usage.txt
+
+Now:
+
+cat disk-usage.txt
+
+This is useful for administrators when you want to capture command output for troubleshooting
+
+=> Lab 3: tee with -a (override and append the file)
+
+With -a
+echo "First line" | tee test.txt
+echo "Second line" | tee -a test.txt
+
+Check:
+
+cat test.txt
+
+Output:
+
+First line
+Second line
+
+=> Lab 4: sudo + tee
+
+This is a very useful real-world situation.
+
+Suppose you want to write something into a file owned by root:
+
+sudo echo "hello" > /etc/test.conf
+
+This can fail because > is handled by your current shell, not by sudo.
+
+Instead:
+
+echo "hello" | sudo tee /etc/test.conf
+
+Now check:
+
+sudo cat /etc/test.conf
+
+For appending:
+
+echo "another line" | sudo tee -a /etc/test.conf
+
+-a means append.

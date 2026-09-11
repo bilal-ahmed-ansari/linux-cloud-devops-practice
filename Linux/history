@@ -244,3 +244,65 @@ history
 You should not find:
 
 echo "Hidden from history"
+
+----------------------
+
+If you want to permanently set HISTCONTROL=ignorespace, you normally put it in your Bash configuration file.
+
+1. Check which shell you are using
+
+Run:
+
+echo $SHELL
+
+If you get:
+
+/bin/bash
+
+then use:
+
+~/.bashrc
+
+2. Open .bashrc
+
+Run:
+
+nano ~/.bashrc
+
+Go to the bottom and add:
+
+export HISTCONTROL=ignorespace
+
+Save:
+
+Ctrl + O
+Enter
+Ctrl + X
+
+3. Apply the change
+
+You don't need to restart the terminal. Run:
+
+source ~/.bashrc
+
+Then check:
+
+echo $HISTCONTROL
+
+You should get:
+
+ignorespace
+
+4. Test it
+
+Run:
+
+echo "This will be saved"
+
+Then:
+
+ echo "This will NOT be saved"
+
+Notice the space before echo in the second command.
+
+Then:

@@ -180,3 +180,67 @@ shows:
 You can delete entry 501:
 
 history -d 501
+
+=> What does HISTCONTROL=ignorespace mean?
+
+It means:
+
+If I put a space before my command, Bash will not save that command in history.
+
+For example, normally:
+
+echo "Hello"
+
+will be saved in history.
+
+But if you type:
+
+ echo "Hello"
+
+Notice the space before echo.
+
+If HISTCONTROL=ignorespace is enabled, Bash will not save that command in history.
+
+
+****** LAB PART *******
+Step 1: Check your setting
+
+Run:
+
+echo $HISTCONTROL
+
+If you get:
+
+ignorespace
+
+then this feature is enabled.
+
+Step 2: Try it
+
+First run:
+
+echo "Normal command"
+
+Then:
+
+ history
+
+You should find:
+
+echo "Normal command"
+
+in the history.
+
+Now run a command with a space before it:
+
+ echo "Hidden from history"
+
+Important: There is a space before echo.
+
+Now run:
+
+history
+
+You should not find:
+
+echo "Hidden from history"

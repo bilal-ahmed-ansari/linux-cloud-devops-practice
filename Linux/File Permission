@@ -1,0 +1,219 @@
+1. Linux permissions answer three questions:
+
+Who can access this file?
+
+There are three main users/categories:
+
+USER     GROUP     OTHERS
+ u        g          o
+
+And three main permissions:
+
+r = read
+w = write
+x = execute
+
+2. Lab 1: Create a file
+mkdir ~/permission-lab
+cd ~/permission-lab
+
+touch test.txt
+ls -l test.txt
+
+You might see:
+
+-rw-r--r-- 1 bilal bilal 0 Sep 10 13:30 test.txt
+
+Let's break this down:
+
+-rw-r--r--
+│
+├── rw-    → user/owner
+├── r--    → group
+└── r--    → others
+
+The first character:
+
+-
+
+means it's a regular file.
+
+For a directory, you'll see:
+
+d
+
+Example:
+
+drwxr-xr-x
+
+=> What does r, w, x mean for a file?
+
+a) Read
+r
+
+You can view the file contents:
+
+b) Write
+w
+
+You can modify the file:
+
+echo "hello" >> test.txt
+
+c) Execute
+x
+
+You can execute the file as a program/script.
+
+3. Lab 2: Change permissions using chmod
+
+Create a script:
+
+touch script.sh
+
+Check:
+
+ls -l script.sh
+
+Maybe:
+
+-rw-r--r-- script.sh
+
+Try:
+
+./script.sh
+
+You may get:
+
+Permission denied
+
+=> Why?
+
+Because the file doesn't have execute permission.
+
+Add execute permission:
+
+chmod +x script.sh
+
+Check:
+
+ls -l script.sh
+
+Now you should see something like:
+
+-rwxr-xr-x
+
+Then:
+
+./script.sh
+
+can execute.
+
+4. Lab 3: Numeric permissions
+
+This is extremely important for interviews.
+
+Permissions have numbers:
+
+r = 4
+w = 2
+x = 1
+
+Therefore:
+
+rwx = 4 + 2 + 1 = 7
+rw- = 4 + 2 = 6
+r-x = 4 + 1 = 5
+r-- = 4
+-w- = 2
+--x = 1
+--- = 0
+
+So:
+
+7 = rwx
+6 = rw-
+5 = r-x
+4 = r--
+3 = -wx
+2 = -w-
+1 = --x
+0 = ---
+
+=> Example: chmod 755
+
+Run:
+
+chmod 755 script.sh
+
+Then:
+
+ls -l script.sh
+
+You get:
+
+-rwxr-xr-x
+
+Why?
+
+7 → rwx → owner
+5 → r-x → group
+5 → r-x → others
+
+Therefore:
+
+755
+│││
+││└── Others = r-x
+│└─── Group  = r-x
+└──── Owner  = rwx
+
+=> Example: chmod 644
+
+For a normal text/config file:
+
+chmod 644 test.txt
+
+Check:
+
+ls -l test.txt
+
+You'll see:
+
+-rw-r--r--
+
+Meaning:
+
+Owner  → read + write
+Group  → read
+Others → read
+
+644 is very common for regular files.
+
+=> Example: chmod 600
+chmod 600 test.txt
+
+Result:
+
+-rw-------
+
+Meaning:
+
+Owner  → read + write
+Group  → nothing
+Others → nothing
+
+Useful when a file should only be accessible by its owner.
+
+=> Example: chmod 700
+chmod 700 script.sh
+
+Result:
+
+-rwx------
+
+Meaning:
+
+Owner  → rwx
+Group  → nothing
+Others → nothing

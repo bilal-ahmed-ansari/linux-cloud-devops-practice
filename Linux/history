@@ -297,12 +297,10 @@ ignorespace
 
 Run:
 
-echo "This will be saved"
-
-Then:
-
  echo "This will NOT be saved"
 
 Notice the space before echo in the second command.
 
 Then:
+
+when you run "history" command, you won't see this output.

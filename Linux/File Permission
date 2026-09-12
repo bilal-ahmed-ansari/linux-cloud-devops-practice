@@ -217,3 +217,68 @@ Meaning:
 Owner  → rwx
 Group  → nothing
 Others → nothing
+
+5. 4. Directory Permissions — Very Important
+
+Directory permissions work slightly differently.
+
+For a directory:
+
+a) r = list directory contents
+
+Suppose you have a directory called test.
+
+r = Read → list contents
+
+You can see what files/directories are inside:
+
+ls test
+
+Example:
+
+test/
+├── file1.txt
+├── file2.txt
+└── folder1/
+
+So r = permission to read/list the names inside the directory.
+
+b) w = Write → create/delete/rename entries
+
+You can modify the contents of the directory:
+
+touch test/newfile.txt      # Create
+rm test/file1.txt           # Delete
+mv test/file2.txt test/a.txt # Rename
+
+So:
+
+w → create files
+w → delete files
+w → rename files
+
+c) x → Enter/access the directory (cd)
+
+=> For example:
+
+mkdir mydir
+ls -ld mydir
+
+You might see:
+
+drwxr-xr-x
+
+6. Lab 4: Directory x permission
+
+Create:
+
+mkdir private
+touch private/file.txt
+
+Now:
+
+ls -ld private
+
+Suppose you remove execute permission:
+
+chmod 644 private

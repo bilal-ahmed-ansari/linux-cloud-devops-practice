@@ -282,3 +282,67 @@ ls -ld private
 Suppose you remove execute permission:
 
 chmod 644 private
+
+Now:
+
+ls -ld private
+
+You may see:
+
+drw-r--r--
+
+The directory has no x permission.
+
+You can potentially see its name/metadata depending on permissions, but you cannot properly access files inside it.
+
+Restore it:
+
+chmod 755 private
+
+7. chown — Change Owner
+
+Permissions and ownership are closely related.
+
+Check:
+
+ls -l test.txt
+
+Example:
+
+-rw-r--r-- 1 bilal bilal test.txt
+             │     │
+             │     └── group
+             └──────── owner
+
+Change owner:
+
+sudo chown root test.txt
+
+Check:
+
+ls -l test.txt
+
+Now owner may be:
+
+root
+
+8. Change owner and group
+sudo chown root:root test.txt
+
+Format:
+
+chown USER:GROUP FILE
+
+Example:
+
+sudo chown bilal:bilal test.txt
+
+9. chgrp — Change Group
+
+You can also change only the group:
+
+sudo chgrp somegroup test.txt
+
+Check:
+
+ls -l test.txt

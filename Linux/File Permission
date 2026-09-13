@@ -346,3 +346,62 @@ sudo chgrp somegroup test.txt
 Check:
 
 ls -l test.txt
+
+10. Practical Admin Example
+
+Imagine you have:
+
+/opt/myapp/
+
+and your application files should be owned by:
+
+appuser:appgroup
+
+You might use:
+
+sudo chown -R appuser:appgroup /opt/myapp
+
+Then:
+
+sudo chmod -R 755 /opt/myapp
+
+11. Symbolic vs Numeric chmod
+
+There are two common ways.
+
+a) Numeric
+chmod 755 script.sh
+
+b) Symbolic
+chmod u+x script.sh
+
+Here:
+
+u = user/owner
+g = group
+o = others
+a = all
+
+=> Examples:
+
+a) chmod u+x script.sh
+
+Add execute for owner.
+
+b) chmod g+w test.txt
+
+Add write permission for group.
+
+c) chmod o-r test.txt
+
+Remove read permission from others.
+
+d) chmod a+x script.sh
+
+Add execute permission for everyone.
+
+Note,:- How do you find files with specific permissions?
+
+For example:
+
+find /tmp -type f -perm 600

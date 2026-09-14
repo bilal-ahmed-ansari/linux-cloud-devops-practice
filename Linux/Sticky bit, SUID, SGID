@@ -121,3 +121,404 @@ runs passwd
 passwd has SUID
      ↓
 runs with root's effective privileges
+
+2. SGID — Set Group ID
+
+SGID has two common meanings.
+
+On a file
+
+An executable with SGID runs with the file's group permissions.
+
+On a directory
+
+This is very useful for Linux administration.
+
+When SGID is set on a directory:
+
+New files/directories created inside inherit the directory's group.
+
+This is commonly used for shared project directories.
+
+=> Lab 2: SGID on Directory
+
+Let's create two users.
+
+sudo useradd user1
+sudo useradd user2
+
+Create a group:
+
+sudo groupadd project
+
+Add both users:
+
+sudo usermod -aG project user1
+sudo usermod -aG project user2
+
+Check:
+
+getent group project
+
+You should see something similar to:
+
+project:x:1001:user1,user2
+
+=> Step 1 — Create shared directory
+sudo mkdir /shared-project
+
+Change group:
+
+sudo chown root:project /shared-project
+
+Set permissions:
+
+sudo chmod 2775 /shared-project
+
+Check:
+
+ls -ld /shared-project
+
+You should see something similar to:
+
+drwxrwsr-x root project /shared-project
+
+Look at:
+
+drwxrwsr-x
+     ^
+     s
+
+That s means SGID.
+
+=> Step 2 — Create a file
+
+Switch to user1:
+
+sudo -iu user1
+
+--------------
+-i = login shell
+It switches to user1 as if user1 has logged in normally. It loads user1's environment, home directory, etc.
+-u = user
+Specifies which user you want to switch to.
+--------------
+
+Check group:
+
+id
+
+Create a file:
+
+cd /shared-project
+touch file1
+
+Check:
+
+ls -l file1
+
+You should see:
+
+-rw-r--r-- user1 project file1
+
+Notice:
+
+owner = user1
+group = project
+
+The file inherited the directory's group.
+
+That's the important purpose of SGID on directories.
+
+Exit user1:
+
+exit
+
+3. Sticky Bit
+
+Sticky Bit is mainly used on directories.
+
+Concept
+
+Suppose you have:
+
+/shared
+
+and many users can create files there.
+
+a) Without Sticky Bit:
+
+user1 creates file1
+user2 may be able to delete file1
+
+Even though file1 belongs to user1, user2 may be able to delete it if the directory permissions allow deletion.
+
+b) With Sticky Bit
+user1 → creates file1
+user2 → tries to delete file1
+        ↓
+       ❌ Permission denied
+
+user2 cannot delete user1's file.
+
+But these users can delete it:
+
+user1       → ✅ file owner
+/shared owner → ✅ directory owner
+root         → ✅ root
+
+The classic example is:
+
+/tmp
+
+Check it:
+
+ls -ld /tmp
+
+You will usually see something like:
+
+drwxrwxrwt root root /tmp
+
+You will usually see something like:
+
+drwxrwxrwt root root /tmp
+
+The final:
+
+t
+
+means Sticky Bit.
+
+=> Lab 3: Sticky Bit
+
+Let's create a test directory.
+
+mkdir ~/sticky-lab
+
+Give everyone access:
+
+chmod 777 ~/sticky-lab
+
+Check:
+
+ls -ld ~/sticky-lab
+
+You will see:
+
+drwxrwxrwx
+
+There is no sticky bit.
+
+Step 1 — Create file as user1
+sudo -iu user1
+
+---------------------
+Here, in my case Ubuntu created the user without creating /home/user1.
+
+Check:
+
+ls -ld /home/user1
+
+It will probably say:
+
+No such file or directory
+
+Create the home directory properly and run in "ubuntu" login:
+
+sudo mkdir /home/user1
+
+Set ownership:
+
+sudo chown user1:user1 /home/user1
+
+Set normal home-directory permissions:
+
+sudo chmod 755 /home/user1
+
+sudo -iu user1
+
+This time you should get:
+
+user1@bilal-ahmed-VMware-Virtual-Platform:~$
+
+Check:
+
+pwd
+
+Expected:
+
+/home/user1
+----------------------
+Run on user1 login -> Go to directory:
+
+cd /home/YOUR_USERNAME/sticky-lab
+
+in my case, YOUR_USERNAME is "ubuntu"
+
+Create:
+
+touch user1-file
+
+---------------
+
+I got an error
+
+$ cd /home/bilal-ahmed/sticky-lab
+-sh: 4: cd: can't cd to /home/bilal-ahmed/sticky-lab
+
+Solution: Your sticky-lab exists, but user1 cannot pass through /home/bilal-ahmed.
+
+Let's fix it safely.
+
+1. Exit from user1
+
+Run:
+
+exit
+
+You should be back to:
+
+bilal-ahmed@...:~$
+
+2. Check permissions
+
+Run:
+
+ls -ld /home/bilal-ahmed
+
+You'll probably see something like:
+
+drwx------ bilal-ahmed bilal-ahmed /home/bilal-ahmed
+
+The ------ for others means user1 cannot enter your home directory.
+
+2. Check permissions
+
+Run:
+
+ls -ld /home/bilal-ahmed
+
+You'll probably see something like:
+
+drwx------ bilal-ahmed bilal-ahmed /home/bilal-ahmed
+
+The ------ for others means user1 cannot enter your home directory.
+
+3. For this lab, give others access to your home directory
+
+Run:
+
+sudo chmod 755 /home/bilal-ahmed
+
+This gives:
+
+owner  → rwx
+group  → r-x
+others → r-x
+
+4. Make sure sticky-lab is still 777
+chmod 777 /home/bilal-ahmed/sticky-lab
+
+Check:
+
+ls -ld /home/bilal-ahmed/sticky-lab
+
+You should see:
+
+drwxrwxrwx ... sticky-lab
+
+5. Login as user1 again
+
+---------------
+
+---------------
+
+sudo -ui user1 is wrong
+
+You typed:
+
+sudo -ui user1
+
+This is interpreted incorrectly, so sudo thinks i is the username:
+
+sudo: user 'i' not found
+
+-------------
+
+Exit:
+
+exit
+
+Step 2 — Try deleting as user2
+sudo -iu user2
+
+Go to the directory:
+
+cd /home/YOUR_USERNAME/sticky-lab
+
+Try:
+
+rm user1-file
+
+Because the directory is 777 and there is no Sticky Bit, user2 may be able to delete it
+
+Exit:
+
+exit
+
+Step 3 — Enable Sticky Bit
+chmod +t ~/sticky-lab
+
+Check:
+
+ls -ld ~/sticky-lab
+
+Now:
+
+drwxrwxrwt
+         ^
+         t
+
+The t means Sticky Bit.
+
+Step 4 — Test again
+
+Create another file as user1:
+
+sudo -iu user1
+
+cd /home/YOUR_USERNAME/sticky-lab
+touch user1-file2
+exit
+
+Now become user2:
+
+sudo -iu user2
+
+Try:
+
+cd /home/YOUR_USERNAME/sticky-lab
+rm user1-file2
+
+You should get:
+
+Operation not permitted
+
+That's Sticky Bit.
+
+---------------
+
+I got this error when I try to switch from user1 to user2
+
+bilal-ahmed@bilal-ahmed-VMware-Virtual-Platform:~$ sudo -iu user1
+$ cd /home/bilal-ahmed/sticky-lab
+$ touch user1-file2
+$ sudo -iu user2
+sudo: I'm sorry user1. I'm afraid I can't do that
+$ exit
+bilal-ahmed@bilal-ahmed-VMware-Virtual-Platform:~$ sudo -iu user2
+sudo: unable to change directory to /home/user2: No such file or directory (os error 2)
+$ 
+
+Sol: It's because user1 does not ahve sudo permission whereas "bilal-ahmed" user has sudo permission.
+

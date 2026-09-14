@@ -1,0 +1,436 @@
+1. What is a Volume?
+
+A volume is storage that you can attach to a server.
+
+For example, suppose your EC2 instance has:
+
+Root disk       8 GB (by default AWS give 8GB disk)
+EBS volume 1   10 GB
+EBS volume 2   12 GB
+EBS volume 3   14 GB
+
+Linux may see them as:
+
+/dev/xvda
+/dev/xvdb
+/dev/xvdc
+/dev/xvdd
+
+The exact names can be different depending on the EC2 instance.
+
+Check with:
+
+lsblk
+
+=> Example:
+
+NAME    SIZE TYPE MOUNTPOINT
+xvda      8G disk
+└─xvda1   8G part /
+xvdb     10G disk
+xvdc     12G disk
+xvdd     14G disk
+
+2. What is AWS EBS?
+
+EBS = Elastic Block Store
+
+EBS is basically a virtual hard disk provided by AWS.
+
+You attach an EBS volume to an EC2 instance and Linux sees it as a block device.
+
+For example:
+
+AWS
+ |
+ |-- EC2 Instance
+ |
+ |-- EBS 10 GB
+ |-- EBS 12 GB
+ |-- EBS 14 GB
+
+Important point:
+
+EBS is AWS storage. LVM is Linux storage management.
+
+3. Normal EBS Volume Without LVM
+
+Suppose you attach a 14 GB EBS volume.
+
+Linux sees:
+
+/dev/xvdd
+
+You can directly create a filesystem:
+
+sudo mkfs.ext4 /dev/xvdd
+
+Create a mount point:
+
+sudo mkdir /data
+
+Mount it:
+
+sudo mount /dev/xvdd /data
+
+Check:
+
+df -h
+
+You might see:
+
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/xvdd        14G   24M   13G   1% /data
+
+So the flow is:
+
+EBS
+ ↓
+/dev/xvdd
+ ↓
+Filesystem
+ ↓
+/data
+
+This is normal/direct disk mounting.
+
+4. What is LVM?
+
+LVM = Logical Volume Manager
+
+LVM allows you to manage storage more flexibly.
+
+Without LVM:
+
+10 GB disk → filesystem → mount
+12 GB disk → filesystem → mount
+
+With LVM:
+
+10 GB disk ──┐
+             ├── PV → VG → LV → filesystem → mount
+12 GB disk ──┘
+
+You can combine multiple physical disks into one storage pool.
+
+5. Physical Volume — PV
+
+A Physical Volume (PV) is a disk/device prepared for LVM.
+
+Example:
+
+/dev/xvdb = 10 GB
+/dev/xvdc = 12 GB
+
+We convert them into PVs:
+
+sudo pvcreate /dev/xvdb
+sudo pvcreate /dev/xvdc
+
+Check:
+
+sudo pvs
+
+You may get:
+
+PV          VG   Fmt  Attr PSize  PFree
+/dev/xvdb        lvm2       10G    10G
+/dev/xvdc        lvm2       12G    12G
+
+So:
+
+PV = disk/device prepared for LVM.
+
+6. Volume Group — VG
+
+A Volume Group is a storage pool made from one or more PVs.
+
+For example:
+
+/dev/xvdb  10 GB
+/dev/xvdc  12 GB
+      ↓
+     VG
+      ↓
+   22 GB pool
+
+Create it:
+
+sudo vgcreate myvg /dev/xvdb /dev/xvdc
+
+Check:
+
+sudo vgs
+
+You should see approximately:
+
+VG     VSize
+myvg   22G
+
+So:
+
+VG = pool of storage created from PVs.
+
+7. Logical Volume — LV
+
+Now we take storage from the VG and create a logical volume.
+
+For example:
+
+sudo lvcreate -L 15G -n mylv myvg
+
+Meaning:
+
+-L 15G
+
+Create a 15 GB LV.
+
+-n mylv
+
+LV name = mylv
+
+myvg
+
+Create it inside the myvg volume group.
+
+Check:
+
+sudo lvs
+
+Example:
+
+LV    VG     Attr       LSize
+mylv  myvg   -wi-a----- 15.00g
+
+8. Why do we need LV?
+
+This is where LVM becomes useful.
+
+Suppose:
+
+PV1 = 10 GB
+PV2 = 12 GB
+
+VG = 22 GB
+
+You don't necessarily have to use all 22 GB immediately.
+
+You can create:
+
+LV1 = 10 GB
+LV2 = 5 GB
+
+and leave:
+
+7 GB free
+
+inside the VG.
+
+Later you can extend an LV.
+
+That's one of the biggest benefits of LVM.
+
+9. Why do we create a filesystem?
+
+An LV (Logical Volume) is just like an empty storage space.
+
+Linux cannot normally store files such as:
+
+file.txt
+photo.jpg
+script.sh
+
+directly on a raw LV.
+
+So we create a filesystem on the LV. The filesystem tells Linux how to organize and manage files and directories on that storage.
+
+For example:
+
+LV
+↓
+Create filesystem
+↓
+ext4
+↓
+Mount it
+↓
+Store files
+
+Command:
+
+sudo mkfs.ext4 /dev/myvg/mylv
+
+Here:
+
+/dev/myvg/mylv = your LV
+mkfs.ext4 = create an ext4 filesystem on it
+
+After that, you can mount it:
+
+sudo mkdir /data
+sudo mount /dev/myvg/mylv /data
+
+Now /data can be used normally:
+
+cd /data
+touch test.txt
+mkdir logs
+
+=> Easy real-life example
+
+Think of it like:
+
+EBS disk
+   ↓
+Partition / LVM
+   ↓
+LV = empty room
+   ↓
+Filesystem = organizes the room
+   ↓
+Mount = gives you a place to access it
+   ↓
+Files & directories
+
+10. Mounting
+
+Create a directory:
+
+sudo mkdir /data
+
+Mount the LV:
+
+sudo mount /dev/myvg/mylv /data
+
+Check:
+
+df -h
+
+Now:
+
+/dev/mapper/myvg-mylv   15G   ...   /data
+
+The complete LVM flow is:
+
+EBS Volume
+    ↓
+Linux Block Device
+    ↓
+PV
+    ↓
+VG
+    ↓
+LV
+    ↓
+Filesystem
+    ↓
+Mount Point
+
+In short, LVM gives you the storage space; the filesystem makes that storage usable for storing files.
+
+11. Dynamic Storage — What Does It Mean?
+
+This is probably the most important concept from the video.
+
+Suppose you initially have:
+
+PV1 = 10 GB
+PV2 = 12 GB
+
+VG = 22 GB
+
+LV = 15 GB
+Free = 7 GB
+
+Later your application needs another 5 GB.
+
+You don't necessarily need to create a new mount point.
+
+You can extend the LV:
+
+15 GB → 20 GB
+
+Then grow the filesystem.
+
+For ext4:
+
+These two commands are used when you want to increase the size of an existing LV and make the filesystem use that new space.
+
+a) 1. Increase the LV
+sudo lvextend -L +5G /dev/myvg/mylv
+
+Meaning:
+
+lvextend → increase LV size
+-L +5G → add 5 GB
+/dev/myvg/mylv → your LV
+
+So:
+
+10 GB LV
+   ↓
++ 5 GB
+   ↓
+15 GB LV
+
+b) Increase the filesystem
+sudo resize2fs /dev/myvg/mylv
+
+This tells the ext4 filesystem:
+
+"The LV has become bigger. Now use the extra space too."
+
+So:
+
+Before:
+
+LV = 10 GB
+Filesystem = 10 GB
+
+After lvextend:
+
+LV = 15 GB
+Filesystem = 10 GB  ← still old size
+
+After resize2fs:
+
+LV = 15 GB
+Filesystem = 15 GB  ✅
+
+Or
+
+sudo lvextend -r -L +5G /dev/myvg/mylv
+
+-r can resize the filesystem along with the LV.
+
+Note: - resize2fs is for ext2/ext3/ext4 filesystems. For XFS, you would use xfs_growfs instead.
+
+12. What happened with the 3 EBS volumes?
+
+From what you described:
+
+EBS 1 = 10 GB
+EBS 2 = 12 GB
+EBS 3 = 14 GB
+
+The first two were used with LVM:
+
+10 GB EBS ──→ PV ──┐
+                    ├──→ VG ──→ LV
+12 GB EBS ──→ PV ──┘
+
+So approximately:
+
+10 + 12 = 22 GB
+
+was available to the VG.
+
+The third EBS:
+
+14 GB EBS
+    ↓
+filesystem
+    ↓
+mount
+
+was used directly without LVM.

@@ -1,0 +1,123 @@
+| Permission     | Meaning                                                                   | Common use          |
+| -------------- | ------------------------------------------------------------------------- | ------------------- |
+| **SUID**       | File runs with the **owner's permission**                                 | Executable programs |
+| **SGID**       | File runs with the **group's permission** / files inherit directory group | Shared directories  |
+| **Sticky Bit** | In a directory, users can delete **only their own files**                 | `/tmp`              |
+
+1. SUID — Set User ID
+Concept
+
+Normally, when you run a file, it runs with your user's permissions.
+
+With SUID, an executable runs with the owner's permissions.
+
+For example:
+
+File owner = root
+SUID set
+        ↓
+Normal user runs the program
+        ↓
+Program temporarily runs with root's permissions
+
+=> How to identify SUID
+
+Use:
+
+ls -l /usr/bin/passwd
+
+You may see:
+
+-rwsr-xr-x 1 root root ... /usr/bin/passwd
+
+Notice:
+
+rws
+  ^
+  s = SUID
+
+Normally execute permission is:
+
+x
+
+With SUID it becomes:
+
+s
+
+=> Lab 1: Set SUID
+Step 1 — Create a test script
+mkdir ~/special-permissions-lab
+cd ~/special-permissions-lab
+
+Create:
+
+nano test.sh
+
+Put:
+
+#!/bin/bash
+id
+
+Save and exit.
+
+Make it executable:
+
+chmod +x test.sh
+
+Run:
+
+./test.sh
+
+You should see your normal user:
+
+uid=1000(...)
+
+Step 2 — Change owner to root
+sudo chown root:root test.sh
+
+Check:
+
+ls -l test.sh
+
+Step 3 — Set SUID
+sudo chmod u+s test.sh
+
+Check:
+
+ls -l test.sh
+
+You may see:
+
+-rwsr-xr-x 1 root root ... test.sh
+
+The important part:
+
+rws
+  ^
+ SUID
+
+Important:-
+
+SUID is mainly meaningful on executable binaries.
+
+Check:
+
+ls -l /usr/bin/passwd
+
+You will typically see:
+
+-rwsr-xr-x root root ...
+
+Why does passwd need SUID?
+
+A normal user needs to change their password, but password-related files are protected and owned by root.
+
+So:
+
+Normal user
+     ↓
+runs passwd
+     ↓
+passwd has SUID
+     ↓
+runs with root's effective privileges

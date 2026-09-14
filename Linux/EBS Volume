@@ -1,0 +1,54 @@
+1. How to Create EBS Volumes in AWS
+
+EBS (Elastic Block Store) provides extra storage for an EC2 instance.
+
+Steps to Create an EBS Volume
+Go to AWS Console → EC2 → Elastic Block Store → Volumes.
+Click Create volume.
+Select the volume type, for example:
+gp3
+
+Enter the required size.
+
+Example:
+
+10 GB
+12 GB
+14 GB
+
+Select the Availability Zone.
+
+Important: The EBS volume and EC2 instance must be in the same Availability Zone.
+
+Example:
+
+EC2 → ap-south-1b
+EBS → ap-south-1b
+Click Create volume.
+
+Repeat the same steps if you need multiple volumes.
+
+2. Attach the EBS Volume to EC2
+
+After creating the volume:
+
+EC2 → Volumes
+→ Select the volume
+→ Actions
+→ Attach volume
+→ Select your EC2 instance
+→ Attach
+
+After attaching the volume, connect to the EC2 instance and check:
+
+lsblk
+
+The new EBS disk should appear in the output.
+
+Example
+EC2 Instance
+    |
+    ├── EBS 10 GB
+    ├── EBS 12 GB
+    └── EBS 14 GB
+

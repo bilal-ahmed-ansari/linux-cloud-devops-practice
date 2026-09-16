@@ -1,0 +1,25 @@
+EBS is used for much more than creating disks.
+
+Think of the industry flow like this:
+
+AWS EBS
+   ↓
+Attach / Detach
+   ↓
+Linux detects disk
+   ↓
+Partition / Filesystem / LVM
+   ↓
+Mount
+   ↓
+Application uses storage
+   ↓
+Monitor
+   ↓
+Backup / Snapshot
+   ↓
+Resize when required
+   ↓
+Troubleshoot when something goes wrong
+
+For your learning, I would do these 8 practicals next.

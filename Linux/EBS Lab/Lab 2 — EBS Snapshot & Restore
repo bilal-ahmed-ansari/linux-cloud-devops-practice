@@ -1,0 +1,293 @@
+What you'll learn
+
+EBS Volume
+    ↓
+Create Snapshot
+    ↓
+Delete / simulate loss
+    ↓
+Create new EBS Volume from Snapshot
+    ↓
+Attach to EC2
+    ↓
+Mount in Linux
+    ↓
+Verify data
+
+We'll use your 14 GB EBS volume (/dev/nvme1n1) again.
+
+Part 1 — Prepare test data
+
+First check that your volume is mounted:
+
+lsblk
+
+You should have something like:
+
+nvme1n1   20G  disk  /data-ebs
+
+Because in Lab 1 we expanded it from 14 → 20 GiB.
+
+Check:
+
+df -h /data-ebs
+
+Now create some important-looking test data:
+
+sudo mkdir -p /data-ebs/application
+
+Create a file:
+
+echo "Production application data" | sudo tee /data-ebs/application/data.txt
+
+Create another:
+
+echo "Database backup information" | sudo tee /data-ebs/application/backup.txt
+
+Check:
+
+ls -l /data-ebs/application
+
+And:
+
+cat /data-ebs/application/data.txt
+
+You should get:
+
+Production application data
+
+Part 2 — Understand the Snapshot
+
+Snapshot = At one point of time, you can take backup of disk.
+
+Your current situation:
+
+EC2
+ │
+ └── EBS 20 GiB
+       │
+       └── /data-ebs
+             │
+             ├── data.txt
+             └── backup.txt
+
+We'll create:
+
+EBS Volume
+     │
+     ↓
+ Snapshot
+
+The snapshot is stored and managed by AWS.
+
+Part 3 — Create the Snapshot
+
+Go to:
+
+AWS Console → EC2 → Elastic Block Store → Volumes
+
+Find your EBS volume attached as:
+
+/dev/nvme1n1
+
+Select it.
+
+Then:
+
+Actions → Create snapshot
+
+Give it a description such as:
+
+EBS-Linux-Lab2-Before-Backup
+
+Click:
+
+Create snapshot
+
+Part 4 — Check Snapshot
+
+Go to:
+
+EC2 → Elastic Block Store → Snapshots
+
+You should see your snapshot.
+
+Initially you may see:
+
+State: pending
+
+Wait until it becomes:
+
+State: completed
+
+=> Important concept
+
+Snapshot creation can happen while the volume is attached and being used.
+
+Part 5 — Simulate a Problem
+
+Run:
+
+sudo rm -rf /data-ebs/application
+
+Check:
+
+ls -l /data-ebs
+
+The application directory should be gone.
+
+Now imagine:
+
+"Oh no! My application data was deleted."
+
+This is where the snapshot becomes useful.
+
+Part 6 — Restore from Snapshot
+
+Go to:
+
+AWS → EC2 → Elastic Block Store → Snapshots
+
+Select your snapshot.
+
+Then:
+
+Actions → Create volume from snapshot
+
+AWS will ask for:
+
+Volume type
+Size
+Availability Zone
+Important: Availability Zone
+
+The new EBS volume must be created in the same Availability Zone as your EC2 instance if you want to attach it to that EC2.
+
+For example, if your EC2 is:
+
+ap-south-1a
+
+create the restored volume in:
+
+ap-south-1a
+
+Create the volume.
+
+Part 7 — Attach the Restored Volume
+
+Go to:
+
+EC2 → Elastic Block Store → Volumes
+
+Find the new volume created from the snapshot.
+
+Select:
+
+Actions → Attach volume
+
+Choose your EC2 instance.
+
+AWS may give it a device name such as:
+
+Choose your EC2 instance.
+
+AWS may give it a device name such as:
+
+/dev/sdf
+
+Click:
+
+Attach volume
+
+Part 8 — Check from Linux
+
+SSH into your EC2.
+
+Run:
+
+lsblk
+
+Now you should see another disk.
+
+For example:
+
+nvme0n1   8G
+nvme1n1  20G
+nvme2n1  10G
+nvme3n1  12G
+nvme4n1  20G
+
+The exact NVMe name can differ.
+
+=> VERY IMPORTANT
+
+Don't assume the restored volume is /dev/nvme4n1.
+
+Use:
+
+lsblk
+
+to identify the newly attached disk.
+
+You can also check:
+
+sudo blkid
+
+Part 9 — Mount the Restored Volume
+
+Suppose your new restored volume is:
+
+/dev/nvme4n1
+
+First create a new mount point:
+
+sudo mkdir /restore
+
+Then mount:
+
+sudo mount /dev/nvme4n1 /restore
+
+Check:
+
+df -h /restore
+
+You should see:
+
+data.txt
+backup.txt
+
+Read the file:
+
+cat /restore/application/data.txt
+
+Expected:
+
+Production application data
+
+=> Why is this useful in industry?
+
+Imagine a Linux server:
+
+EC2
+ │
+ └── EBS
+      │
+      └── /data
+           │
+           └── Application data
+
+Before a risky operation, an administrator might create an EBS snapshot.
+
+For example:
+
+Before OS/application change
+           ↓
+      EBS Snapshot
+           ↓
+      Make changes
+           ↓
+       Something breaks
+           ↓
+      Restore/recover
+
+Snapshots are also commonly used as part of backup and disaster-recovery strategies.

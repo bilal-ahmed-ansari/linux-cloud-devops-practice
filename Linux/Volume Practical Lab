@@ -1,0 +1,497 @@
+1. Practical Lab — Do This Yourself
+
+I recommend you create the same lab.
+
+Part A — Create EC2
+
+Create an Ubuntu EC2 instance.
+
+For practice, you can use:
+
+Ubuntu
+t2.micro / t3.micro
+
+depending on availability.
+
+Then SSH:
+
+ssh -i your-key.pem ubuntu@<PUBLIC-IP>
+
+Part B — Create 3 EBS Volumes
+
+Create:
+
+Volume 1 → 10 GB
+Volume 2 → 12 GB
+Volume 3 → 14 GB
+
+Attach all three to your EC2 instance.
+
+Then SSH into the EC2 and run:
+
+lsblk
+
+You should see something similar to:
+
+NAME    SIZE TYPE MOUNTPOINT
+xvda      8G disk
+└─xvda1   8G part /
+xvdb     10G disk
+xvdc     12G disk
+xvdd     14G disk
+
+So for our exact lab, we'll do:
+
+10 GB → /dev/nvme2n1 ──┐
+                       ├── LVM
+12 GB → /dev/nvme3n1 ──┘
+
+14 GB → /dev/nvme1n1 ── Direct mount
+
+Note:- Important: Do not touch /dev/nvme0n1. That's your Ubuntu root disk.
+
+Part C — 10 GB + 12 GB → LVM
+
+We will combine these two:
+
+/dev/nvme2n1 = 10 GB
+/dev/nvme3n1 = 12 GB
+
+into:
+
+PV → VG → LV → Filesystem → /data-lvm
+
+Step 1: Confirm the disks
+
+Run:
+
+lsblk
+
+You already have:
+
+nvme2n1   10G
+nvme3n1   12G
+
+These are empty disks, so we're good.
+
+Step 2: Install LVM tools
+
+Ubuntu may already have them, but let's make sure:
+
+sudo apt update
+sudo apt install lvm2 -y
+What is lvm2?
+
+It provides commands such as:
+
+pvcreate
+vgcreate
+lvcreate
+pvs
+vgs
+lvs
+
+which we need for LVM.
+
+Step 3: Create Physical Volumes — PV
+
+Now we'll tell Linux:
+
+"I want to use these two disks for LVM."
+
+Run:
+
+sudo pvcreate /dev/nvme2n1
+
+Then:
+
+sudo pvcreate /dev/nvme3n1
+
+You should see something similar to:
+
+Physical volume "/dev/nvme2n1" successfully created.
+Physical volume "/dev/nvme3n1" successfully created.
+
+Check:
+sudo pvs
+
+You should get something like:
+
+PV             VG   Fmt  Attr PSize   PFree
+/dev/nvme2n1        lvm2       10.00g  10.00g
+/dev/nvme3n1        lvm2       12.00g  12.00g
+
+=> Understand what happened
+
+Before:
+
+nvme2n1 → normal empty disk
+nvme3n1 → normal empty disk
+
+After:
+
+nvme2n1 → PV
+nvme3n1 → PV
+
+So:
+
+PV = a disk prepared for LVM.
+
+Step 4: Create Volume Group — VG
+
+Now we'll combine the two PVs into one storage pool.
+
+We'll call the VG:
+
+datavg
+
+Run:
+
+sudo vgcreate datavg /dev/nvme2n1 /dev/nvme3n1
+
+Expected:
+
+Volume group "datavg" successfully created
+
+Check:
+
+sudo vgs
+
+You should see approximately:
+
+VG      VSize   VFree
+datavg  21.99g  21.99g
+
+Why approximately 22 GB?
+
+Because:
+
+10 GB + 12 GB = 22 GB
+
+There is a small difference because of how storage sizes are represented.
+
+=> Understand VG
+
+You now have:
+
+/dev/nvme2n1 (10G)
+       ↓
+      PV
+       │
+       ├──────────┐
+       │          │
+       ↓          ↓
+     datavg = approximately 22 GB
+       ↑
+       │
+      PV
+       ↑
+/dev/nvme3n1 (12G)
+
+Think of VG as one big storage pool.
+
+Step 5: Create Logical Volume — LV
+
+Now we have a ~22 GB pool.
+
+Let's not use all of it.
+
+We'll create a:
+
+15 GB LV
+
+Run:
+
+sudo lvcreate -L 15G -n datalv datavg
+
+=> Meaning:
+
+-L 15G
+
+Create 15 GB storage.
+
+-n datalv
+
+Give the LV the name datalv.
+
+datavg
+
+Create it inside the datavg VG.
+
+Check it
+sudo lvs
+
+Expected:
+
+LV      VG      LSize
+datalv  datavg  15.00g
+
+And:
+
+sudo vgs
+
+You'll see roughly:
+
+VG      VSize   VFree
+datavg  21.99g   6.99g
+
+So now:
+
+datavg
+│
+├── datalv = 15 GB
+│
+└── Free = ~7 GB
+
+This free 7 GB is important. Later we'll use it to demonstrate LVM expansion.
+
+Step 6: Create Filesystem
+
+Right now datalv exists, but it doesn't have a filesystem.
+
+Create an ext4 filesystem:
+
+sudo mkfs.ext4 /dev/datavg/datalv
+
+You should see output about creating an ext4 filesystem.
+
+Why do we need this?
+
+Think:
+
+LV
+ ↓
+Empty storage
+
+The filesystem makes it usable for normal Linux files.
+
+LV
+ ↓
+ext4 filesystem
+ ↓
+can store files/directories
+
+Step 7: Create Mount Point
+
+Create a directory:
+
+sudo mkdir /data-lvm
+
+Check:
+
+ls -ld /data-lvm
+
+Step 8: Mount the LV
+
+Now mount it:
+
+sudo mount /dev/datavg/datalv /data-lvm
+
+Check:
+
+df -h
+
+You should see something similar to:
+
+Filesystem              Size  Used Avail Use% Mounted on
+/dev/nvme0n1p1          6.8G  ...   ...   ... /
+/dev/mapper/datavg-datalv
+                         15G   ...   ...   1% /data-lvm
+
+Also run:
+
+lsblk
+
+Now you should see the LVM relationship.
+
+=> Your current structure
+
+At this point:
+
+                 EC2
+                  │
+        ┌─────────┴─────────┐
+        │                   │
+   Root 8 GB            Extra EBS
+   nvme0n1               volumes
+        │                   │
+        │          ┌────────┼────────┐
+        │          │        │        │
+        │       10 GB     12 GB    14 GB
+        │       nvme2     nvme3    nvme1
+        │          │        │        │
+        │          │        │        │
+        │          └── PV ──┘        │
+        │               │            │
+        │              VG            │
+        │            datavg           │
+        │               │            │
+        │             LV             │
+        │           datalv            │
+        │               │            │
+        │             ext4            │
+        │               │            │
+        │          /data-lvm          │
+        │                            │
+        │                         Direct EBS
+        │                            │
+        │                           ext4
+        │                            │
+        │                       /data-ebs
+
+The 14 GB disk is still untouched. That's intentional.
+
+Part D — 14 GB EBS Without LVM
+
+Now we'll use:
+
+/dev/nvme1n1
+
+Your 14 GB EBS.
+
+This time we won't use LVM.
+
+The flow will simply be:
+
+EBS
+ ↓
+/dev/nvme1n1
+ ↓
+ext4
+ ↓
+/data-ebs
+
+Step 1: Confirm
+
+Run:
+
+lsblk
+
+Confirm:
+
+nvme1n1   14G
+
+Step 2: Create filesystem
+sudo mkfs.ext4 /dev/nvme1n1
+
+=> This destroys anything currently on that disk. In your lab it is a new empty EBS volume, so that's expected.
+
+Step 3: Create mount point
+sudo mkdir /data-ebs
+
+Step 4: Mount
+sudo mount /dev/nvme1n1 /data-ebs
+
+Check:
+
+df -h
+
+You should see:
+
+/dev/nvme1n1    14G   ...   ...   ... /data-ebs
+
+Part E — Test That Both Work
+
+Let's create test files.
+
+a) LVM storage
+sudo touch /data-lvm/test-lvm-file
+
+Check:
+
+ls -l /data-lvm
+
+You should see:
+
+test-lvm-file
+
+b) Direct EBS
+sudo touch /data-ebs/test-ebs-file
+
+Check:
+
+ls -l /data-ebs
+
+You should see:
+
+test-ebs-file
+
+Part F — Most Important LVM Practical: Extend Storage
+
+Now we can use the remaining ~7 GB in your VG.
+
+Currently:
+
+datavg = ~22 GB
+
+datalv = 15 GB
+free   = ~7 GB
+
+Check:
+
+sudo vgs
+
+Then:
+
+sudo lvs
+
+Step 1: Increase LV by 5 GB
+
+Run:
+
+sudo lvextend -L +5G /dev/datavg/datalv
+
+Check:
+
+sudo lvs
+
+Now:
+
+datalv = 20 GB
+
+But there is one important thing:
+
+LV has become 20 GB, but the filesystem may still be 15 GB.
+
+So we need to grow the filesystem.
+
+Because we are using ext4:
+
+sudo resize2fs /dev/datavg/datalv
+
+Then:
+
+df -h /data-lvm
+
+You should now see approximately:
+
+/data-lvm → 20 GB
+Or easier:
+
+For ext4, you can usually do both together:
+
+sudo lvextend -r -L +5G /dev/datavg/datalv
+
+-r means resize the filesystem too.
+
+This is the "Dynamic Storage" part
+
+Before:
+
+datavg = ~22 GB
+
+┌───────────────────────┐
+│ datalv 15 GB │ Free 7G│
+└───────────────────────┘
+
+After:
+
+datavg = ~22 GB
+
+┌─────────────────────────────┐
+│       datalv 20 GB │ Free 2G│
+└─────────────────────────────┘
+
+No new mount point was required.
+
+That's the main advantage I've learned from LVM dynamic storage management.

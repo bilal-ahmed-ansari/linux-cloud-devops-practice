@@ -1,0 +1,286 @@
+Lab 1: EBS Volume Expansion using your current EC2 setup.
+
+We'll use your existing 14 GB EBS volume because it is mounted directly and this will teach you the basic AWS → Linux expansion flow first.
+
+What we'll do
+
+Currently:
+
+AWS EBS
+14 GB
+   ↓
+/dev/nvme1n1
+   ↓
+ext4
+   ↓
+/data-ebs
+
+We'll increase it:
+
+14 GB
+  ↓
+20 GB
+
+Then verify that Linux sees the additional space.
+
+Important: We will NOT touch your 10 GB + 12 GB LVM disks for this lab. Those can be used later for an LVM expansion lab.
+
+Step 1 — Check your current Linux storage
+
+SSH into your EC2 and run:
+
+lsblk
+
+You previously had:
+
+nvme1n1   14G  disk
+nvme2n1   10G  disk
+nvme3n1   12G  disk
+
+Now also run:
+
+df -h
+
+You should find something similar to:
+
+/dev/nvme1n1    14G   ...   ...   /data-ebs
+Why are we checking this?
+
+Before changing anything, we need to know:
+
+Which EBS volume are we changing?
+What is its current size?
+Where is it mounted?
+
+For your lab:
+
+Device:       /dev/nvme1n1
+Current size: 14 GB
+Mount point:  /data-ebs
+
+Step 2 — Check the EBS volume in AWS
+
+Go to:
+
+AWS Console → EC2 → Elastic Block Store → Volumes
+
+Find the 14 GiB volume attached to your EC2.
+
+You should see something like:
+
+Volume
+Size:       14 GiB
+State:      In-use
+Instance:   your EC2 instance
+Important concept
+
+Your Linux device:
+
+/dev/nvme1n1
+
+is the Linux representation of the EBS volume.
+
+AWS calls it an:
+
+EBS Volume
+
+Linux calls it a:
+
+Block Device
+
+Step 3 — Modify the EBS volume
+
+In AWS:
+
+EC2 → Elastic Block Store → Volumes
+
+Select your 14 GiB volume.
+
+Then:
+
+Actions → Modify volume
+
+Change:
+
+Size:
+14 GiB
+
+to:
+
+20 GiB
+
+Then click:
+
+Modify
+
+Confirm the change.
+
+=> What happened?
+
+AWS has now increased the underlying EBS volume:
+
+Before:
+
+EBS = 14 GB
+       ↓
+Linux = 14 GB
+
+After:
+
+EBS = 20 GB
+       ↓
+Linux should eventually see 20 GB
+
+But here's an important point:
+
+Increasing EBS size does NOT automatically mean the filesystem immediately uses the new space.
+
+There can be multiple layers:
+
+EBS Volume
+    ↓
+Partition
+    ↓
+Filesystem
+    ↓
+Mount point
+
+In our current lab, your EBS is being used directly without a partition, so the structure is simpler:
+
+EBS
+ ↓
+/dev/nvme1n1
+ ↓
+ext4 filesystem
+ ↓
+/data-ebs
+
+We need to make sure the filesystem uses the new space.
+
+Step 4 — Check from Linux
+
+Go back to your EC2 terminal.
+
+Run:
+
+lsblk
+
+You may now see:
+
+nvme1n1   20G  disk
+
+If it still shows 14G immediately, wait a little and run:
+
+sudo udevadm settle
+
+Then:
+
+lsblk
+
+You can also check:
+
+sudo dmesg | tail
+
+Step 5 — Check the filesystem
+
+Run:
+
+df -h /data-ebs
+
+You may find that the filesystem still shows around 14 GB, even though lsblk shows 20 GB.
+
+This is an important Linux concept:
+
+Disk size and filesystem size are separate things.
+
+=> For example:
+
+EBS disk
+   ↓
+20 GB
+   ↓
+Filesystem
+   ↓
+14 GB
+
+The extra 6 GB exists on the disk but hasn't been added to the filesystem yet.
+
+Step 6 — Check filesystem type
+
+Run:
+
+df -T /data-ebs
+
+You should see something like:
+
+Filesystem      Type   Size  Used Avail Use% Mounted on
+/dev/nvme1n1    ext4   14G   ...   ...   ... /data-ebs
+
+We need to know whether it's:
+
+ext4
+
+or:
+
+xfs
+
+Your lab should be ext4 because we created it using:
+
+mkfs.ext4
+
+Step 7 — Expand the ext4 filesystem
+
+Because your filesystem is ext4, run:
+
+sudo resize2fs /dev/nvme1n1
+
+You should get output showing that the filesystem is being resized.
+
+What does resize2fs do?
+
+It tells the ext4 filesystem:
+
+"The underlying disk is now bigger. Start using the additional space."
+
+So:
+
+Before:
+
+EBS        = 14 GB
+Filesystem = 14 GB
+
+
+After AWS modification:
+
+EBS        = 20 GB
+Filesystem = 14 GB
+
+
+After resize2fs:
+
+EBS        = 20 GB
+Filesystem = 20 GB
+
+Step 8 — Verify
+
+Run:
+
+lsblk
+
+Then:
+
+df -h /data-ebs
+
+You should now see approximately:
+
+/dev/nvme1n1   20G   ...   ...   /data-ebs
+
+Step 9 — Verify your existing data
+
+Before the expansion you created:
+
+ls -l /data-ebs
+
+You should still have:
+
+test-ebs-file

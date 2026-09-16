@@ -291,3 +291,10 @@ Before OS/application change
       Restore/recover
 
 Snapshots are also commonly used as part of backup and disaster-recovery strategies.
+
+Note:- A snapshot itself is not an EBS volume.
+
+Snapshot = a backup/copy of the data from an EBS volume.
+
+If the original EBS volume is deleted or becomes corrupted, we can create a new EBS volume from the snapshot and use the data again.
+

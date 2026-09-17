@@ -1,0 +1,276 @@
+As of now, we have used EBS as a disk or storage.
+
+The question arises whether EBS disk works in same speed or not?
+
+There are different EBS volume types. Depending on their criteria, their performance and use cases are different.
+
+1. Consider there are 3 disks
+
+Disk A → normal speed
+Disk B → fast SSD
+Disk C → very fast SSD
+
+Now AWS EBS volume having similar concept
+
+Common types:
+
+| Type  | Simple meaning            | Common use                 |
+| ----- | ------------------------- | -------------------------- |
+| `gp3` | General-purpose SSD       | Most servers               |
+| `gp2` | Older general-purpose SSD | Older workloads            |
+| `io2` | High-performance SSD      | Critical databases         |
+| `st1` | HDD, high throughput      | Large sequential data      |
+| `sc1` | HDD, low cost             | Infrequently accessed data |
+
+For my lab, we'll focus mainly on gp3.
+
+2. What is IOPS?
+
+IOPS means:
+
+Input/Output Operations Per Second
+
+Baby language:
+
+Imagine a shop.
+
+Customer → Shopkeeper
+Customer → Shopkeeper
+Customer → Shopkeeper
+
+If the shopkeeper can serve:
+
+100 customers/second
+
+that's like higher IOPS.
+
+=> For storage:
+
+Application
+    ↓
+Read / Write requests
+    ↓
+EBS
+
+IOPS tells us roughly how many storage operations per second the volume can handle.
+
+=> Example
+1000 IOPS
+
+means the volume can handle about:
+
+1000 I/O operations per second
+
+3. What is Throughput?
+
+Throughput is different.
+
+It means:
+
+How much data can be transferred per second.
+
+Example:
+
+100 MB/s
+
+means:
+
+100 MB of data per second
+
+=> Simple difference:
+
+IOPS
+ ↓
+How many operations?
+
+Throughput
+ ↓
+How much data?
+
+4. Easy real-life example
+
+Imagine moving water.
+
+IOPS
+
+How many times can you open/close the tap?
+
+Open → Close
+Open → Close
+Open → Close
+
+That's like IOPS.
+
+Throughput
+
+How much water comes through the pipe per second?
+
+10 litres/second
+
+That's like throughput.
+
+5. Lab Part
+
+I'll create a small gp3 EBS volume and inspect its settings.
+
+Step 1 — AWS Console
+
+Go to:
+
+AWS Console → EC2 → Elastic Block Store → Volumes
+
+Click:
+
+Create volume
+
+Choose:
+
+Volume type: gp3
+Size: 10 GiB
+
+Keep the default IOPS and throughput for now.
+
+Choose the same Availability Zone as your EC2.
+
+For example:
+
+EC2
+ap-south-1a
+
+EBS
+ap-south-1a
+
+Why same AZ?
+
+Because an EBS volume is attached to an EC2 instance in the same Availability Zone.
+
+Step 2 — Attach it
+
+Select the new volume:
+
+Actions → Attach volume
+
+Select your EC2 instance.
+
+AWS may show a device name such as:
+
+/dev/sdf
+
+Click Attach volume.
+
+Step 3: Find it in Ubuntu
+
+SSH into your EC2 and run:
+
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINTS
+
+You'll see a new disk, probably something like:
+
+nvme6n1    10G
+
+⚠️ Don't assume the name.
+
+AWS device /dev/sdf can appear inside Linux as something like:
+
+/dev/nvme6n1
+
+That's normal with Nitro-based EC2 instances.
+
+Step 4: Identify the AWS volume
+
+Run:
+
+ls -l /dev/disk/by-id/ | grep "vol"
+
+Find the new volume ID.
+
+For example:
+
+nvme-Amazon_Elastic_Block_Store_volXXXXXXXX
+    ↓
+../../nvme6n1
+
+Now we know:
+
+AWS EBS Volume
+      ↓
+volXXXXXXXX
+      ↓
+/dev/nvme6n1
+
+Step 5: Check filesystem
+
+Run:
+
+sudo blkid /dev/nvme6n1
+
+Because this is a brand-new EBS volume, it probably won't have a filesystem yet.
+
+That's okay.
+
+Step 6: Create filesystem
+
+⚠️ This command is safe only because this is the NEW 10 GiB gp3 volume.
+
+First make absolutely sure you're using the new volume.
+
+Then:
+
+sudo mkfs.ext4 /dev/nvme6n1
+
+Now it has an ext4 filesystem.
+
+Step 7: Mount it
+
+Create mount point:
+
+sudo mkdir /data-gp3
+
+Mount:
+
+sudo mount /dev/nvme6n1 /data-gp3
+
+Check:
+
+df -h /data-gp3
+
+You should see approximately:
+
+/dev/nvme6n1    10G    ...    ...    ...    /data-gp3
+
+Step 8: Test the disk
+
+Create some data:
+
+echo "Testing gp3 EBS volume" | sudo tee /data-gp3/test.txt
+
+Check:
+
+cat /data-gp3/test.txt
+
+Output:
+
+Testing gp3 EBS volume
+
+Your gp3 EBS volume is working.
+
+Step 9: Check EBS settings
+
+Go back to:
+
+AWS Console → EC2 → Volumes
+
+Select your new volume.
+
+You'll see things such as:
+
+Volume type: gp3
+Size: 10 GiB
+
+=> So when someone says:
+
+"We are using gp3 EBS volumes."
+
+you understand that gp3 is an SSD-based general-purpose EBS volume type, and its performance can be configured in terms of IOPS and throughput.
+IOPS: ...
+Throughput: ... MiB/s

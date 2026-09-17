@@ -1,0 +1,350 @@
+EBS store the data in encrypted format.
+
+Consider you have a notebook
+
+a) Normal disk:
+
+EC2 → EBS
+       ↓
+    Data
+       ↓
+  readable
+
+b) Encrypted EBS:
+
+EC2 → EBS
+       ↓
+  🔐 Encrypted Data
+
+Here data is not readable even if unauthorized person try to access the data.
+
+=> This will be flow of our lab
+
+Create encrypted EBS
+        ↓
+Attach to EC2
+        ↓
+Check encryption
+        ↓
+Format + mount
+        ↓
+Create test data
+        ↓
+Create snapshot
+        ↓
+Check snapshot encryption
+        ↓
+Create volume from snapshot
+        ↓
+Verify encryption
+
+Step 1: Create encrypted EBS
+
+AWS Console mein:
+
+EC2 → Elastic Block Store → Volumes
+
+Click:
+
+Create volume
+
+Choose:
+
+Volume type: gp3
+Size: 10 GiB
+
+Then encryption section mein:
+
+Encrypt this volume: ✅
+
+For this lab, use the AWS-managed/default EBS encryption key if the console offers it.
+
+You may see something like:
+
+KMS key
+aws/ebs
+
+=> What is KMS?
+
+Very simple:
+
+KMS = AWS service that manages encryption keys.
+
+Think:
+
+KMS
+ ↓
+Encryption key 🔑
+ ↓
+EBS
+ ↓
+Encrypted data 🔐
+
+You don't need to learn KMS deeply right now.
+
+Step 2: Same Availability Zone
+
+Make sure the new EBS is in the same AZ as your EC2.
+
+For example:
+
+EC2
+ap-south-1a
+   │
+   ↓
+EBS
+ap-south-1a
+
+Then click Create volume.
+
+Step 3: Check encryption
+
+After creating the volume, select it.
+
+You should see:
+
+Volume type: gp3
+Size: 10 GiB
+Encrypted: Yes
+
+This is your first verification.
+
+Step 4: Attach it
+
+Select the volume:
+
+Actions → Attach volume
+
+Select your EC2.
+
+Then SSH into Ubuntu.
+
+Run:
+
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINTS
+
+You'll find your new 10G disk.
+
+For example:
+
+nvme6n1    10G
+
+⚠️ Don't assume nvme6n1. Your device name may be different.
+
+Step 5: Find the exact EBS volume
+
+Run:
+
+ls -l /dev/disk/by-id/ | grep "vol"
+
+Find the new volume ID and see which NVMe device it points to.
+
+For example:
+
+vol0abc123...
+       ↓
+/dev/nvme6n1
+
+Step 6: Create filesystem
+
+Because this is a brand-new EBS volume, we can format it.
+
+Suppose the new device is:
+
+/dev/nvme6n1
+
+Then:
+
+sudo mkfs.ext4 /dev/nvme6n1
+
+⚠️ Very important: Don't run this against:
+
+/dev/nvme0n1
+
+your root disk.
+
+And don't run it against your existing:
+
+/data-ebs
+/restore
+/data-lvm
+
+Step 7: Mount
+
+Create mount point:
+
+sudo mkdir /data-encrypted
+
+Mount:
+
+sudo mount /dev/nvme6n1 /data-encrypted
+
+Check:
+
+df -h /data-encrypted
+
+Step 8: Create test data
+echo "This is encrypted EBS data" | sudo tee /data-encrypted/test.txt
+
+Check:
+
+cat /data-encrypted/test.txt
+
+You should get:
+
+This is encrypted EBS data
+
+Step 9: Create snapshot
+
+Now go to:
+
+AWS Console → EC2 → Volumes
+
+Select your encrypted EBS volume.
+
+Choose:
+
+Actions → Create snapshot
+
+Give it a name such as:
+
+lab6-encrypted-ebs-snapshot
+
+Create it.
+
+Step 10: Check snapshot encryption
+
+Go to:
+
+EC2 → Elastic Block Store → Snapshots
+
+Find your snapshot.
+
+You should see:
+
+Encrypted: Yes
+
+So the flow becomes:
+
+Encrypted EBS
+     ↓
+Snapshot
+     ↓
+Encrypted Snapshot
+
+Step 11: Restore from snapshot
+
+Select the snapshot:
+
+Actions → Create volume from snapshot
+
+Create another EBS volume.
+
+AWS will preserve the encryption.
+
+So:
+
+Encrypted EBS
+      ↓
+Encrypted Snapshot
+      ↓
+New Encrypted EBS
+
+This is a very useful concept.
+
+Note:- Is a snapshot of an encrypted EBS encrypted?
+
+For an encrypted EBS snapshot, yes, the snapshot is encrypted.
+
+Step 12: Check new restored volume in AWS
+
+Go to:
+
+EC2 → Elastic Block Store → Volumes
+
+Find the new volume created from the snapshot.
+
+Check:
+
+Volume type → gp3
+Size        → 10 GiB
+Encrypted   → Yes
+State       → Available
+
+If it shows Encrypted = Yes, the encryption part is confirmed.
+
+Step 13: Attach the restored volume
+
+Select the new volume:
+
+Actions → Attach volume
+
+Select your EC2 instance.
+
+Then SSH into Ubuntu.
+
+Run:
+
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINTS
+
+Find the new 10 GiB disk.
+
+For example:
+
+nvme7n1   10G   ext4
+
+⚠️ Your device may have a different name. Don't assume nvme7n1.
+
+Step 14: Mount the restored volume
+
+First create a mount point:
+
+sudo mkdir /restore-encrypted
+
+Then, assuming the new device is /dev/nvme7n1:
+
+sudo mount /dev/nvme7n1 /restore-encrypted
+
+Check:
+
+df -h /restore-encrypted
+
+You should see:
+
+/dev/nvme7n1    10G    ...    ...    ...    /restore-encrypted
+
+Step 15: Check the recovered data
+
+This is the most important verification.
+
+Run:
+
+ls -l /restore-encrypted
+
+You should see your previous test file:
+
+test.txt
+
+Then:
+
+cat /restore-encrypted/test.txt
+
+Expected:
+
+This is encrypted EBS data
+
+=> Now you've proved:
+
+Encrypted EBS
+      ↓
+Encrypted Snapshot
+      ↓
+New EBS Volume
+      ↓
+Attach
+      ↓
+Mount
+      ↓
+Original data recovered
+
+Important: For this restored volume, don't run mkfs.ext4. The filesystem and data already came from the snapshot.

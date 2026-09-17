@@ -1,0 +1,630 @@
+What does "persistent" mean?
+
+Persistent = something that stays/remains even after a reboot.
+
+Imagine you have an EBS disk:
+
+EC2
+ │
+ └── EBS Volume
+       │
+       └── /data-ebs
+
+You mounted the EBS volume manually:
+
+sudo mount /dev/nvme1n1 /data-ebs
+
+Now /data-ebs is accessible.
+
+What does "persistent" mean?
+
+Persistent = something that stays/remains even after a reboot.
+
+Imagine you have an EBS disk:
+
+EC2
+ │
+ └── EBS Volume
+       │
+       └── /data-ebs
+
+You mounted the EBS volume manually:
+
+sudo mount /dev/nvme1n1 /data-ebs
+
+Now /data-ebs is accessible.
+
+=> In my case, when I run lsblk:
+
+nvme0n1   8G
+├─nvme0n1p1   6.9G   /
+├─nvme0n1p13  1023M  /boot
+└─nvme0n1p15  106M   /boot/efi
+
+nvme2n1   20G
+
+nvme1n1   12G
+└─datavg-datalv 20G
+
+nvme4n1   10G
+└─datavg-datalv 20G
+
+nvme3n1   20G
+
+So:
+
+nvme0n1 = ROOT → DON'T TOUCH
+
+nvme1n1 12G ─┐
+             ├── LVM datavg → datalv 20G
+nvme4n1 10G ─┘
+
+nvme2n1 20G = separate EBS
+nvme3n1 20G = separate EBS
+
+=> But because there is no filesystem/mountpoint shown:
+
+nvme3n1  20G  disk
+
+it isn't currently mounted.
+
+Similarly, your LVM exists:
+
+datavg-datalv  20G
+
+but there's no mountpoint after it.
+
+Therefore df -h doesn't show it.
+
+=> Why isn't df -h showing them?
+
+Because lsblk and df -h show different things.
+
+Think:
+
+lsblk
+  ↓
+"What disks/devices do I have?"
+
+df -h
+  ↓
+"What filesystems are currently mounted?"
+
+=> So what do we want?
+
+We want Linux to remember:
+
+"Whenever this server starts, automatically mount this EBS volume at /data-ebs."
+
+That's called a persistent mount.
+
+We configure this using:
+
+/etc/fstabServer starts
+     ↓
+Linux reads /etc/fstab
+     ↓
+Finds the EBS volume
+     ↓
+Mounts it
+     ↓
+/data-ebs is available
+
+So think of /etc/fstab as a to-do list for Linux when it boots.
+
+Step 1: I've run these commands so that it will explain exactly which disk is which and we'll set up /etc/fstab properly so that after the next reboot:
+
+/data-ebs   → automatically mounted
+/data-lvm   → automatically mounted
+
+sudo blkid
+sudo pvs
+sudo vgs
+sudo lvs
+
+Explaination:- /dev/nvme1n1  12G ──┐
+                   ├── datavg → datalv 20G
+/dev/nvme4n1  10G ──┘
+
+pvs confirms:
+
+PV           VG      PSize     PFree
+nvme1n1      datavg   <12G       0
+nvme4n1      datavg   <10G       1.99G
+
+So:
+
+Total VG = 21.99G
+LV       = 20G
+Free     = 1.99G
+
+This is exactly what we expected.
+
+Step 2: /dev/mapper/datavg-datalv is your LVM filesystem
+
+blkid says:
+
+/dev/mapper/datavg-datalv
+UUID="b6562be5-bb19-490f-990b-100d307d8ca6"
+TYPE="ext4"
+
+So your LVM logical volume has an ext4 filesystem, but currently it is not mounted.
+
+That's why df -h didn't show it.
+
+Step 3: Now the interesting part: your two 20G disks
+
+You have:
+
+/dev/nvme2n1  UUID="eb97baf4..." TYPE="ext4"
+/dev/nvme3n1  UUID="eb97baf4..." TYPE="ext4"
+
+Both have the same filesystem UUID.
+
+This strongly indicates they are the original and snapshot-restored copies of the same filesystem.
+
+That's why we should NOT put both into /etc/fstab using their UUID.
+
+If both are mounted using the same UUID, you'll have a conflict.
+
+Step 4: First, let's identify which 20G volume is currently supposed to be /data-ebs
+
+Run:
+
+sudo mkdir -p /data-ebs
+sudo mkdir -p /restore
+
+Then don't mount anything yet.
+
+Run: identifies which filesystem/data are present inside disk (-s)
+This we are checking because we ahve 2 UUID's for 2 separate EBS volumes (original and restore volume from snapshot)
+
+sudo file -s /dev/nvme2n1 -> means nvme2 has an ext4 file system (showing in output)
+sudo file -s /dev/nvme3n1
+
+And:
+
+ls -l /dev/disk/by-id/ | grep nvme -> this disk contains which EBS volume
+
+Send me the output.
+
+Then we'll identify:
+
+nvme2n1 = original EBS
+nvme3n1 = snapshot restored EBS
+
+Your current EBS mapping
+
+From /dev/disk/by-id/:
+
+| Linux device | AWS EBS Volume ID | Size | Purpose                    |
+| ------------ | ----------------- | ---: | -------------------------- |
+| `nvme0n1`    | `vol09d996...`    |   8G | Root disk                  |
+| `nvme1n1`    | `vol0ba3f...`     |  12G | LVM PV                     |
+| `nvme4n1`    | `vol0269...`      |  10G | LVM PV                     |
+| `nvme2n1`    | `vol0ca4...`      |  20G | Direct EBS                 |
+| `nvme3n1`    | `vol03c4...`      |  20G | Direct EBS / snapshot copy |
+
+And:
+
+nvme1n1 12G ─┐
+             ├── datavg → datalv 20G
+nvme4n1 10G ─┘
+
+So LVM is fine.
+
+But we still need to know which 20G is original vs snapshot
+
+Both:
+
+/dev/nvme2n1
+/dev/nvme3n1
+
+have the same filesystem UUID:
+
+eb97baf4-1143-4276-8071-07db842e22a0
+
+That's because the snapshot is a copy of the original filesystem.
+
+So don't use UUID to distinguish these two.
+
+The easiest way is AWS Console:
+
+EC2 → Elastic Block Store → Volumes
+
+Find:
+
+vol0ca4e0e03074422c2
+
+This is:
+
+/dev/nvme2n1
+
+And:
+
+vol03c4a13c7eb6a11cf
+
+is:
+
+/dev/nvme3n1
+
+So our final setup will be:
+
+Original EBS
+/dev/nvme2n1
+      ↓
+/data-ebs
+
+
+Snapshot restored EBS
+/dev/nvme3n1
+      ↓
+/restore
+
+Step 5: 
+
+a) Mount Original EBS 
+sudo mount /dev/nvme2n1 /data-ebs
+
+Check:
+
+df -h /data-ebs
+
+Expected:
+
+/dev/nvme2n1   ~20G   ...   /data-ebs
+
+b) Mount snapshot restored volume
+
+sudo mount /dev/nvme3n1 /restore
+
+Check:
+
+df -h /restore
+
+Expected:
+
+/dev/nvme3n1   ~20G   ...   /restore
+
+=> check your recover data
+
+ls -l /data-ebs
+
+and:
+
+ls -l /restore
+
+------------
+
+In my case, I didn't got application folder inside /restore
+
+Step 1 — umount Current restore
+sudo umount /restore
+
+Check:
+
+df -h
+
+You will not see /restore in "df -h".
+
+Step 2 — create test data at Original volume 
+
+sudo mkdir -p /data-ebs/application
+echo "Production application data" | sudo tee /data-ebs/application/data.txt
+echo "Database backup information" | sudo tee /data-ebs/application/backup.txt
+
+Verify:
+
+ls -l /data-ebs/application
+
+and:
+
+cat /data-ebs/application/data.txt
+cat /data-ebs/application/backup.txt
+
+Step 3 — Create snapshot
+
+Go to AWS Console:
+
+EC2 → Elastic Block Store → Volumes
+
+Select:
+
+Original 20 GiB volume
+vol0ca4e0e03074422c2
+
+Then:
+
+Actions → Create snapshot
+
+Description:
+
+EBS-Lab2-Application-Backup
+
+Wait until snapshot becomes Completed.
+
+Step 4 — Simulate data loss
+
+After snapshot is completed:
+
+sudo rm -rf /data-ebs/application
+
+Check:
+
+ls -l /data-ebs
+
+application folder will disappear.
+
+Step 5 — create volume from snapshot
+
+AWS:
+
+Snapshots → select EBS-Lab2-Application-Backup → Actions → Create volume from snapshot
+
+Use:
+
+Size: 20 GiB
+Availability Zone: same as your EC2
+Volume type: same/general-purpose
+
+Create volume.
+
+Step 6 — New volume attach karo
+
+Attach it to the same EC2.
+
+Then run this command to find new device
+
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINTS
+
+Step 7: Check AWS Volume IDs
+
+Run:
+
+ls -l /dev/disk/by-id/ | grep "vol"
+
+This will show something like:
+
+nvme-Amazon_Elastic_Block_Store_volXXXXXXXX -> ../../nvme3n1
+nvme-Amazon_Elastic_Block_Store_volYYYYYYYY -> ../../nvme5n1
+
+Then compare those Volume IDs with AWS Console.
+
+My output is
+
+ubuntu@ip-172-31-5-245:~$ ls -l /dev/disk/by-id/ | grep "vol"
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol0269b3f05a187ab38 -> ../../nvme4n1
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol0269b3f05a187ab38_1 -> ../../nvme4n1
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol03c4a13c7eb6a11cf -> ../../nvme3n1
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol03c4a13c7eb6a11cf_1 -> ../../nvme3n1
+lrwxrwxrwx 1 root root 13 Sep 16 23:43 nvme-Amazon_Elastic_Block_Store_vol07e7c65690334c558 -> ../../nvme5n1
+lrwxrwxrwx 1 root root 13 Sep 16 23:43 nvme-Amazon_Elastic_Block_Store_vol07e7c65690334c558_1 -> ../../nvme5n1
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74 -> ../../nvme0n1
+lrwxrwxrwx 1 root root 15 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74-part1 -> ../../nvme0n1p1
+lrwxrwxrwx 1 root root 16 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74-part13 -> ../../nvme0n1p13
+lrwxrwxrwx 1 root root 16 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74-part14 -> ../../nvme0n1p14
+lrwxrwxrwx 1 root root 16 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74-part15 -> ../../nvme0n1p15
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74_1 -> ../../nvme0n1
+lrwxrwxrwx 1 root root 15 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74_1-part1 -> ../../nvme0n1p1
+lrwxrwxrwx 1 root root 16 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74_1-part13 -> ../../nvme0n1p13
+lrwxrwxrwx 1 root root 16 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74_1-part14 -> ../../nvme0n1p14
+lrwxrwxrwx 1 root root 16 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol09d996b884a346a74_1-part15 -> ../../nvme0n1p15
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol0ba3f396ae095b4fc -> ../../nvme1n1
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol0ba3f396ae095b4fc_1 -> ../../nvme1n1
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol0ca4e0e03074422c2 -> ../../nvme2n1
+lrwxrwxrwx 1 root root 13 Sep 16 22:28 nvme-Amazon_Elastic_Block_Store_vol0ca4e0e03074422c2_1 -> ../../nvme2n1
+
+Your mapping is:
+
+vol0ca4e0e03074422c2 → /dev/nvme2n1 → Original EBS → /data-ebs
+
+vol03c4a13c7eb6a11cf → /dev/nvme3n1 → Old snapshot-restored volume
+
+vol07e7c65690334c558 → /dev/nvme5n1 → NEW snapshot-restored volume
+
+Important: nvme5n1 is the new volume you just created from the latest snapshot.
+------------
+
+-------------
+
+Step 1 — Mount the NEW restored volume
+
+You already created /restore, so run:
+
+sudo mount /dev/nvme5n1 /restore
+
+Step 2 — Check
+df -h /restore
+
+You should see something similar to:
+
+/dev/nvme5n1   20G   ...   /restore
+
+Step 3 — Check the recovered application
+ls -l /restore
+
+Then:
+
+ls -l /restore/application
+
+And finally:
+
+cat /restore/application/data.txt
+cat /restore/application/backup.txt
+
+Note:- Why nvme5n1 and not nvme3n1?
+
+Because you currently have two restored/duplicate 20G volumes:
+
+nvme3n1 → old restored volume
+nvme5n1 → new restored volume from the snapshot we just created
+
+We want to test the new snapshot, so use:
+
+sudo mount /dev/nvme5n1 /restore
+
+---------------
+
+=> Why we'll use /dev/disk/by-id/
+
+Normally you might use UUID in /etc/fstab.
+
+But in your lab, the original EBS and snapshot-restored EBS are cloned filesystems, so they can have the same filesystem UUID.
+
+Therefore, for these two EBS volumes, using the AWS volume-specific by-id path is safer.
+
+Step 6: Backup /etc/fstab
+
+Before changing anything:
+
+sudo cp /etc/fstab /etc/fstab.bak
+
+Check it:
+
+cat /etc/fstab
+
+Step 7: I have added your 3 data mounts:
+
+EBS original       → /data-ebs
+EBS restored       → /restore
+LVM datalv         → /data-lvm
+
+verify:
+
+ls -ld /data-ebs /restore /data-lvm
+
+You should see all three directories.
+
+Step 8: Open /etc/fstab file and add these 3 lines at bottom
+
+/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol0ca4e0e03074422c2 /data-ebs ext4 defaults,nofail 0 2
+/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol07e7c65690334c558 /restore ext4 defaults,nofail 0 2
+/dev/mapper/datavg-datalv /data-lvm ext4 defaults,nofail 0 2
+
+=> What each line means
+
+For example:
+
+/dev/disk/by-id/...vol0ca4e0e03074422c2
+        ↓
+your original EBS volume
+        ↓
+/data-ebs
+
+And:
+
+/dev/disk/by-id/...vol07e7c65690334c558
+        ↓
+your snapshot-restored EBS volume
+        ↓
+/restore
+
+And:
+
+/dev/mapper/datavg-datalv
+        ↓
+your LVM logical volume
+        ↓
+/data-lvm
+
+run to process mount
+
+sudo mount -a
+
+Output:
+ubuntu@ip-172-31-5-245:~$ sudo mount -a
+mount: (hint) your fstab has been modified, but systemd still uses
+       the old version; use 'systemctl daemon-reload' to reload.
+
+Note:-
+mount attaches the actual filesystem/disk to that folder
+/etc/fstab tells Linux to automatically mount it after reboot
+
+=> it's warning for systemd reload updated fstab file.
+
+Reload the system
+
+sudo systemctl daemon-reload
+
+=> sudo mount -a
+
+Check mounts
+
+Run:
+
+df -h
+
+Step 9: Step 6 — Verify the actual data
+
+Before rebooting, let's make sure the data is still accessible.
+
+Run:
+
+ls -l /data-ebs
+ls -l /restore
+ls -l /data-lvm
+
+Especially check the recovered snapshot:
+
+ls -l /restore/application
+
+-----------------
+The important point is:
+
+/data-ebs and /restore are two different disks
+
+You currently have:
+
+/data-ebs
+   ↓
+Original EBS volume
+   ↓
+vol0ca4e0e03074422c2
+
+and:
+
+/restore
+   ↓
+Snapshot-restored EBS volume
+   ↓
+vol07e7c65690334c558
+
+Your output confirms:
+
+/data-ebs
+├── lost+found
+└── test-ebs-file
+
+while:
+
+/restore
+├── application
+├── lost+found
+└── test-ebs-file
+
+So the recovered application directory is on /restore, not /data-ebs.
+
+=> Why?
+
+Remember Lab 2:
+
+We deliberately simulated data loss on the original EBS:
+
+Original EBS
+/data-ebs
+    ↓
+application/
+    ↓
+DELETE application/
+
+Then we restored the data from the snapshot:
+
+Snapshot
+   ↓
+New EBS
+   ↓
+/restore
+   ↓
+application/    ← recovered
+
+-------------

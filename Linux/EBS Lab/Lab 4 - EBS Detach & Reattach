@@ -1,0 +1,269 @@
+=> Learn how to remove an EBS disk from an EC2 and attach the same disk again
+
+Think of EBS like an external hard disk connected to your EC2.
+
+EC2 Server
+    │
+    │ attached
+    ↓
+EBS Volume
+    │
+    ↓
+/data-ebs
+
+We will temporarily disconnect that EBS disk and then connect it again.
+
+=> Lab Flow
+
+EBS Volume
+    ↓
+Mounted on /data-ebs
+    ↓
+Unmount
+    ↓
+Detach from EC2
+    ↓
+Disk disappears from Linux
+    ↓
+Attach same EBS again
+    ↓
+Disk appears again
+    ↓
+Mount it
+    ↓
+Check data
+
+The important thing we learn is:
+
+Detach does NOT mean delete.
+
+Detach means:
+
+EC2  ✖──── EBS
+
+The EBS volume still exists in AWS.
+
+Later we attach it again:
+
+EC2  ─────→ EBS
+
+And the data should still be there.
+
+=> My Lab Setup
+
+I will use your original EBS:
+
+Volume ID:
+vol0ca4e0e03074422c2
+
+Currently:
+
+EBS
+ ↓
+/dev/nvme2n1
+ ↓
+/data-ebs
+
+Do NOT touch:
+
+/dev/nvme0n1
+
+because that's your EC2 root disk.
+
+Step 1 — Check the data
+
+First let's make sure /data-ebs is currently mounted.
+
+Run:
+
+df -h /data-ebs
+
+You should see something similar to:
+
+Filesystem       Size  Used Avail Use% Mounted on
+/dev/nvme2n1      20G  ...   ...   ... /data-ebs
+
+Now:
+
+ls -l /data-ebs
+
+You should see:
+
+lost+found
+test-ebs-file
+
+This proves the EBS disk is currently connected and mounted.
+
+Step 2 — Unmount the EBS
+
+Before AWS can safely detach the volume, Linux should stop using it.
+
+Run:
+
+sudo umount /data-ebs
+What does umount mean?
+
+Simple:
+
+mount
+  =
+connect disk to folder
+
+umount
+  =
+disconnect disk from folder
+
+After unmounting:
+
+EBS disk
+   ↓
+/dev/nvme2n1
+
+but
+
+/data-ebs
+   ↓
+not mounted
+
+Check:
+
+df -h /data-ebs
+
+It should no longer show /dev/nvme2n1 mounted there.
+
+Step 3 — Check lsblk
+
+Run:
+
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINTS
+
+You may still see:
+
+nvme2n1   20G   ext4
+
+but the MOUNTPOINTS column will be empty.
+
+This is important:
+
+Unmount does not remove the disk.
+
+It only removes the connection between the filesystem and /data-ebs.
+
+Step 4 — Detach from AWS
+
+Now go to:
+
+AWS Console → EC2 → Elastic Block Store → Volumes
+
+Find:
+
+vol0ca4e0e03074422c2
+
+Right-click → Detach volume
+
+Confirm the detach.
+
+Wait until its state becomes:
+
+Available
+
+=> What happened?
+
+Before:
+
+EC2
+ │
+ └── vol0ca4e0e03074422c2
+
+After detach:
+
+EC2
+
+        vol0ca4e0e03074422c2
+        Available
+
+The EBS still exists.
+
+We did NOT delete it.
+
+Step 5 — Check Linux
+
+Back in Ubuntu:
+
+lsblk
+
+You should no longer see the 20G original EBS disk.
+
+Your root disk and LVM disks will still be there.
+
+This demonstrates:
+
+AWS detach
+     ↓
+Linux loses the block device
+
+Step 6 — Attach the same EBS again
+
+In AWS Console:
+
+EC2 → Elastic Block Store → Volumes
+
+Select:
+
+vol0ca4e0e03074422c2
+
+Then:
+
+Actions → Attach volume
+
+Select your same EC2 instance.
+
+For device name, AWS may show something like:
+
+/dev/sdf
+
+Wait until:
+
+State = In-use
+
+Step 7 — Find the disk in Linux
+
+Now run:
+
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINTS
+
+The EBS should appear again.
+
+Don't assume it will always be /dev/nvme2n1.
+
+After detach/reattach, Linux/AWS can give it a different NVMe device name.
+
+=> /dev/disk/by-id/
+
+Step 8 — Mount it again
+
+Suppose it comes back as:
+
+/dev/nvme2n1
+
+Then:
+
+sudo mount /dev/nvme2n1 /data-ebs
+
+If it comes back as another device, for example:
+
+/dev/nvme3n1
+
+then use:
+
+sudo mount /dev/nvme3n1 /data-ebs
+
+Use whichever device actually belongs to vol0ca4e0e03074422c2.
+
+then use:
+
+sudo mount /dev/nvme3n1 /data-ebs
+
+Use whichever device actually belongs to vol0ca4e0e03074422c2.
+Click Attach volume.
+

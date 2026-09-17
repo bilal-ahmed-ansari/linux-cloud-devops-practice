@@ -267,3 +267,41 @@ sudo mount /dev/nvme3n1 /data-ebs
 Use whichever device actually belongs to vol0ca4e0e03074422c2.
 Click Attach volume.
 
+Note:-
+
+1. sudo udevadm settle
+
+=> Whatever disk has been attached, it will detect and process that disk. "udev" create entries like /dev/... and manage it.
+
+So:
+
+EBS attach
+   ↓
+Linux detects disk
+   ↓
+udev processes disk
+   ↓
+/dev/nvme2n1
+/dev/disk/by-id/...
+
+udevadm settle basically waits until pending udev work is finished.
+
+2. Find the identity information of disk
+
+udevadm info --query=property --name=/dev/nvme2n1 | grep -E 'ID_SERIAL|ID_WWN'
+
+=> Breakdown: udevadm info
+    ↓
+device ki information
+
+--query=property
+    ↓
+properties show karo
+
+--name=/dev/nvme2n1
+    ↓
+specifically show the information of this disk
+
+grep -E 'ID_SERIAL|ID_WWN'
+    ↓
+show only Serial/WWN related information 

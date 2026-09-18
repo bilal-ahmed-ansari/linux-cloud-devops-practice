@@ -1,133 +1,23 @@
-1. A Domain Controller (DC) is a server that runs Active Directory services and is responsible for managing and verifying users, computers, and access in an Active Directory domain.
+login computers: channel name
 
-2. What does a Domain Controller actually do?
+When we install AD DS (Active Directory domain service) in server OS that machine become Domain Controller.
 
-=> Authenticates users 🔐
+AD DS is a service developed by Microsoft.
 
-Suppose you log in to a company computer:
+Install Microsoft server edition like 2012R2, 2016,2019,2022 on server.
+Install service which is known as AD DS
 
-Username: bilal
-Password: ********
+DC is resposible to check authentication. If any user trying to logging in system in network, request goes to DC, DC will check if that username and password is present in DB (reside in AD) or not.
 
-The computer can contact the Domain Controller:
+IF it is, DC authenticates and allow user to login over a network.
 
-Computer
-   ↓
-Domain Controller
-   ↓
-"Is Bilal's username/password valid?"
-   ↓
-Yes
-   ↓
-Login allowed
+Centralized management of network resources such as users, computers, printers, group
 
-This is called authentication.
+If user forget his password, then you can reset password on server itself through DC
 
-=> Manage User:
+Using DC, we deploy software utilities on network. Eg I want to install chrome on computers. The one way is to do manually but if I have 50 PC's, then this concept occurs when user login.
 
-bilal
-ahmed
-john
-admin
-
-Administrators can create, disable, reset, or manage these accounts.
-
-=> Manages groups
-
-For example:
-
-Linux-Admins
-Developers
-HR
-Finance
-
-A user can belong to one or more groups.
-
-For example:
-
-Bilal
-  ↓
-Linux-Admins
-
-This group membership can be used to control access.
-
-=> Manages computers
-
-Company computers can join the domain.
-
-For example:
-
-Company Domain
-      |
-      ├── PC-01
-      ├── PC-02
-      ├── PC-03
-      └── Server-01
-
-The organization can centrally manage these computers.
-
-3. What happens when a user logs in?
-
-A simplified example:
-
-             User
-              |
-              | username + password
-              ↓
-         Windows PC
-              |
-              | authentication request
-              ↓
-       Domain Controller
-              |
-              ↓
-       Active Directory
-              |
-       Check the account
-              |
-          ┌───┴───┐
-          ↓       ↓
-       Valid    Invalid
-          ↓       ↓
-        Login   Denied
-
-So the Domain Controller is the server that handles domain authentication and related directory services.
-
-3. Domain Controller vs Active Directory
-
-This is another common confusion.
-
-a) Active Directory
-
-Think of it as the directory/service system.
-
-It contains information about:
-
-Users
-Groups
-Computers
-Policies
-
-b) Domain Controller
-
-Think of it as the server providing those Active Directory domain services.
-
-4. Can there be more than one Domain Controller?
-
-Yes.
-
-Companies usually have multiple DCs for redundancy and availability.
-
-For example:
-
-             Active Directory Domain
-                       |
-             ┌─────────┴─────────┐
-             ↓                   ↓
-           DC-01               DC-02
-             |                   |
-             └─────────┬─────────┘
-                       ↓
-                 Company PCs
-
-If DC-01 has a problem, DC-02 can continue providing domain services, depending on the environment and configuration.
+Manage Group Policy which is applied on user, PC's through AD
+like policies appplied on desktop, wallpaper
+block control panel
+Block C, D drive, notepad

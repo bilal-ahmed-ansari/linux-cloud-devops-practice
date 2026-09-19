@@ -3,3 +3,9 @@ AD is onpremise technology whereas Azure AD is a cloud technology.
 Suppose laptop have local admin account. Now local admin needs to manage 100 computers, identify which users what things they need to do on PC, so they can do restiction in order to access something, do monitoring. These things are provided vy AD.
 
 AD is a directory where we create users and we join machine inside domain.
+
+AD server is a Domain controller. Here, you can see users, computers, printers under the database. also we register printer inside domain. It's AD domain called DC.
+
+From centralized DB, we manage user's, computers. If we want to block right click, block control panel or admin rights on system, you can do through GPU located in AD. AD force GPU to apply conditions.
+
+AD know "name". To convert name to ip and vice versa, this is done by dns server.

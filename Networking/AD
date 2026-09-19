@@ -9,3 +9,15 @@ AD server is a Domain controller. Here, you can see users, computers, printers u
 From centralized DB, we manage user's, computers. If we want to block right click, block control panel or admin rights on system, you can do through GPU located in AD. AD force GPU to apply conditions.
 
 AD know "name". To convert name to ip and vice versa, this is done by dns server.
+
+system "A" wants to ping another machine "B". So system "A" has tcp/ip where it is showing ourdns address details. request goes to this dns address and from here, we find another machine "B". ITs kind of request resolve.
+
+All names of dc, dns, routers, switches are present in centralized DB. 
+
+In dns, names and ip will be shown. 
+
+ad works on basis of name, network devices work on ip address. dns communicate bwtween ad and network devices.
+
+Consider there is one machine having domain controller (xyz.com), where you need to install ADDS. To know domain name, xyz is a name of the domain. the first dc is called forest domain controller.
+
+before install dc, microsoft suggested to install dns role before installing ad so that it can integrate with AD DNS.

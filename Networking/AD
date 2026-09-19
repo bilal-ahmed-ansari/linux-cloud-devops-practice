@@ -21,3 +21,34 @@ ad works on basis of name, network devices work on ip address. dns communicate b
 Consider there is one machine having domain controller (xyz.com), where you need to install ADDS. To know domain name, xyz is a name of the domain. the first dc is called forest domain controller.
 
 before install dc, microsoft suggested to install dns role before installing ad so that it can integrate with AD DNS.
+
+to use ad, use integrated dns. means dc has 2 roles
+a) AD DS role
+b) DNS role
+
+select server roles as 
+a)AD DS
+b)DNS server
+
+1st dc is considered as a forest DC.
+
+For lab practice, install AD DNS, add new forest with domain name as "XYZ.com". 
+
+Here netbios name: XYZ
+
+Also it shows path for dabase folder, log file folder, SYSVOL folder. 
+
+In review options, click on "View Script" where you can save the script and use that same script while creating another DC.
+
+=> check if AD DS role is installed or not?
+
+Sol:- open cmd
+run "net accounts" -> If you will see primary role, then AD DS role will installed.
+
+OR go to server manager > top right side, click on Manage > remove roles and features
+
+=> go to c:\\windows\debug\dcpromo -> it show info like dns name, netbios name 
+OR
+go to event viewer > left side, go to application and services log > directory service.
+
+To verify everything is installed in machine, go to Tools on top right side

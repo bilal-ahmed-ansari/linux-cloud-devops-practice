@@ -51,4 +51,16 @@ OR go to server manager > top right side, click on Manage > remove roles and fea
 OR
 go to event viewer > left side, go to application and services log > directory service.
 
-To verify everything is installed in machine, go to Tools on top right side
+To verify everything is installed in machine, go to Tools on top right side.
+
+Click Tools on top right hand side and refer these:-
+AD Administrative task
+AD Domain and Trust: It trust other domain
+AD user and computer: Manage user and computer.
+ADSI edit: Edit at partition level.
+AD Site and Services: Consider there are 2 DC (delhi and mumbai). We can add the subnet for these domain, add these DC's to our site and maintain proper relationship.
+DNS: you will see server name and primary zome (domain name)
+
+To verify if DNS is installed, run "net accounts" on CMD.
+You can check on Event Viewer.
+

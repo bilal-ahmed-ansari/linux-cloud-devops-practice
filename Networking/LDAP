@@ -232,3 +232,24 @@ Active Directory
        ├── DNS → name resolution
        |
        └── Group Policy → centralized configuration
+
+9. What is OpenLDAP then?
+
+You may hear about OpenLDAP when learning Linux.
+
+OpenLDAP is an open-source LDAP directory server.
+
+So:
+
+LDAP
+  ↓
+Protocol
+
+OpenLDAP
+  ↓
+LDAP directory server
+
+Active Directory
+  ↓
+Microsoft directory service
+that supports LDAP

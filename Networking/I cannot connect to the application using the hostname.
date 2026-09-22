@@ -1,29 +1,245 @@
-You can troubleshoot:
+Suppose you have an application server:
+
+Hostname: appserver
+IP:       192.168.1.50
+
+You can connect using IP:
+
+ssh user@192.168.1.50
+
+but this doesn't work:
+
+ssh user@appserver
+
+That means the problem may be hostname → IP resolution.
+
+1. First understand what is happening
+
+When you type:
+
+ssh user@appserver
+
+Linux needs to know:
+
+"What IP address belongs to appserver?"
+
+For example:
+
+appserver  →  192.168.1.50
+
+This is called name resolution.
+
+If Linux cannot find the IP, hostname connection won't work.
+
+2. First test — getent hosts
+
+Run:
 
 getent hosts appserver
 
-If it fails, check:
+a) Case 1 — You get an IP
+
+For example:
+
+192.168.1.50    appserver
+
+Good!
+
+This means:
+
+appserver
+   ↓
+192.168.1.50
+
+Linux can resolve the hostname.
+
+So DNS/name resolution is probably not the problem.
+
+b) Case 2 — Nothing comes back
+
+Example:
+
+$ getent hosts appserver
+
+$
+
+This means Linux could not find an IP for appserver.
+
+Now we investigate DNS/name resolution.
+
+3. Check /etc/resolv.conf
+
+Run:
 
 cat /etc/resolv.conf
 
-Then:
+You may see something like:
+
+nameserver 192.168.1.1
+
+The important part is:
+
+nameserver
+
+It tells Linux:
+
+"Which DNS server should I ask when I need to convert a hostname into an IP?"
+
+Think of it like:
+
+Your Linux machine
+       |
+       | "What is the IP of appserver?"
+       ↓
+DNS Server
+       |
+       ↓
+192.168.1.50
+
+If the DNS server is wrong/unreachable, hostname resolution can fail.
+
+4. Check resolvectl status
+
+Run:
 
 resolvectl status
 
-Then:
+This gives more information about DNS configuration.
+
+You may see something like:
+
+DNS Servers: 192.168.1.1
+
+or:
+
+DNS Servers: 8.8.8.8
+
+You can check:
+
+Which DNS server is being used
+Which network interface is using it
+
+5. Test with dig
+
+Now run:
 
 dig appserver
 
-Then check network connectivity.
+You are basically asking DNS:
 
-=> Simple troubleshooting flow
+"DNS, do you know the IP address of appserver?"
 
-Hostname not working
+If DNS knows it, you may get:
+
+ANSWER SECTION:
+
+appserver.     60    IN    A    192.168.1.50
+
+That means:
+
+appserver → 192.168.1.50
+
+DNS is working. ✅
+
+If dig says something like:
+status: NXDOMAIN
+
+It means:
+
+DNS does not know this hostname.
+
+So the problem is likely DNS/name registration.
+
+6. Then check network connectivity
+
+Suppose:
+
+getent hosts appserver
+
+returns:
+
+192.168.1.50    appserver
+
+Great.
+
+Now test whether you can reach the server:
+
+ping -c 4 appserver
+
+If you get:
+
+64 bytes from 192.168.1.50
+
+then the machine is reachable.
+
+7. But ping working doesn't always mean application works
+
+This is important.
+
+Suppose:
+
+appserver
+   ↓
+192.168.1.50
+   ↓
+Network works
+
+But the application is listening on port 8080.
+
+Test:
+
+nc -vz appserver 8080
+
+If successful:
+
+Connection to appserver 8080 port [tcp/*] succeeded!
+
+Then:
+
+Hostname resolution ✅
+Network connectivity ✅
+Port connectivity ✅
+
+If it fails, then investigate the application/service/firewall.
+
+=> Complete troubleshooting flow
+
+Think of it like this:
+
+You type:
+ssh user@appserver
+        |
         ↓
-Can the name resolve?
+Can Linux find the IP?
+        |
         ↓
 getent hosts appserver
+        |
+        +---- NO ----→ DNS problem
+        |               |
+        |               ├─ cat /etc/resolv.conf
+        |               |
+        |               ├─ resolvectl status
+        |               |
+        |               └─ dig appserver
+        |
+        YES
+        |
         ↓
-If no → Check DNS configuration
+Can you reach the server?
+        |
         ↓
-If yes → Check network/service
+ping appserver
+        |
+        YES
+        |
+        ↓
+Is the application port working?
+        |
+        ↓
+nc -vz appserver PORT
+        |
+        YES
+        |
+        ↓
+Check application/login

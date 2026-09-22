@@ -1,0 +1,234 @@
+1. What is LDAP?
+
+LDAP = Lightweight Directory Access Protocol
+
+Think of LDAP as a communication method/protocol used to access information stored in a directory.
+
+=> Real-life example
+
+Imagine your company has 500 employees:
+
+| Employee | Username | Department | Email                                         |
+| -------- | -------- | ---------- | --------------------------------------------- |
+| Bilal    | bilal    | IT         | [bilal@company.com](mailto:bilal@company.com) |
+| Rahul    | rahul    | HR         | [rahul@company.com](mailto:rahul@company.com) |
+| Ahmed    | ahmed    | Finance    | [ahmed@company.com](mailto:ahmed@company.com) |
+
+For eg:
+
+Application
+    |
+    | LDAP request
+    ↓
+Directory Server
+    |
+    ↓
+User information
+
+2. What is a Directory?
+
+A directory is basically a centralized database of users, computers, groups, etc.
+
+For example:
+
+Company
+│
+├── Users
+│   ├── Bilal
+│   ├── Rahul
+│   └── Ahmed
+│
+├── Groups
+│   ├── IT
+│   ├── HR
+│   └── Finance
+│
+└── Computers
+    ├── PC01
+    ├── PC02
+    └── PC03
+
+3. Where does LDAP come into the picture?
+
+Suppose an application wants to check:
+
+"Does user Bilal exist?"
+
+The application can communicate with the directory using LDAP.
+
+Application
+     |
+     | "Find Bilal"
+     ↓
+    LDAP
+     |
+     ↓
+Directory Server
+     |
+     ↓
+Bilal exists
+
+Or:
+
+"Is Bilal a member of the IT group?"
+
+Again, the application can use LDAP to query the directory.
+
+4. LDAP = protocol
+OpenLDAP / Active Directory = directory services/products
+
+Think about it like this:
+
+HTTP is a protocol.
+
+Apache/Nginx are web servers that use HTTP.
+
+Similarly:
+
+LDAP is a protocol.
+
+Active Directory is a directory service that supports LDAP.
+
+5. What is Active Directory?
+
+Active Directory (AD) is Microsoft's directory service.
+
+It stores information about:
+
+Users
+Computers
+Groups
+Printers
+Servers
+Organizational Units (OUs)
+Policies and other directory objects
+
+Eg:
+
+Company
+│
+├── IT
+│   ├── Bilal
+│   ├── Ahmed
+│   └── PC-01
+│
+├── HR
+│   ├── Rahul
+│   └── PC-02
+│
+└── Finance
+    └── PC-03
+
+AD is normally installed as a role on Windows Server, and the server becomes a Domain Controller (DC).
+
+6. So what is the relationship between LDAP and AD?
+
+This is the most important part.
+
+AD supports LDAP.
+
+For example:
+
+                    Active Directory
+                          │
+             ┌────────────┴────────────┐
+             │                         │
+            LDAP                   Kerberos
+             │                         │
+      Directory queries           Authentication
+
+AD uses multiple protocols/services.
+
+LDAP is one of them.
+
+7. LDAP VS AD
+
+| LDAP                                               | Active Directory                                                            |
+| -------------------------------------------------- | --------------------------------------------------------------------------- |
+| LDAP is a **protocol**                             | AD is a **directory service**                                               |
+| Used to communicate with a directory               | Stores and manages directory information                                    |
+| Not a complete directory service by itself         | Complete Microsoft directory solution                                       |
+| Can be used by many directory servers              | Microsoft's implementation                                                  |
+| Commonly used for directory queries/authentication | Provides users, groups, computers, domains, GPO, etc.                       |
+| Vendor-neutral                                     | Microsoft technology                                                        |
+| Can work with Linux applications                   | Primarily designed for Windows environments, but supports Linux integration |
+
+8. LDAP vs AD with a real company example
+
+Imagine your company has:
+
+Domain: company.local
+
+Users:
+    Bilal
+    Ahmed
+    Rahul
+
+Groups:
+    Linux-Admins
+    Windows-Admins
+    Developers
+
+Your company has an application.
+
+The application asks:
+
+"Is Bilal a valid company user?"
+
+It can communicate with AD using LDAP.
+
+Application
+     |
+     | LDAP
+     ↓
+Domain Controller
+     |
+     ↓
+Active Directory
+     |
+     ↓
+Bilal
+
+AD responds:
+
+Yes, Bilal exists.
+
+The application can also ask:
+
+"Which groups does Bilal belong to?"
+
+LDAP can be used to query that information from AD.
+
+=> LDAP can be involved in authentication.
+
+For example, an application might do:
+
+Username: bilal
+Password: ********
+       |
+       ↓
+Application
+       |
+       | LDAP
+       ↓
+Active Directory
+       |
+       ↓
+Check user/password
+       |
+       ↓
+Success / Failure
+
+AD also uses Kerberos extensively for Windows domain authentication. 
+
+In Windows domain
+
+Active Directory
+       |
+       ├── LDAP → directory access
+       |
+       ├── Kerberos → authentication
+       |
+       ├── DNS → name resolution
+       |
+       └── Group Policy → centralized configuration

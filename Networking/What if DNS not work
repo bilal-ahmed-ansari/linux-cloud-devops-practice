@@ -2,33 +2,50 @@ Suppose you run:
 
 ping google.com
 
-And get:
+And you get:
 
 Temporary failure in name resolution
 
-This means:
+=> What does this mean?
 
-Ubuntu could not find the IP address for google.com.
+It means Ubuntu is not able to convert google.com into its IP address.
 
-It does not automatically mean the internet is completely down.
+For example:
 
-Maybe:
+google.com  →  IP address
+
+DNS does this conversion.
+
+Important: This error does not always mean that the internet is completely down.
+
+There could be different reasons:
 
 DNS server is not reachable
-DNS configuration is wrong
-Network is not working
+DNS configuration is incorrect
+Network connection is not working
 DNS service has a problem
-Troubleshooting approach
 
-First test the IP:
+=> How to troubleshoot?
+
+First, try pinging an IP address directly:
 
 ping -c 3 8.8.8.8
 
-Then test the name:
+Then try the domain name:
 
 ping -c 3 google.com
-Understand
-Ping IP works
-Ping name fails
+
+=> Understand the result
+
+If:
+
+ping 8.8.8.8       → Works ✅
+ping google.com    → Fails ❌
+
+Then:
+
+Internet/network may be working
+        ↓
+But DNS name resolution is failing
         ↓
 Possible DNS problem
